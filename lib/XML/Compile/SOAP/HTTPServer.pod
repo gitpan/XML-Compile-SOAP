@@ -1,0 +1,119 @@
+=head1 NAME
+
+XML::Compile::SOAP::HTTPServer - create SOAP over HTTP daemon
+
+=head1 INHERITANCE
+
+ XML::Compile::SOAP::HTTPServer
+   is a XML::Compile::SOAP::Server
+
+ XML::Compile::SOAP::HTTPServer
+   is a HTTP::Daemon
+
+=head1 SYNOPSIS
+
+ my $server = XML::Compile::SOAP::HTTPServer->new(@options);
+ $server->run;
+
+=head1 DESCRIPTION
+
+This module handles the exchange of (XML) messages, according to the
+rules of SOAP (any version).  The module does not known how to parse
+or compose XML, but only worries about the HTTP aspects.
+
+The server is as flexible as possible: accept M-POST (HTTP Extension
+Framework) and POST (standard HTTP) for any message.  It can be used
+for any SOAP1.1 and SOAP1.2 mixture.
+
+=head1 METHODS
+
+XML::Compile::SOAP::HTTPServer-E<gt>B<new>(OPTIONS)
+
+=over 4
+
+As OPTIONS, you can pass anything the HTTP::Daemon method C<new()>
+understands.  You may also provide a prepared daemon object.
+
+ Option      --Default
+ daemon        <created>
+ role          'NEXT'
+ support_soap  'ANY'
+
+. daemon => M<HTTP::Daemon>
+
+=over 4
+
+Use the already created daemon object.
+
+=back
+
+. role => URI
+
+=over 4
+
+In SOAP1.1, the term is 'actor', but SOAP1.2 has renamed this into
+'role': the role [the daemon] plays in the transport protocol.
+
+=back
+
+. support_soap => 'SOAP11'|'SOAP12'|'ANY'
+
+=over 4
+
+Which versions of SOAP to support.  Quite an amount of preparations
+must be made to start a server, which can be reduced by enforcing
+a single SOAP type.
+
+=back
+
+=back
+
+=head2 Attributes
+
+$obj-E<gt>B<soapImplementation>(VERSION)
+
+=over 4
+
+=back
+
+=head2 Handlers
+
+$obj-E<gt>B<actionHandler>(SOAPACTION, SOAPVERSION, [DECODER, ENCODER, CALLBACK])
+
+=over 4
+
+Returned is the request DECODER, the answer ENCODER, and the CALLBACK
+related to the specified SOAPACTION and SOAPVERSION.  With 5 arguments,
+new settings are defined for these, otherwise the current settings
+are returned.
+
+=back
+
+$obj-E<gt>B<getSoapAction>(REQUEST)
+
+=over 4
+
+Collect the soap action URI from the request, with C<undef> on
+failure.
+
+=back
+
+$obj-E<gt>B<run>(OPTIONS)
+
+=over 4
+
+=back
+
+=head1 SEE ALSO
+
+This module is part of XML-Compile-SOAP distribution version 0.55,
+built on October 03, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+
+=head1 LICENSE
+
+Copyrights 2007 by Mark Overmeer. For other contributors see ChangeLog.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+See F<http://www.perl.com/perl/misc/Artistic.html>
+

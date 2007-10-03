@@ -1,0 +1,45 @@
+=head1 NAME
+
+XML::Compile::SOAP::Server - base class for SOAP message servers
+
+=head1 INHERITANCE
+
+ XML::Compile::SOAP::Server is extended by
+   XML::Compile::SOAP::HTTPServer
+
+=head1 SYNOPSIS
+
+ # never used directly.
+
+=head1 DESCRIPTION
+
+This base class defines the method that each server side of the SOAP
+message exchange protocols must implement.
+
+The commonatities on the level of options to the methods is not yet known,
+where there is only one transport implementation available on the moment:
+L<XML::Compile::SOAP::HTTPServer|XML::Compile::SOAP::HTTPServer>, for transport over HTTP.
+
+=head1 METHODS
+
+XML::Compile::SOAP::Server-E<gt>B<new>(OPTIONS)
+
+=over 4
+
+Compile a server handler.
+
+=back
+
+=head1 SEE ALSO
+
+This module is part of XML-Compile-SOAP distribution version 0.55,
+built on October 03, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+
+=head1 LICENSE
+
+Copyrights 2007 by Mark Overmeer. For other contributors see ChangeLog.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+See F<http://www.perl.com/perl/misc/Artistic.html>
+

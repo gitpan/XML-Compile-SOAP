@@ -1,0 +1,239 @@
+=head1 NAME
+
+XML::Compile::SOAP::HTTPClient - exchange SOAP via HTTP
+
+=head1 INHERITANCE
+
+ XML::Compile::SOAP::HTTPClient
+   is a XML::Compile::SOAP::Client
+
+=head1 SYNOPSIS
+
+ my $call = XML::Compile::SOAP::HTTPClient->new(@options);
+ my ($answer, $trace) = $call->($request);
+ my $answer = $call->($request);
+
+=head1 DESCRIPTION
+
+This module handles the exchange of (XML) messages, according to the
+rules of SOAP (any version).  The module does not known how to parse
+or compose XML, but only worries about the HTTP aspects.
+
+=head1 METHODS
+
+XML::Compile::SOAP::HTTPClient-E<gt>B<defaultUserAgent>([AGENT])
+
+=over 4
+
+Returns the User Agent which will be used when none is specified.  You
+may change the configuration of the AGENT (the returned LWP::UserAgent
+object) or provide one yourself.  See also L<new(user_agent)|XML::Compile::SOAP::HTTPClient/"METHODS">.
+
+Changes to the agent configuration can be made before or after the
+compilation, or even inbetween SOAP calls.
+
+=back
+
+$obj-E<gt>B<headerAddVersions>(HEADER)
+
+XML::Compile::SOAP::HTTPClient-E<gt>B<headerAddVersions>(HEADER)
+
+=over 4
+
+Adds some lines about module versions, which may help debugging
+or error reports.  This is called when a new client or server
+is being created.
+
+=back
+
+XML::Compile::SOAP::HTTPClient-E<gt>B<new>(OPTIONS)
+
+=over 4
+
+Compile an HTTP client handler.  Returned is a subroutine which is called
+with a text represenation of the XML request, or an XML::LibXML tree.
+In SCALAR context, an XML::LibXML parsed tree of the answer message
+is returned.  In LIST context, that answer is followed by a HASH which
+contains trace information.
+
+ Option        --Default
+ address         <derived from soap_action>
+ charset         'utf-8'
+ header          <created>
+ method          'POST'
+ mime_type       <depends on protocol>
+ mpost_id        42
+ soap_action     undef
+ soap_version    'SOAP11'
+ transport_hook  <undef>
+ user_agent      <singleton created>
+
+. address => URI|ARRAY-of-URI
+
+=over 4
+
+One or more URI which represents the servers. One is chosen at random.
+
+=back
+
+. charset => STRING
+
+. header => M<HTTP::Headers> object
+
+=over 4
+
+Versions of XML::Compile, L<XML::Compile::SOAP|XML::Compile::SOAP>, and LWP will be
+added to simplify bug reports.
+
+=back
+
+. method => 'POST'|'M-POST'
+
+=over 4
+
+With C<POST>, you get the standard HTTP exchange.  The C<M-POST> is
+implements the (Microsoft) HTTP Extension Framework.  Some servers
+accept both, other require a specific request.
+
+=back
+
+. mime_type => STRING
+
+. mpost_id => INTEGER
+
+=over 4
+
+With method C<M-POST>, the header extension fields require (any) number
+to be grouped.
+
+=back
+
+. soap_action => URI
+
+. soap_version => 'SOAP11'|'SOAP12'
+
+. transport_hook => CODE
+
+=over 4
+
+Transport is handled by LWP::UserAgent subroutine request, however... you
+may need to modify the request or answer messages outside the reach of
+L<XML::Compile::SOAP|XML::Compile::SOAP>.  This may also be used for debugging.  The CODE
+reference provided will be called with the request message (HTTP::Request)
+as first parameter, and the user agent (LWP::UserAgent) as second.  You
+must return an answer (HTTP::Response) or C<undef>.
+
+See section L<DETAILS/Use of transport_hook>.
+
+=back
+
+. user_agent => M<LWP::UserAgent>
+
+=over 4
+
+If you pass your own user agent, you will be able to configure
+it. Otherwise, one will be created with all the defaults by
+L<defaultUserAgent()|XML::Compile::SOAP::HTTPClient/"METHODS">. Providing your own user agents -or at least
+have a look at the configuration- seems like a good idea.
+
+=back
+
+example: create a client
+
+ my $call = XML::Compile::SOAP::HTTP->client
+  ( address => 'http://www.stockquoteserver.com/StockQuote' );
+
+ # $request and $answer are XML::LibXML trees
+ my ($answer, $trace) = $call->($request);
+
+ # drop $trace info immediately
+ my $answer = $call->($request);
+
+=back
+
+=head1 DETAILS
+
+=head2 Use of transport_hook
+
+The L<new(transport_hook)|XML::Compile::SOAP::HTTPClient/"METHODS"> options can be used for various purposes.
+These CODE references are called in stead of the actual HTTP transport,
+but may still make that happen.
+
+=head3 The dummy hook
+
+A dummy client transport_hook is this:
+
+ sub hook($$)
+ {  my ($request, $user_agent) = @_;
+    my $answer = $user_agent->request($request);
+    return $answer;
+ }
+ # sub hook($$) { $_[1]->request($_[0]) }
+
+ my $http = XML::Compile::SOAP::HTTP->client
+   ( ...
+   , transport_hook => \&hook
+   )
+
+or
+
+ my $call = $wsdl->prepareClient
+   ( 'some port'
+   , transport_hook => \&hook
+   );
+
+=head3 Example use of transport_hook
+
+Add a print statement before and after the actual transmission.
+Of course, you can get a trace hash with timing info back from the call
+(in LIST context as second returned element).
+
+ sub hook
+ {  my ($request, $user_agent) = @_;
+    print "sending request\n";
+    my $answer = $user_agent->request($request);
+    print "received answer\n";
+    $answer;
+ }
+
+=head3 Regression tests with transport_hook
+
+In test-scripts, we may not have access to internet, and we may not know
+how to create a daemon on all kinds of platforms.  Therefore, the
+L<new(transport_hook)|XML::Compile::SOAP::HTTPClient/"METHODS"> can be used to connect the request directly
+to an answer.
+
+ my $operation = $wsdl->operation('my-port');
+ my ($soapAction, $decode_request, $encode_answer)
+    = $operation->prepareServer(...);
+
+ # Simulate server daemon
+ my $hook = sub               # closure!
+ {   my ($request, $user_agent) = @_;
+     my $received = $decode_request->($request);
+     # .... server-side tests on $received data...
+     my $send     = { ... };  # fake an answer
+     $encode_answer->($send);
+ }
+
+ my $client = $operation->prepareClient
+   ( ....
+   , transport_hook => \&hook
+   );
+
+In this case, there is no actual message transmission, because the
+C<user_agent> is not used.
+
+=head1 SEE ALSO
+
+This module is part of XML-Compile-SOAP distribution version 0.55,
+built on October 03, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+
+=head1 LICENSE
+
+Copyrights 2007 by Mark Overmeer. For other contributors see ChangeLog.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+See F<http://www.perl.com/perl/misc/Artistic.html>
+
