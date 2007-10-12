@@ -7,15 +7,16 @@ use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '0.55';
+$VERSION = '0.56';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
-use XML::Compile        qw//;
+use XML::Compile        ();
 use XML::Compile::Util  qw/pack_type/;
 
 
 sub new($@)
 {   my $class = shift;
+
     error __x"you can only instantiate sub-classes of {class}"
         if $class eq __PACKAGE__;
 
@@ -28,10 +29,12 @@ sub init($)
     $self->{enc}     = $args->{encoding_ns} || panic "no encoding namespace";
     $self->{mime}    = $args->{media_type}  || 'application/soap+xml';
     $self->{schemas} = $args->{schemas}     || XML::Compile::Schema->new;
+    $self->{version} = $args->{version}     || panic "no version string";
     $self;
 }
 
 
+sub version()    {shift->{version}}
 sub envelopeNS() {shift->{env}}
 sub encodingNS() {shift->{enc}}
 
@@ -54,8 +57,8 @@ sub prefixPreferences($)
 sub compileMessage($@)
 {   my ($self, $direction, %args) = @_;
 
-      $direction eq 'SENDER'   ? $self->writer(\%args)
-    : $direction eq 'RECEIVER' ? $self->reader(\%args)
+      $direction eq 'SENDER'   ? $self->sender(\%args)
+    : $direction eq 'RECEIVER' ? $self->receiver(\%args)
     : error __x"message direction is 'SENDER' or 'RECEIVER', not {dir}"
          , dir => $direction;
 }
@@ -63,11 +66,11 @@ sub compileMessage($@)
 #------------------------------------------------
 
 
-sub writer($)
+sub sender($)
 {   my ($self, $args) = @_;
 
-    die "ERROR: option 'role' only for readers"  if $args->{role};
-    die "ERROR: option 'roles' only for readers" if $args->{roles};
+    error __"option 'role' only for readers"  if $args->{role};
+    error __"option 'roles' only for readers" if $args->{roles};
 
     my $envns  = $self->envelopeNS;
     my $allns  = $self->prefixPreferences($args->{prefix_table} || []);
@@ -105,7 +108,7 @@ sub writer($)
      );
 
     sub { my ($values, $charset) = @_;
-          my $doc = XML::LibXML::Document->new('1.0', $charset);
+          my $doc = XML::LibXML::Document->new('1.0', $charset || 'UTF-8');
           my %data = %$values;  # do not destroy the calling hash
 
           $data{Header}{$_} = delete $data{$_} for @$hlabels;
@@ -131,7 +134,7 @@ sub writerHook($$@)
                         push @childs, $g if $g;
                    }
                }
-               warn "ERROR: unused values @{[ keys %data ]}\n"
+               warning __x"unused values {names}", names => [keys %data]
                    if keys %data;
 
                @childs or return ();
@@ -272,18 +275,19 @@ sub writerCreateFault($$$)
 #------------------------------------------------
 
 
-sub reader($)
+sub receiver($)
 {   my ($self, $args) = @_;
 
-    die "ERROR: option 'destination' only for writers"
+    error __"option 'destination' only for writers"
         if $args->{destination};
 
-    die "ERROR: option 'mustUnderstand' only for writers"
+    error __"option 'mustUnderstand' only for writers"
         if $args->{understand};
 
     my $schema = $self->schemas;
     my $envns  = $self->envelopeNS;
 
+# roles are not checked (yet)
 #   my $roles  = $args->{roles} || $args->{role} || 'ULTIMATE';
 #   my @roles  = ref $roles eq 'ARRAY' ? @$roles : $roles;
 
@@ -396,10 +400,10 @@ sub readerEncstyleHook()
    { before => $before, after => $after };
 }
 
+#------------------------------------------------
+
 
 sub roleAbbreviation($) { panic "not implemented" }
-
-#------------------------------------------------
 
 
 1;

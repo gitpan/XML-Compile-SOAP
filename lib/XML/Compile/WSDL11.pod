@@ -14,6 +14,13 @@ XML::Compile::WSDL11 - create SOAP messages defined by WSDL 1.1
  my $schemas = $wsdl->schemas;
  my $op      = $wsdl->operation('GetStockPrice');
 
+ my @op_defs = $wsdl->operations;
+
+ my $client  = $wsdl->prepareClient('GetStockPrice');
+
+ my $server  = XML::Compile::SOAP::HTTPServer->new;
+ $server->actionsFromWSDL($wsdl);
+
 =head1 DESCRIPTION
 
 ### This module is UNDER CONSTRUCTION.  It will only evolve with your
@@ -46,12 +53,15 @@ XML::Compile::WSDL11-E<gt>B<new>(XML, OPTIONS)
 =over 4
 
 The XML is the WSDL file, which is anything accepted by
-XML::Compile subroutine dataToXML.  All options are also passed
-to create an internal XML::Compile::Schema object.  See
-XML::Compile::Schema subroutine new
+L<XML::Compile::dataToXML()|XML::Compile/"Read XML">.  All options are also passed
+to create an internal L<XML::Compile::Schema|XML::Compile::Schema> object.  See
+L<XML::Compile::Schema::new()|XML::Compile::Schema/"Constructors">
 
- Option        --Default
- wsdl_namespace  undef
+ Option        --Defined in     --Default
+ schema_dirs     XML::Compile     undef
+ wsdl_namespace                   undef
+
+. schema_dirs => DIRECTORY|ARRAY-OF-DIRECTORIES
 
 . wsdl_namespace => IRI
 
@@ -67,11 +77,39 @@ document.
 
 =head2 Accessors
 
+$obj-E<gt>B<addSchemaDirs>(DIRECTORIES)
+
+XML::Compile::WSDL11-E<gt>B<addSchemaDirs>(DIRECTORIES)
+
+=over 4
+
+See L<XML::Compile/"Accessors">
+
+=back
+
+$obj-E<gt>B<findSchemaFile>(FILENAME)
+
+=over 4
+
+See L<XML::Compile/"Accessors">
+
+=back
+
+$obj-E<gt>B<knownNamespace>(NAMESPACE|PAIRS)
+
+XML::Compile::WSDL11-E<gt>B<knownNamespace>(NAMESPACE|PAIRS)
+
+=over 4
+
+See L<XML::Compile/"Accessors">
+
+=back
+
 $obj-E<gt>B<schemas>
 
 =over 4
 
-Returns the XML::Compile::Schema object which collects all type
+Returns the L<XML::Compile::Schema|XML::Compile::Schema> object which collects all type
 information.
 
 =back
@@ -86,13 +124,33 @@ document root element is defined.
 
 =back
 
+=head2 Read XML
+
+$obj-E<gt>B<dataToXML>(NODE|REF-XML-STRING|XML-STRING|FILENAME|KNOWN)
+
+=over 4
+
+See L<XML::Compile/"Read XML">
+
+=back
+
+=head2 Filters
+
+$obj-E<gt>B<walkTree>(NODE, CODE)
+
+=over 4
+
+See L<XML::Compile/"Filters">
+
+=back
+
 =head2 Extension
 
 $obj-E<gt>B<addWSDL>(XMLDATA)
 
 =over 4
 
-Some XMLDATA, accepted by XML::Compile subroutine dataToXML is provided,
+Some XMLDATA, accepted by L<XML::Compile::dataToXML()|XML::Compile/"Read XML"> is provided,
 which should represent the top-level of a (partial) WSDL document.
 The specification can be spread over multiple files, which each have a
 C<definition> root element.
@@ -209,10 +267,52 @@ specified, a HASH of HASHes is returned with the CLASSes on the top-level.
 
 =back
 
+$obj-E<gt>B<operations>(OPTIONS)
+
+=over 4
+
+Return a list with all operations defined in the WSDL.
+
+ Option --Default
+ produce  'HASHES'
+
+. produce => 'OBJECTS'|'HASHES'
+
+=over 4
+
+By default, this function will return a list of HASHes, each representing
+one defined operation.  When this option is set, those HASHes are
+immediately used to create L<XML::Compile::WSDL11::Operation|XML::Compile::WSDL11::Operation> objects
+per operation.
+
+=back
+
+=back
+
+=head1 DETAILS
+
+=head1 DIAGNOSTICS
+
+Error: cannot find pre-installed name-space files
+
+=over 4
+
+Use C<$ENV{SCHEMA_LOCATION}> or L<new(schema_dirs)|XML::Compile/"Constructors"> to express location
+of installed name-space files, which came with the L<XML::Compile|XML::Compile>
+distribution package.
+
+=back
+
+Error: don't known how to interpret XML data
+
+=over 4
+
+=back
+
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.55,
-built on October 03, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.56,
+built on October 12, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

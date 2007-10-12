@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11;
 use vars '$VERSION';
-$VERSION = '0.55';
+$VERSION = '0.56';
 use base 'XML::Compile::SOAP';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -27,11 +27,15 @@ XML::Compile->knownNamespace
 
 sub new($@)
 {   my $class = shift;
+    $class ne __PACKAGE__
+        or error __x"only instantiate a SOAP11::Client or ::Server";
     (bless {}, $class)->init( {@_} );
 }
 
 sub init($)
 {   my ($self, $args) = @_;
+
+    $args->{version}               ||= 'SOAP11';
     my $env = $args->{envelope_ns} ||= "$base/envelope/";
     my $enc = $args->{encoding_ns} ||= "$base/encoding/";
     $self->SUPER::init($args);
@@ -90,7 +94,7 @@ sub writerHeaderEnv($$$$)
     $ucode;
 }
 
-sub writer($)
+sub sender($)
 {   my ($self, $args) = @_;
     $args->{prefix_table}
      = [ ''         => 'do not use'
@@ -100,7 +104,7 @@ sub writer($)
        , xsi        => 'http://www.w3.org/2001/XMLSchema-instance'
        ];
 
-    $self->SUPER::writer($args);
+    $self->SUPER::sender($args);
 }
 
 sub writerConvertFault($$)
@@ -150,12 +154,6 @@ sub convertCodeToFaultcode($$)
 }
 
 
-
 sub roleAbbreviation($) { $_[1] eq 'NEXT' ? $actor_next : $_[1] }
-
-
-sub prepareServer($)
-{   my ($self, $server) = @_;
-}
 
 1;

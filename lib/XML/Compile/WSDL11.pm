@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '0.55';
+$VERSION = '0.56';
 use base 'XML::Compile';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -19,6 +19,7 @@ use XML::Compile::Util    qw/pack_type/;
 use XML::Compile::WSDL11::Operation ();
 
 use List::Util  qw/first/;
+use Data::Dumper;  # needs to go away
 
 my $base  = 'http://schemas.xmlsoap.org/wsdl';
 my $wsdl1 = "$base/";
@@ -206,6 +207,7 @@ sub operation(@)
      , port_op  => $port_op
      , bind_op  => $bind_op
      );
+#warn Dumper $operation;
 
     $operation;
 }
@@ -250,6 +252,66 @@ sub find($;$)
 
     error __x"explicit selection required: pick one {class} from {groups}"
         , class => $class, groups => join("\n    ", '', sort keys %$group);
+}
+
+
+sub operations(@)
+{   my ($self, %args) = @_;
+    my @ops;
+    my $produce = delete $args{produce} || 'HASHES';
+
+  SERVICE:
+    foreach my $service ($self->find('service'))
+    {
+      PORT:
+        foreach my $port (@{$service->{port} || []})
+        {
+            my $bindname = $port->{binding}
+                or error __x"no binding defined in port '{name}'"
+                      , name => $port->{name};
+            my $binding  = $self->find(binding => $bindname);
+
+            my $type     = $binding->{type}
+                or error __x"no type defined with binding `{name}'"
+                    , name => $bindname;
+            my $portType = $self->find(portType => $type);
+            my $types    = $portType->{operation}
+                or error __x"no operations defined for portType `{name}'"
+                     , name => $type;
+
+            if($produce ne 'OBJECTS')
+            {   foreach my $operation (@$types)
+                {   push @ops
+                      , { service   => $service->{name}
+                        , port      => $port->{name}
+                        , portType  => $portType->{name}
+                        , binding   => $bindname
+                        , operation => $operation->{name}
+                        };
+                }
+                next PORT;
+            }
+ 
+            foreach my $operation (@$types)
+            {   my @bindops = @{$binding->{operation} || []};
+                my $op_name = $operation->{name};
+                my $bind_op = first {$_->{name} eq $op_name} @bindops;
+
+                push @ops, XML::Compile::WSDL11::Operation->new
+                  ( name      => $operation->{name}
+                  , service   => $service
+                  , port      => $port
+                  , portType  => $portType
+                  , binding   => $binding
+                  , wsdl      => $self
+                  , port_op   => $operation
+                  , bind_op   => $bind_op
+                  );
+            }
+        }
+    }
+
+    @ops;
 }
 
 1;

@@ -13,20 +13,22 @@ XML::Compile::SOAP - base-class for SOAP implementations
  **WARNING** Implementation not finished (but making
  ** progress): see STATUS statement below.
 
- use XML::Compile::SOAP11;
+ use XML::Compile::SOAP11::Client;
  use XML::Compile::Util qw/pack_type/;
 
  # There are quite some differences between SOAP1.1 and 1.2
- my $soap   = XML::Compile::SOAP11->new;
+ my $client = XML::Compile::SOAP11::Client->new;
 
  # load extra schemas always explicitly
- $soap->schemas->importDefinitions(...);
+ $client->schemas->importDefinitions(...);
+
+ # !!! THE NEXT STEPS ARE ONLY REQUIRED WHEN YOU DO NOT HAVE A WSDL
+ # !!! SEE XML::Compile::WSDL11 IF YOU HAVE A WSDL FILE
 
  my $h1el = pack_type $myns, $some_element;
  my $b1el = "{$myns}$other_element";  # same, less clean
 
- # Request, answer, and call usually created via WSDL
- my $encode_query = $soap->compileMessage
+ my $encode_query = $client->compileMessage
    ( 'SENDER'
    , header   => [ h1 => $h1el ]
    , body     => [ b1 => $b1el ]
@@ -35,7 +37,7 @@ XML::Compile::SOAP - base-class for SOAP implementations
    , encodings => { b1 => { use => 'literal' }}
    );
 
- my $decode_response = $soap->compileMessage
+ my $decode_response = $client->compileMessage
    ( 'RECEIVER'
    , header    => [ h2 => $h2el ]
    , body      => [ b2 => $b2el ]
@@ -44,7 +46,10 @@ XML::Compile::SOAP - base-class for SOAP implementations
    , encodings => { h2 => { use => 'literal' }}
    );
 
- my $http = XML::Compile::SOAP::HTTPClient->new(address => $server);
+ my $http = XML::Compile::SOAP::HTTPClient->new
+   ( action  => 'http://...'
+   , address => $server
+   );
 
  # In nice, small steps:
 
@@ -57,7 +62,7 @@ XML::Compile::SOAP - base-class for SOAP implementations
 
  # Simplify your life
 
- my $call   = $soap->compileCall($encode_query, $decode_query, $http);
+ my $call   = $client->compileRequest($encode_query, $decode_response, $http);
  my $result = $call->(h1 => ..., b1 => ...);
  print $result->{h2}->{...};
  print $result->{b2}->{...};
@@ -121,6 +126,7 @@ can be hidden for you)
  envelope_ns  <required>
  media_type   application/soap+xml
  schemas      created internally
+ version      <required>
 
 . encoding_ns => URI
 
@@ -134,6 +140,14 @@ can be hidden for you)
 
 Use this when you have already processed some schema definitions.  Otherwise,
 you can add schemas later with C<< $soap->schames->importDefinitions() >>
+
+=back
+
+. version => STRING
+
+=over 4
+
+The simple string representation of the protocol.
 
 =back
 
@@ -163,8 +177,14 @@ $obj-E<gt>B<schemas>
 
 =over 4
 
-Returns the XML::Compile::Schema object which contains the
+Returns the L<XML::Compile::Schema|XML::Compile::Schema> object which contains the
 knowledge about the types.
+
+=back
+
+$obj-E<gt>B<version>
+
+=over 4
 
 =back
 
@@ -214,7 +234,7 @@ By default, the end-point is the destination of each header element.
 
 The ARRAY contains a LIST of key-value pairs, specifing an entry label
 followed by an I<actor> (soap1.1) or I<role> (soap1.2) URI.  You may use
-the predefined actors/roles, like 'NEXT'.  See L<roleAbbreviation()|XML::Compile::SOAP/"Reader (internals)">.
+the predefined actors/roles, like 'NEXT'.  See L<roleAbbreviation()|XML::Compile::SOAP/"Helpers">.
 
 =back
 
@@ -289,9 +309,9 @@ Alternative for option C<role>
 
 =back
 
-=head2 Writer (internals)
+=head2 Sender (internals)
 
-$obj-E<gt>B<writer>(ARGS)
+$obj-E<gt>B<sender>(ARGS)
 
 =over 4
 
@@ -337,13 +357,7 @@ $obj-E<gt>B<writerHook>(NAMESPACE, LOCAL, ACTIONS)
 
 =back
 
-=head2 Reader (internals)
-
-$obj-E<gt>B<reader>(ARGS)
-
-=over 4
-
-=back
+=head2 Receiver (internals)
 
 $obj-E<gt>B<readerEncstyleHook>
 
@@ -369,6 +383,14 @@ $obj-E<gt>B<readerParseHeader>(HEADERDEF)
 
 =back
 
+$obj-E<gt>B<receiver>(ARGS)
+
+=over 4
+
+=back
+
+=head2 Helpers
+
 $obj-E<gt>B<roleAbbreviation>(STRING)
 
 =over 4
@@ -377,6 +399,9 @@ Translates actor/role/destination abbreviations into URIs. Various
 SOAP protocol versions have different pre-defined URIs, which can
 be abbreviated for readibility.  Returns the unmodified STRING in
 all other cases.
+
+SOAP11 only defines C<NEXT>.  SOAP12 defines C<NEXT>, C<NONE>, and
+C<ULTIMATE>.
 
 =back
 
@@ -441,7 +466,7 @@ is done only once in the initialization phase of your program.
 
 At run-time, you have to call the CODE reference with a
 data-structure which is compatible with the schema structure.
-(See XML::Compile::Schema subroutine template if you have no clue how it should
+(See L<XML::Compile::Schema::template()|XML::Compile::Schema/"Compilers"> if you have no clue how it should
 look)  So: let's send this:
 
  # insert your data
@@ -497,50 +522,12 @@ equivalent to the C<%data_in> from the client.
 It is quite simple to produce a WSDL file which is capable of handling
 SOAP1.1 and SOAP1.2 protocols with the same messages.  However, when
 faults are being generated, then differences show up. Therefore,
-L<writerConvertFault()|XML::Compile::SOAP/"Writer (internals)"> is used to hide the differences.
-
-=head1 DIAGNOSTICS
-
-Error: an input message does not have faults
-
-=over 4
-
-=back
-
-Error: headerfault does only exist in SOAP1.1
-
-=over 4
-
-=back
-
-Error: option 'destination' only for writers
-
-=over 4
-
-=back
-
-Error: option 'mustUnderstand' only for writers
-
-=over 4
-
-=back
-
-Error: option 'role' only for readers
-
-=over 4
-
-=back
-
-Error: option 'roles' only for readers
-
-=over 4
-
-=back
+L<writerConvertFault()|XML::Compile::SOAP/"Sender (internals)"> is used to hide the differences.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.55,
-built on October 03, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.56,
+built on October 12, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

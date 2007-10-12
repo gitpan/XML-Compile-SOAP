@@ -5,14 +5,16 @@
 use warnings;
 use strict;
 
-package XML::Compile::SOAP::Server;
+package XML::Compile::SOAP11::Server;
 use vars '$VERSION';
-$VERSION = '0.55';
+$VERSION = '0.56';
+use base 'XML::Compile::SOAP11', 'XML::Compile::SOAP::Server';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 
 
-sub new(@) { panic "protocol server not implemented" }
-sub init($) { shift }
+sub prepareServer($)
+{   my ($self, $server) = @_;
+}
 
 1;

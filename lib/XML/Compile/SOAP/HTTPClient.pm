@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::HTTPClient;
 use vars '$VERSION';
-$VERSION = '0.55';
+$VERSION = '0.56';
 use base 'XML::Compile::SOAP::Client';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -32,14 +32,15 @@ sub new(@)
     my $version  = $args{soap_version} || 'SOAP11';
     my $header   = $args{header}       || HTTP::Headers->new;
     my $charset  = $args{charset}      || 'utf-8';
-    my $action   = $args{soap_action};
     my $mpost_id = $args{mpost_id}     || 42;
     my $mime     = $args{mime};
-    my $address  = $args{address};
 
+    my $action   = $args{action}
+        or error __x"soap action not specified";
+
+    my $address  = $args{address};
     unless($address)
-    {   $address = $action
-            or error "no address nor soap_action specified";
+    {   $address = $action;
         $address =~ s/\#.*//;
     }
     my @addrs    = ref $address eq 'ARRAY' ? @$address : $address;
@@ -69,7 +70,7 @@ sub new(@)
     }
     else
     {   error "SOAP method must be POST or M-POST, not {method}"
-           , method => $method;
+          , method => $method;
     }
 
     # pick random server.  Ideally, we should change server when one
@@ -77,21 +78,34 @@ sub new(@)
     my $server  = @addrs[rand @addrs];
 
     my $request = HTTP::Request->new($method => $server, $header);
-    $parser   ||= XML::LibXML->new;
 
+    if(my $fake_server = $class->fakeServer)
+    {   return sub
+          { my ($answer, $trace) = $fake_server->
+              ( action => $action, message => $_[0], http_header => $request
+              , user_agent => $ua, server => $server, soap_version => $version
+              , soap => $class->soapClientImplementation($version)
+              );
+            wantarray ? ($answer, $trace) : $answer;
+          }
+    }
+
+    $parser   ||= XML::LibXML->new;
     sub
     {   $request->content(ref $_[0] ? $_[0]->toString : $_[0]);
-        my $start        = time;
-        my %trace        = (start => scalar localtime, request => $request);
+        my $start    = time;
+        my $response = $ua->request($request);
 
-        my $response     = $ua->request($request);
-
-        $trace{elapse}   = time - $start;
-        $trace{response} = $response;
+        my %trace =
+          ( start    => scalar(localtime $start)
+          , request  => $request
+          , response => $response
+          , elapse   => (time - $start)
+          );
 
         my $answer;
         if($response->content_type =~ m![/+]xml$!i)
-        {   $answer = eval {$parser->parser_string($response->content_decoded)};
+        {   $answer = eval {$parser->parser_string($response->decoded_content)};
             $trace{error} = $@ if $@;
         }
         else

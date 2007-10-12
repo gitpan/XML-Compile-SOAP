@@ -1,6 +1,6 @@
 =head1 NAME
 
-XML::Compile::SOAP::Client - base class for SOAP message clients
+XML::Compile::SOAP::Client - SOAP message initiators
 
 =head1 INHERITANCE
 
@@ -13,27 +13,40 @@ XML::Compile::SOAP::Client - base class for SOAP message clients
 
 =head1 DESCRIPTION
 
-This base class defines the method that each client side of the SOAP
+This class defines the methods that each client side of the SOAP
 message exchange protocols must implement.
-
-The commonatities on the level of options to the methods is not yet known,
-where there is only one transport implementation available on the moment:
-L<XML::Compile::SOAP::HTTPClient|XML::Compile::SOAP::HTTPClient>, for transport over HTTP.
 
 =head1 METHODS
 
-XML::Compile::SOAP::Client-E<gt>B<new>(OPTIONS)
+=head2 Instantiation
+
+This object can not be instantiated, but is only used as secundary
+base class.  The primary must contain the C<new>.
+
+=head2 Debugging
+
+$obj-E<gt>B<fakeServer>([FAKE|undef])
+
+XML::Compile::SOAP::Client-E<gt>B<fakeServer>([FAKE|undef])
 
 =over 4
 
-Compile a client handler.
+Returns the fake server, if defined: it will be called to simulate
+an external SOAP server.  Use this for debugging and regression test
+scripts.
+
+Usually, you should set your own FAKE server, but simply instantiate
+a L<XML::Compile::SOAP::Tester|XML::Compile::SOAP::Tester> object.
+
+BE WARNED: this FAKE server must be instantiated B<before> the
+SOAP client handlers are compiled.
 
 =back
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.55,
-built on October 03, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.56,
+built on October 12, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

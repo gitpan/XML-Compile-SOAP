@@ -33,17 +33,18 @@ The OPTIONS are all collected from the WSDL description by
 XML::Compile::WSDL subroutine operation.  End-users should not attempt to
 initiate this object directly.
 
- Option       --Default
- action         <from wsdl>
- bind_op        undef
- binding        <required>
- port           <required>
- portOperation  <required>
- portType       <required>
- protocol       'HTTP'
- service        <required>
- style          <from wsdl operation style> | 'document'
- wsdl           <required>
+ Option  --Default
+ action    <from wsdl>
+ bind_op   undef
+ binding   <required>
+ name      <required>
+ port      <required>
+ portType  <required>
+ port_op   <required>
+ protocol  'HTTP'
+ service   <required>
+ style     <from wsdl operation style> | 'document'
+ wsdl      <required>
 
 . action => URI
 
@@ -51,11 +52,13 @@ initiate this object directly.
 
 . binding => HASH
 
+. name => STRING
+
 . port => HASH
 
-. portOperation => HASH
-
 . portType => HASH
+
+. port_op => HASH
 
 . protocol => URI|'HTTP'
 
@@ -71,7 +74,7 @@ Transfer Protocol.
 
 . style => 'document'|'rpc'
 
-. wsdl => M<XML::Compile::WSDL11> object
+. wsdl => XML::Compile::WSDL11 object
 
 =back
 
@@ -84,6 +87,12 @@ $obj-E<gt>B<bindOperation>
 =back
 
 $obj-E<gt>B<bindings>
+
+=over 4
+
+=back
+
+$obj-E<gt>B<name>
 
 =over 4
 
@@ -159,6 +168,12 @@ $obj-E<gt>B<soapNameSpace>
 
 =back
 
+$obj-E<gt>B<soapVersion>
+
+=over 4
+
+=back
+
 =head2 Handlers
 
 $obj-E<gt>B<prepareClient>(OPTIONS)
@@ -207,11 +222,16 @@ $obj-E<gt>B<prepareServer>(OPTIONS)
 =over 4
 
 Prepare the routines which will decode the request and encode the answer,
-as will be run on the server.  The L<XML::Compile::SOAP::Server|XML::Compile::SOAP::Server> will
+as will be run on the server.  The XML::Compile::SOAP::Server will
 connect these.
 
 Returned is a LIST of three: the soapAction string, the request decoder
 CODE reference, and the answer encoder CODE reference.
+
+ Option--Default
+ soap    <required>
+
+. soap => XML::Compile::SOAP object
 
 =back
 
@@ -260,8 +280,8 @@ all are all returned.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.55,
-built on October 03, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.56,
+built on October 12, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

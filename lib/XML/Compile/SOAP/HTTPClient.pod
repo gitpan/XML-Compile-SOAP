@@ -57,16 +57,18 @@ is returned.  In LIST context, that answer is followed by a HASH which
 contains trace information.
 
  Option        --Default
- address         <derived from soap_action>
+ action          <required>
+ address         <derived from action>
  charset         'utf-8'
  header          <created>
  method          'POST'
- mime_type       <depends on protocol>
+ mime_type       <depends on soap version>
  mpost_id        42
- soap_action     undef
  soap_version    'SOAP11'
  transport_hook  <undef>
  user_agent      <singleton created>
+
+. action => URI
 
 . address => URI|ARRAY-of-URI
 
@@ -78,11 +80,11 @@ One or more URI which represents the servers. One is chosen at random.
 
 . charset => STRING
 
-. header => M<HTTP::Headers> object
+. header => HTTP::Headers object
 
 =over 4
 
-Versions of XML::Compile, L<XML::Compile::SOAP|XML::Compile::SOAP>, and LWP will be
+Versions of L<XML::Compile|XML::Compile>, L<XML::Compile::SOAP|XML::Compile::SOAP>, and LWP will be
 added to simplify bug reports.
 
 =back
@@ -108,8 +110,6 @@ to be grouped.
 
 =back
 
-. soap_action => URI
-
 . soap_version => 'SOAP11'|'SOAP12'
 
 . transport_hook => CODE
@@ -118,16 +118,17 @@ to be grouped.
 
 Transport is handled by LWP::UserAgent subroutine request, however... you
 may need to modify the request or answer messages outside the reach of
-L<XML::Compile::SOAP|XML::Compile::SOAP>.  This may also be used for debugging.  The CODE
-reference provided will be called with the request message (HTTP::Request)
-as first parameter, and the user agent (LWP::UserAgent) as second.  You
-must return an answer (HTTP::Response) or C<undef>.
+L<XML::Compile::SOAP|XML::Compile::SOAP>.
 
+The CODE reference provided will be called with the request
+message (HTTP::Request) as first parameter, and the user
+agent (LWP::UserAgent) as second.  You must return an answer
+(HTTP::Response) or C<undef>.
 See section L<DETAILS/Use of transport_hook>.
 
 =back
 
-. user_agent => M<LWP::UserAgent>
+. user_agent => LWP::UserAgent object
 
 =over 4
 
@@ -140,14 +141,30 @@ have a look at the configuration- seems like a good idea.
 
 example: create a client
 
- my $call = XML::Compile::SOAP::HTTP->client
-  ( address => 'http://www.stockquoteserver.com/StockQuote' );
+ my $call = XML::Compile::SOAP::HTTPClient->new
+   ( address => 'http://www.stockquoteserver.com/StockQuote'
+   , action  => 'http://example.com/GetLastTradePrice'
+   );
 
  # $request and $answer are XML::LibXML trees
  my ($answer, $trace) = $call->($request);
 
  # drop $trace info immediately
  my $answer = $call->($request);
+
+=back
+
+=head2 Instantiation
+
+=head2 Debugging
+
+$obj-E<gt>B<fakeServer>([FAKE|undef])
+
+XML::Compile::SOAP::HTTPClient-E<gt>B<fakeServer>([FAKE|undef])
+
+=over 4
+
+See L<XML::Compile::SOAP::Client/"Debugging">
 
 =back
 
@@ -196,38 +213,10 @@ Of course, you can get a trace hash with timing info back from the call
     $answer;
  }
 
-=head3 Regression tests with transport_hook
-
-In test-scripts, we may not have access to internet, and we may not know
-how to create a daemon on all kinds of platforms.  Therefore, the
-L<new(transport_hook)|XML::Compile::SOAP::HTTPClient/"METHODS"> can be used to connect the request directly
-to an answer.
-
- my $operation = $wsdl->operation('my-port');
- my ($soapAction, $decode_request, $encode_answer)
-    = $operation->prepareServer(...);
-
- # Simulate server daemon
- my $hook = sub               # closure!
- {   my ($request, $user_agent) = @_;
-     my $received = $decode_request->($request);
-     # .... server-side tests on $received data...
-     my $send     = { ... };  # fake an answer
-     $encode_answer->($send);
- }
-
- my $client = $operation->prepareClient
-   ( ....
-   , transport_hook => \&hook
-   );
-
-In this case, there is no actual message transmission, because the
-C<user_agent> is not used.
-
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.55,
-built on October 03, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.56,
+built on October 12, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

@@ -1,30 +1,33 @@
 =head1 NAME
 
-XML::Compile::SOAP12 - base class for SOAP1.2 implementation
+XML::Compile::SOAP12::Server - SOAP1.2 server needs
 
 =head1 INHERITANCE
 
- XML::Compile::SOAP12
+ XML::Compile::SOAP12::Server
+   is a XML::Compile::SOAP12
    is a XML::Compile::SOAP
 
- XML::Compile::SOAP12 is extended by
-   XML::Compile::SOAP12::Server
+ XML::Compile::SOAP12::Server
+   is a XML::Compile::SOAP::Server
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
 
-**WARNING** Implementation not finished: not usable!!
-
-This module handles the SOAP protocol version 1.2.
-See F<http://www.w3.org/TR/soap12/>).
-
-The client specifics are implemented in XML::Compile::SOAP12::Client,
-and the server needs can be found in L<XML::Compile::SOAP12::Server|XML::Compile::SOAP12::Server>.
+Thos module does not implement an actual soap server daemon, but the
+needs to create the server side.  The server daemon is implemented
+by L<XML::Compile::SOAP::Daemon|XML::Compile::SOAP::Daemon>.
 
 =head2 STATUS
 
 =head1 METHODS
+
+$obj-E<gt>B<prepareServer>(SERVER)
+
+=over 4
+
+=back
 
 =head2 Constructors
 
@@ -32,35 +35,7 @@ $obj-E<gt>B<new>(OPTIONS)
 
 =over 4
 
- Option      --Defined in     --Default
- encoding_ns   XML::Compile::SOAP  http://www.w3.org/2003/05/soap-encoding
- envelope_ns   XML::Compile::SOAP  http://www.w3.org/2003/05/soap-envelope
- header_fault                   error
- media_type    XML::Compile::SOAP  application/soap+xml
- rpc_ns                         http://www.w3.org/2003/05/soap-rpc
- schemas       XML::Compile::SOAP  created internally
- version       XML::Compile::SOAP  'SOAP12'
-
-. encoding_ns => URI
-
-. envelope_ns => URI
-
-. header_fault => <anything>
-
-=over 4
-
-SOAP1.1 defines a header fault type, which not present in SOAP 1.2,
-where it is replaced by a C<notUnderstood> structure.
-
-=back
-
-. media_type => MIMETYPE
-
-. rpc_ns => URI
-
-. schemas => C<XML::Compile::Schema> object
-
-. version => STRING
+See L<XML::Compile::SOAP12/"Constructors">
 
 =back
 
@@ -94,14 +69,15 @@ $obj-E<gt>B<roleAbbreviation>(STRING)
 
 =over 4
 
-Translates actor abbreviations into URIs.  For SOAP1.2, defined are C<NEXT>,
-C<NONE>, and C<ULTIMATE>.  Returns the unmodified STRING in all other cases.
+See L<XML::Compile::SOAP12/"Accessors">
 
 =back
 
 $obj-E<gt>B<rpcNS>
 
 =over 4
+
+See L<XML::Compile::SOAP12/"Accessors">
 
 =back
 

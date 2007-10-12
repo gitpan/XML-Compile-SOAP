@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP12;
 use vars '$VERSION';
-$VERSION = '0.55';
+$VERSION = '0.56';
 use base 'XML::Compile::SOAP';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -36,6 +36,7 @@ sub new($@)
 
 sub init($)
 {   my ($self, $args) = @_;
+    $args->{version}               ||= 'SOAP12';
     my $env = $args->{envelope_ns} ||= "$base/soap-envelope";
     my $enc = $args->{encoding_ns} ||= "$base/soap-encoding";
     $self->SUPER::init($args);
@@ -52,20 +53,16 @@ sub init($)
 
 sub rpcNS() {shift->{rpc}}
 
-sub writer($)
+sub sender($)
 {   my ($self, $args) = @_;
 
     error __x"headerfault does only exist in SOAP1.1"
         if $args->{header_fault};
 
+    $self->SUPER::sender($args);
 }
 
 
 sub roleAbbreviation($) { $roles{$_[1]} || $_[1] }
-
-
-sub prepareServer($)
-{   my ($self, $server) = @_;
-}
 
 1;

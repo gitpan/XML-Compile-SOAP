@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11::Operation;
 use vars '$VERSION';
-$VERSION = '0.55';
+$VERSION = '0.56';
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
 use List::Util  'first';
@@ -27,12 +27,15 @@ sub new(@)
 
 sub init()
 {   my $self = shift;
+    my $name = $self->name;
 
     # autodetect namespaces used
-    my $soapns  = $self->{soap_ns}
-      = exists $self->port->{ pack_type $soap11, 'address' } ? $soap11
-      : error __x"soap namespace {namespace} not (yet) supported"
-            , namespace => $soap11;
+    my $port = $self->port;
+    my ($soapns, $version) = ($self->{soap_ns}, $self->{version})
+      = exists $port->{ pack_type $soap11,'address' } ? ($soap11, 'SOAP11')
+      : exists $port->{ pack_type $soap12,'address' } ? ($soap12, 'SOAP12')
+      : error __x"no supported namespace found for {operation}"
+           , operation => $name;
 
     $self->schemas->importDefinitions($soapns);
 
@@ -58,6 +61,7 @@ sub init()
 }
 
 
+sub name()     {shift->{name}}
 sub service()  {shift->{service}}
 sub port()     {shift->{port}}
 sub binding()  {shift->{binding}}
@@ -70,6 +74,7 @@ sub bindOperation() {shift->{bind_op}}
 
 
 sub soapNameSpace() {shift->{soap_ns}}
+sub soapVersion()   {shift->{version}}
 
 
 sub endPointAddresses()
@@ -125,13 +130,13 @@ sub prepareClient(@)
     my $soapns = $self->soapNameSpace;
     my ($soap, $version);
     if($soapns eq $soap11)
-    {   require XML::Compile::SOAP11;
-        $soap    = XML::Compile::SOAP11->new(schemas => $self->schemas);
+    {   require XML::Compile::SOAP11::Client;
+        $soap    = XML::Compile::SOAP11::Client->new(schemas => $self->schemas);
         $version = 'SOAP11';
     }
     elsif($soapns eq $soap12)
-    {   require XML::Compile::SOAP12;
-        $soap    = XML::Compile::SOAP12->new(schemas => $self->schemas);
+    {   require XML::Compile::SOAP12::Client;
+        $soap    = XML::Compile::SOAP12::Client->new(schemas => $self->schemas);
         $version = 'SOAP12';
     }
     else { panic "NameSpace $soapns not supported for WSDL11 operation" }
@@ -167,7 +172,7 @@ sub prepareClient(@)
     require XML::Compile::SOAP::HTTPClient;
     my $call = XML::Compile::SOAP::HTTPClient->new
       ( soap_version   => $version
-      , soap_action    => $self->soapAction
+      , action         => $self->soapAction
       , address        => [ $self->endPointAddresses ]
       , transport_hook => $args{transport_hook}
       );
@@ -186,6 +191,9 @@ sub prepareClient(@)
 sub prepareServer(@)
 {   my ($self, %args) = @_;
     my ($input, $output);
+
+    my $soap = $args{soap} or panic "no soap to prepare server";
+
     ($self->soapAction, $input, $output);
 }
 
