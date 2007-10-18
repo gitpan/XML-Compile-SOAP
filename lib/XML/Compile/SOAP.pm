@@ -7,11 +7,11 @@ use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '0.56';
+$VERSION = '0.57';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 use XML::Compile        ();
-use XML::Compile::Util  qw/pack_type/;
+use XML::Compile::Util  qw/pack_type unpack_type/;
 
 
 sub new($@)
@@ -88,7 +88,7 @@ sub sender($)
       ( $args->{body} || [], $allns );
 
     my ($fault, $flabels) = $self->writerCreateFault
-      ( $args->{fault} || [], $allns
+      ( $args->{faults} || [], $allns
       , pack_type($envns, 'Fault')
       );
 
@@ -107,12 +107,25 @@ sub sender($)
      , attributes_qualified => 1
      );
 
-    sub { my ($values, $charset) = @_;
-          my $doc = XML::LibXML::Document->new('1.0', $charset || 'UTF-8');
-          my %data = %$values;  # do not destroy the calling hash
+    sub { my ($values, $charset) = ref $_[0] eq 'HASH' ? @_ : ( {@_}, undef);
+          my $doc   = XML::LibXML::Document->new('1.0', $charset || 'UTF-8');
+          my %copy  = %$values;  # do not destroy the calling hash
+          my %data;
 
-          $data{Header}{$_} = delete $data{$_} for @$hlabels;
-          $data{Body}{$_}   = delete $data{$_} for @$blabels, @$flabels;
+          $data{$_}         = delete $copy{$_} for qw/Header Body/;
+          $data{Body}     ||= {};
+
+          $data{Header}{$_} = delete $copy{$_} for @$hlabels;
+          $data{Body}{$_}   = delete $copy{$_} for @$blabels, @$flabels;
+
+          if(!keys %copy) { ; }
+          elsif(@$blabels==1 && !$data{Body}{$blabels->[0]})
+          {   $data{Body}{$blabels->[0]} = \%copy;
+          }
+          else
+          {   error __x"blocks not used: {blocks}", blocks => [keys %copy];
+          }
+
           $envelope->($doc, \%data);
         };
 }
@@ -137,7 +150,9 @@ sub writerHook($$@)
                warning __x"unused values {names}", names => [keys %data]
                    if keys %data;
 
-               @childs or return ();
+               # Body must be present, even empty, Header doesn't
+               @childs || $tag =~ m/Body$/ or return ();
+
                my $node = $doc->createElement($tag);
                $node->appendChild($_) for @childs;
                $node;
@@ -239,29 +254,33 @@ sub writerCreateBody($$)
 sub writerCreateFault($$$)
 {   my ($self, $faults, $allns, $faulttype) = @_;
     my (@rules, @flabels);
-    my $schema = $self->schemas;
-    my @f      = @$faults;
 
+    my $schema = $self->schemas;
+    my $fault  = $schema->compile
+      ( WRITER => $faulttype
+      , output_namespaces  => $allns
+      , include_namespaces => 0
+      , elements_qualified => 'TOP'
+      );
+
+    my @f      = @$faults;
     while(@f)
     {   my ($label, $type) = splice @f, 0, 2;
         my $details = $schema->compile
           ( WRITER => $type
           , output_namespaces  => $allns
           , include_namespaces => 0
+          , elements_qualified => 'TOP'
           );
 
-        my $fault = $schema->compile
-         ( WRITER => $faulttype
-         , output_namespaces  => $allns
-         , include_namespaces => 0
-         , elements_qualified => 'TOP'
-         );
-
         my $code = sub
-         { my $doc  = shift;
-           my $data = $self->writerConvertFault($type, shift);
-           $data->{$type} = $details->(delete $data->{details});
-           $fault->($doc, $data);
+         { my ($doc, $data)  = (shift, shift);
+           my %copy = %$data;
+           $copy{faultactor} = $self->roleURI($copy{faultactor});
+           my $det = delete $copy{detail};
+           my @det = !defined $det ? () : ref $det eq 'ARRAY' ? @$det : $det;
+           $copy{detail}{$type} = [ map {$details->($doc, $_)} @det ];
+           $fault->($doc, \%copy);
          };
 
         push @rules, $label => $code;
@@ -270,7 +289,6 @@ sub writerCreateFault($$$)
 
     (\@rules, \@flabels);
 }
-
 
 #------------------------------------------------
 
@@ -291,14 +309,15 @@ sub receiver($)
 #   my $roles  = $args->{roles} || $args->{role} || 'ULTIMATE';
 #   my @roles  = ref $roles eq 'ARRAY' ? @$roles : $roles;
 
-    my $header = $self->readerParseHeader($args->{header} || []);
-    my $body   = $self->readerParseBody($args->{body} || []);
+    my $faultdec   = $self->readerParseFaults($args->{faults} || [], $envns);
+    my $header     = $self->readerParseHeader($args->{header} || []);
+    my $body       = $self->readerParseBody($args->{body} || []);
 
     my $headerhook = $self->readerHook($envns, 'Header', @$header);
-    my $bodyhook   = $self->readerHook($envns, 'Body', @$body);
+    my $bodyhook   = $self->readerHook($envns, 'Body',   @$body);
     my $encstyle   = $self->readerEncstyleHook;
 
-    my $envelope = $self->schemas->compile
+    my $envelope   = $self->schemas->compile
      ( READER => pack_type($envns, 'Envelope')
      , hooks  => [ $encstyle, $headerhook, $bodyhook ]
      );
@@ -311,12 +330,14 @@ sub receiver($)
           {  my $k       = shift @pairs;
              $data->{$k} = shift @pairs;
           }
+
+          $faultdec->($data);
           $data;
         }
 }
 
 
-sub readerHook($$@)
+sub readerHook($$$@)
 {   my ($self, $ns, $local, @do) = @_;
     my %trans = map { ($_->[1] => [ $_->[0], $_->[2] ]) } @do; # we need copies
  
@@ -331,10 +352,12 @@ sub readerHook($$@)
                 if(my $t = $trans{$type})
                 {   my $v = $t->[1]->($child);
                     $h{$t->[0]} = $v if defined $v;
+                    next;
                 }
-                else
-                {   $h{$type} = $child;
-                }
+                return ($label => $self->replyMustUnderstandFault($type))
+                    if $child->getAttribute('mustUnderstand') || 0;
+
+                $h{$type} = $child;  # not decoded
             }
             ($label => \%h);
           }
@@ -350,7 +373,9 @@ sub readerParseHeader($)
     my @h      = @$header;
     while(@h)
     {   my ($label, $element) = splice @h, 0, 2;
-        push @rules, [$label, $element, $schema->compile(READER => $element)];
+        push @rules, [$label, $element
+          , $schema->compile(READER => $element, anyElement => 'TAKE_ALL')];
+
     }
 
     \@rules;
@@ -365,10 +390,17 @@ sub readerParseBody($)
     my @b      = @$body;
     while(@b)
     {   my ($label, $element) = splice @b, 0, 2;
-        push @rules, [$label, $element, $schema->compile(READER => $element)];
+        push @rules, [$label, $element
+          , $schema->compile(READER => $element, anyElement => 'TAKE_ALL')];
     }
 
     \@rules;
+}
+
+
+sub readerParseFaults($)
+{   my ($self, $faults) = @_;
+    sub { shift };
 }
 
 
@@ -403,7 +435,13 @@ sub readerEncstyleHook()
 #------------------------------------------------
 
 
+sub roleURI($) { panic "not implemented" }
+
+
 sub roleAbbreviation($) { panic "not implemented" }
+
+
+sub replyMustUnderstandFault($) { panic "not implemented" }
 
 
 1;

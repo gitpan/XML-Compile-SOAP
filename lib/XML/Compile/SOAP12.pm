@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP12;
 use vars '$VERSION';
-$VERSION = '0.56';
+$VERSION = '0.57';
 use base 'XML::Compile::SOAP';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -20,6 +20,7 @@ my %roles =
  , NONE     => "$role/none"
  , ULTIMATE => "$role/ultimateReceiver"
  );
+my %rroles = reverse %roles;
 
 XML::Compile->addSchemaDirs(__FILE__);
 XML::Compile->knownNamespace
@@ -62,7 +63,8 @@ sub sender($)
     $self->SUPER::sender($args);
 }
 
+sub roleURI($) { $roles{$_[1]} || $_[1] }
 
-sub roleAbbreviation($) { $roles{$_[1]} || $_[1] }
+sub roleAbbreviation($) { $rroles{$_[1]} || $_[1] }
 
 1;

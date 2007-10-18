@@ -5,16 +5,12 @@
 use warnings;
 use strict;
 
-package XML::Compile::SOAP11::Server;
+package XML::Compile::SOAP11::Client;
 use vars '$VERSION';
 $VERSION = '0.57';
-use base 'XML::Compile::SOAP11', 'XML::Compile::SOAP::Server';
+use base 'XML::Compile::SOAP11','XML::Compile::SOAP::Client';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 
-
-sub prepareServer($)
-{   my ($self, $server) = @_;
-}
 
 1;

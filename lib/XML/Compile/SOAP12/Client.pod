@@ -1,31 +1,21 @@
 =head1 NAME
 
-XML::Compile::SOAP11::Server - SOAP1.1 server needs
+XML::Compile::SOAP12::Client - SOAP1.2 client needs
 
 =head1 INHERITANCE
 
- XML::Compile::SOAP11::Server
-   is a XML::Compile::SOAP11
+ XML::Compile::SOAP12::Client
+   is a XML::Compile::SOAP12
    is a XML::Compile::SOAP
 
- XML::Compile::SOAP11::Server
-   is a XML::Compile::SOAP::Server
+ XML::Compile::SOAP12::Client
+   is a XML::Compile::SOAP::Client
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
 
-This module does not implement an actual soap server, but the
-needs to create the server side.  The server daemon is implemented
-by L<XML::Compile::SOAP::Daemon|XML::Compile::SOAP::Daemon>
-
 =head1 METHODS
-
-$obj-E<gt>B<prepareServer>(SERVER)
-
-=over 4
-
-=back
 
 =head2 Constructors
 
@@ -33,7 +23,28 @@ $obj-E<gt>B<new>(OPTIONS)
 
 =over 4
 
-See L<XML::Compile::SOAP11/"Constructors">
+ Option      --Defined in     --Default
+ encoding_ns   XML::Compile::SOAP  http://www.w3.org/2003/05/soap-encoding
+ envelope_ns   XML::Compile::SOAP  http://www.w3.org/2003/05/soap-envelope
+ header_fault  XML::Compile::SOAP12  error
+ media_type    XML::Compile::SOAP  application/soap+xml
+ rpc_ns        XML::Compile::SOAP12  http://www.w3.org/2003/05/soap-rpc
+ schemas       XML::Compile::SOAP  created internally
+ version       XML::Compile::SOAP  'SOAP12'
+
+. encoding_ns => URI
+
+. envelope_ns => URI
+
+. header_fault => <anything>
+
+. media_type => MIMETYPE
+
+. rpc_ns => URI
+
+. schemas => C<XML::Compile::Schema> object
+
+. version => STRING
 
 =back
 
@@ -63,6 +74,14 @@ See L<XML::Compile::SOAP/"Accessors">
 
 =back
 
+$obj-E<gt>B<rpcNS>
+
+=over 4
+
+See L<XML::Compile::SOAP12/"Accessors">
+
+=back
+
 $obj-E<gt>B<schemas>
 
 =over 4
@@ -81,11 +100,19 @@ See L<XML::Compile::SOAP/"Accessors">
 
 =head2 Single messages
 
+$obj-E<gt>B<compileClient>(OPTIONS)
+
+=over 4
+
+See L<XML::Compile::SOAP::Client/"Single messages">
+
+=back
+
 $obj-E<gt>B<compileMessage>(('SENDER'|'RECEIVER'), OPTIONS)
 
 =over 4
 
-See L<XML::Compile::SOAP11/"Single messages">
+See L<XML::Compile::SOAP/"Single messages">
 
 =back
 
@@ -169,7 +196,7 @@ $obj-E<gt>B<readerParseFaults>(FAULTSDEF)
 
 =over 4
 
-See L<XML::Compile::SOAP11/"Receiver (internals)">
+See L<XML::Compile::SOAP/"Receiver (internals)">
 
 =back
 
@@ -212,6 +239,18 @@ $obj-E<gt>B<roleURI>(URI|STRING)
 =over 4
 
 See L<XML::Compile::SOAP/"Helpers">
+
+=back
+
+=head2 Debugging
+
+$obj-E<gt>B<fakeServer>([FAKE|undef])
+
+XML::Compile::SOAP12::Client-E<gt>B<fakeServer>([FAKE|undef])
+
+=over 4
+
+See L<XML::Compile::SOAP::Client/"Debugging">
 
 =back
 

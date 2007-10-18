@@ -19,8 +19,6 @@ Thos module does not implement an actual soap server daemon, but the
 needs to create the server side.  The server daemon is implemented
 by L<XML::Compile::SOAP::Daemon|XML::Compile::SOAP::Daemon>.
 
-=head2 STATUS
-
 =head1 METHODS
 
 $obj-E<gt>B<prepareServer>(SERVER)
@@ -65,14 +63,6 @@ See L<XML::Compile::SOAP/"Accessors">
 
 =back
 
-$obj-E<gt>B<roleAbbreviation>(STRING)
-
-=over 4
-
-See L<XML::Compile::SOAP12/"Accessors">
-
-=back
-
 $obj-E<gt>B<rpcNS>
 
 =over 4
@@ -110,14 +100,6 @@ See L<XML::Compile::SOAP/"Single messages">
 =head2 Sender (internals)
 
 $obj-E<gt>B<sender>(ARGS)
-
-=over 4
-
-See L<XML::Compile::SOAP/"Sender (internals)">
-
-=back
-
-$obj-E<gt>B<writerConvertFault>(NAME, DATA)
 
 =over 4
 
@@ -191,6 +173,14 @@ See L<XML::Compile::SOAP/"Receiver (internals)">
 
 =back
 
+$obj-E<gt>B<readerParseFaults>(FAULTSDEF)
+
+=over 4
+
+See L<XML::Compile::SOAP/"Receiver (internals)">
+
+=back
+
 $obj-E<gt>B<readerParseHeader>(HEADERDEF)
 
 =over 4
@@ -209,12 +199,36 @@ See L<XML::Compile::SOAP/"Receiver (internals)">
 
 =head2 Helpers
 
+$obj-E<gt>B<replyMustUnderstandFault>(TYPE)
+
+=over 4
+
+See L<XML::Compile::SOAP/"Helpers">
+
+=back
+
+$obj-E<gt>B<roleAbbreviation>(URI)
+
+=over 4
+
+See L<XML::Compile::SOAP/"Helpers">
+
+=back
+
+$obj-E<gt>B<roleURI>(URI|STRING)
+
+=over 4
+
+See L<XML::Compile::SOAP/"Helpers">
+
+=back
+
 =head1 DETAILS
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.56,
-built on October 12, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.57,
+built on October 18, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

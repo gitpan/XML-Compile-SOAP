@@ -10,13 +10,13 @@ XML::Compile::SOAP - base-class for SOAP implementations
 
 =head1 SYNOPSIS
 
- **WARNING** Implementation not finished (but making
- ** progress): see STATUS statement below.
+ ** WARNING: Implementation not finished (but making progress)
+ ** see README.todo in distribution!!!
 
  use XML::Compile::SOAP11::Client;
  use XML::Compile::Util qw/pack_type/;
 
- # There are quite some differences between SOAP1.1 and 1.2
+ # There are some (hidden) differences between SOAP1.1 and 1.2
  my $client = XML::Compile::SOAP11::Client->new;
 
  # load extra schemas always explicitly
@@ -24,7 +24,7 @@ XML::Compile::SOAP - base-class for SOAP implementations
 
  # !!! THE NEXT STEPS ARE ONLY REQUIRED WHEN YOU DO NOT HAVE A WSDL
  # !!! SEE XML::Compile::WSDL11 IF YOU HAVE A WSDL FILE
-
+ 
  my $h1el = pack_type $myns, $some_element;
  my $b1el = "{$myns}$other_element";  # same, less clean
 
@@ -41,8 +41,7 @@ XML::Compile::SOAP - base-class for SOAP implementations
    ( 'RECEIVER'
    , header    => [ h2 => $h2el ]
    , body      => [ b2 => $b2el ]
-   , headerfault => [ ... ]
-   , fault     => [ ... ]
+   , faults    => [ ... ]
    , encodings => { h2 => { use => 'literal' }}
    );
 
@@ -55,17 +54,26 @@ XML::Compile::SOAP - base-class for SOAP implementations
 
  my @query    = (h1 => ..., b1 => ...);
  my $request  = $encode_query->($query);
- my $response = $http->($request);
- my $answer   = $decode_response->($resonse);
+ my ($response, $trace) = $http->($request);
+ my $answer   = $decode_response->($response);
  use Data::Dumper;
- warn Dumper $answer;   # see: a HASH with h2 and b2!
+ warn Dumper $answer;     # see: a HASH with h2 and b2!
+ if($answer->{Fault}) ... # error
 
  # Simplify your life
 
- my $call   = $client->compileRequest($encode_query, $decode_response, $http);
+ my $call   = $client->compileClient
+   ( kind      => 'request-response'
+   , request   => $encode_query
+   , response  => $decode_response
+   , transport => $http
+   );
+
  my $result = $call->(h1 => ..., b1 => ...);
  print $result->{h2}->{...};
  print $result->{b2}->{...};
+
+ my ($result, $trace) = $call->(...);
 
 =head1 DESCRIPTION
 
@@ -75,39 +83,9 @@ most often used.  The SOAP1.2 definition (F<http://www.w3.org/TR/soap12/>)
 is quite different; this module tries to define a sufficiently abstract
 interface to hide the protocol differences.
 
-=head2 STATUS
-
-On the moment, the following limitations exist:
-
-=over 4
-
-=item .
-
-Only document/literal use is supported, not XML-RPC.
-
-=item .
-
-Faults and headerfaults not correctly processed.
-
-=item .
-
-No real-life tests yet.
-
-=item .
-
-No encoding.
-
-=item .
-
-Only SOAP1.1 sufficiently implemented (probably)
-
-=item .
-
-and so on...
-
-=back
-
-So: there is only a small chance that the current code works for you.
+On the moment, B<XML-RPC is not supported>.  There are many more limitations,
+which can be found in the README.todo file which is part of the
+distribution package.
 
 =head1 METHODS
 
@@ -208,7 +186,7 @@ to explicitly specify the element to be processed.
  body            []
  destination     []
  encodings       {}
- fault           []
+ faults          []
  header          undef
  mustUnderstand  []
  role            ULTIMATE
@@ -234,7 +212,8 @@ By default, the end-point is the destination of each header element.
 
 The ARRAY contains a LIST of key-value pairs, specifing an entry label
 followed by an I<actor> (soap1.1) or I<role> (soap1.2) URI.  You may use
-the predefined actors/roles, like 'NEXT'.  See L<roleAbbreviation()|XML::Compile::SOAP/"Helpers">.
+the predefined actors/roles, like 'NEXT'.  See L<roleURI()|XML::Compile::SOAP/"Helpers"> and
+L<roleAbbreviation()|XML::Compile::SOAP/"Helpers">.
 
 =back
 
@@ -248,7 +227,7 @@ and C<namespace> parameters.  The encodings are organized per label.
 
 =back
 
-. fault => ENTRIES
+. faults => ENTRIES
 
 =over 4
 
@@ -317,16 +296,6 @@ $obj-E<gt>B<sender>(ARGS)
 
 =back
 
-$obj-E<gt>B<writerConvertFault>(NAME, DATA)
-
-=over 4
-
-The fault data can be provided in SOAP1.1 or SOAP1.2 format, or even
-both mixed.  The data structure is transformed to fit the used
-protocol level.  See L<DETAILS/Faults>.
-
-=back
-
 $obj-E<gt>B<writerCreateBody>(BODY-DEFS, NAMESPACE-TABLE)
 
 =over 4
@@ -377,6 +346,12 @@ $obj-E<gt>B<readerParseBody>(BODYDEF)
 
 =back
 
+$obj-E<gt>B<readerParseFaults>(FAULTSDEF)
+
+=over 4
+
+=back
+
 $obj-E<gt>B<readerParseHeader>(HEADERDEF)
 
 =over 4
@@ -391,13 +366,30 @@ $obj-E<gt>B<receiver>(ARGS)
 
 =head2 Helpers
 
-$obj-E<gt>B<roleAbbreviation>(STRING)
+$obj-E<gt>B<replyMustUnderstandFault>(TYPE)
+
+=over 4
+
+Produce an error structure to be returned to the sender.
+
+=back
+
+$obj-E<gt>B<roleAbbreviation>(URI)
+
+=over 4
+
+Translate a role URI into a simple string, if predefined.  See
+L<roleURI()|XML::Compile::SOAP/"Helpers">.
+
+=back
+
+$obj-E<gt>B<roleURI>(URI|STRING)
 
 =over 4
 
 Translates actor/role/destination abbreviations into URIs. Various
-SOAP protocol versions have different pre-defined URIs, which can
-be abbreviated for readibility.  Returns the unmodified STRING in
+SOAP protocol versions have different pre-defined STRINGs, which can
+be abbreviated for readibility.  Returns the unmodified URI in
 all other cases.
 
 SOAP11 only defines C<NEXT>.  SOAP12 defines C<NEXT>, C<NONE>, and
@@ -407,11 +399,134 @@ C<ULTIMATE>.
 
 =head1 DETAILS
 
-=head2 Do it yourself, no WSDL
+=head2 Using the produced calls
 
-Does this all look too complicated?  It isn't that bad.  The following
-example is used as test-case t/82soap11.t, directly taken from the SOAP11
-specs section 1.3 example 1.
+First, you compile the call either via a WSDL file (see
+L<XML::Compile::WSDL11|XML::Compile::WSDL11>), or in small manual steps, as described in
+the next section.  So, in one of both ways, you end-up with
+
+    # compile once
+    my $call = $soap->compileClient(...);
+
+    # and call often
+    my $anwer = $call->(%request);  # list of pairs
+    my $anwer = $call->(\%request); # same, but HASH
+    my $anwer = $call->(\%request, 'UTF-8');  # same
+
+But what is the structure of C<%request> and C<$answer> ?  Well, there
+are various syntaxes possible: from structurally perfect, to user-friendly.
+
+First, find out which data structures can be present.  When you compiled
+your messages explicitly, you have picked your own names.  When the
+call was initiated from a WSDL file, then you have to find the names
+of the message parts which can be used.  The component names are for
+header blocks, body blocks, headerfaults, and (body) faults.
+
+Let's say that the WSDL defines this (ignoring all name-space issues)
+
+ <message name="GetLastTradePriceInput">
+   <part name="count" type="int" />
+   <part name="request" element="TradePriceRequest"/>
+ </message>
+
+ <message name="GetLastTradePriceOutput">
+   <part name="answer" element="TradePrice"/>
+ </message>
+
+ <definitions ...>
+  <binding ...>
+   <operation ...>
+    <input>
+     <soap:header message="GetLastTradePriceInput" part="count"
+     <soap:body message="GetLastTradePriceInput" parts="request"
+    <output>
+     <soap:body message="GetLastTradePriceOutput"
+
+The input message needs explicitly named parts, in this case, where the
+output message simply uses all defined in the body.  So, the input message
+has one header block C<count>, and one body block C<request>.  The output
+message only has one body block C<answer>.
+
+Then, the definitions of the blocks:
+
+ <element name="TradePriceRequest">
+   <complexType>
+     <all>
+       <element name="tickerSymbol" type="string"/>
+
+ <element name="TradePrice">
+   <complexType>
+     <all>
+       <element name="price" type="float"/>
+
+Now, calling the compiled function can be done like this:
+
+  my $anwer = $call->(count => 5, request => {tickerSymbol => 'IBM'});
+  my $anwer = $call->(
+      {count => 5, request => {tickerSymbol => 'IBM'}}, 'UTF-8');
+
+However, in this case you may simplify the call.  First, all pairs
+which use known block names are collected.  Then, if there is exactly
+one body block which is not used yet, it will get all of the left over
+names.  So... in this case, you could also use
+
+ my $got = $call->(count => 5, tickerSymbol => 'IBM');
+
+This does not work if the block element is a simple type.  In most
+existing SOAP schemas, this simplification probably is possible.
+
+The C<$got> is a HASH, which will not be simplified.  The return
+might be (Data::Dumper is your friend)
+
+ $got = { answer => { price => 16.3 } }
+
+To access the value use
+
+ printf "%.2f US\$\n", $got->{answer}->{price};
+ printf "%.2f US\$\n", $got->{answer}{price};
+
+=head3 Faults
+
+Faults and headerfaults are a slightly different story: the type which
+is specified with them is not of the fault XML node itself, but of the
+C<details> sub-element within the standard fault structure.
+
+When producing the data for faults, you must be aware of the fact that
+the structure is different for SOAP1.1 and SOAP1.2.  When interpreting
+faults, the same problems are present, although the implementation
+tries to help you.
+
+Check whether SOAP1.1 or SOAP1.2 is used by looking for a C<faultcode>
+(SOAP1.1) or a C<Code> (SOAP1.2) field in the data:
+
+  if(my $fault = $got->{Fault})
+  {  if($fault->{faultcode}) { ... SOAP1.1 ... }
+     elsif($fault->{Code})   { ... SOAP1.2 ... }
+     else { die }
+  }
+
+In either protocol case, the following will get you at a compatible
+structure:
+
+  if(my $fault = $got->{Fault})
+  {   my $decoded = $got->{$fault->{_NAME}};
+      print $decoded->{code};
+      ...
+  }
+
+See the respective manuals L<XML::Compile::SOAP11|XML::Compile::SOAP11> and
+L<XML::Compile::SOAP12|XML::Compile::SOAP12> for the (ugly) specifics.
+
+=head2 Calling SOAP without WSDL
+
+See the manual page of L<XML::Compile::WSDL11|XML::Compile::WSDL11> to see how simple
+you can use this module when you have a WSDL file at hand.  The
+creation of a correct WSDL file is NOT SIMPLE.
+
+When using SOAP without WSDL file, it gets a little bit more complicate
+to use: you need to describe the content of the messages yourself.
+The following example is used as test-case C<t/10soap11.t>, directly
+taken from the SOAP11 specs section 1.3 example 1.
 
  # for simplification
  my $TestNS   = 'http://test-types';
@@ -470,10 +585,8 @@ data-structure which is compatible with the schema structure.
 look)  So: let's send this:
 
  # insert your data
- my %data_in =
-  ( transaction => 5
-  , request     => {symbol => 'DIS'}
-  );
+ my %data_in = (transaction => 5, request => {symbol => 'DIS'});
+ my %data_in = (transaction => 5, symbol => 'DIS'); # alternative
 
  # create a XML::LibXML tree
  my $xml  = $get_price->(\%data_in, 'UTF-8');
@@ -517,17 +630,10 @@ equivalent to the C<%data_in> from the client.
 
 =head2 Encodings
 
-=head2 Faults
-
-It is quite simple to produce a WSDL file which is capable of handling
-SOAP1.1 and SOAP1.2 protocols with the same messages.  However, when
-faults are being generated, then differences show up. Therefore,
-L<writerConvertFault()|XML::Compile::SOAP/"Sender (internals)"> is used to hide the differences.
-
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.56,
-built on October 12, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.57,
+built on October 18, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

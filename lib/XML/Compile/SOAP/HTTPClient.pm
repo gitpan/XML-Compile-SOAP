@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::HTTPClient;
 use vars '$VERSION';
-$VERSION = '0.56';
+$VERSION = '0.57';
 use base 'XML::Compile::SOAP::Client';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -20,11 +20,12 @@ use HTTP::Headers  ();
 use Time::HiRes   qw/time/;
 use XML::LibXML   ();
 
+my $parser = XML::LibXML->new;
+
 # (Microsofts HTTP Extension Framework)
 my $http_ext_id = 'http://schemas.xmlsoap.org/soap/envelope/';
 
 
-my $parser;
 sub new(@)
 {   my ($class, %args) = @_;
     my $ua       = $args{user_agent}   || $class->defaultUserAgent;
@@ -90,7 +91,6 @@ sub new(@)
           }
     }
 
-    $parser   ||= XML::LibXML->new;
     sub
     {   $request->content(ref $_[0] ? $_[0]->toString : $_[0]);
         my $start    = time;

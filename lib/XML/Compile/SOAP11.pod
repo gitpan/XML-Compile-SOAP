@@ -8,6 +8,7 @@ XML::Compile::SOAP11 - base class for SOAP1.1 implementation
    is a XML::Compile::SOAP
 
  XML::Compile::SOAP11 is extended by
+   XML::Compile::SOAP11::Client
    XML::Compile::SOAP11::Server
 
 =head1 SYNOPSIS
@@ -20,57 +21,12 @@ The implementation tries to behave like described in
 F<http://www.ws-i.org/Profiles/BasicProfile-1.0.html>
 
 Two extensions are made: the SOAP11 client
-XML::Compile::SOAP11::Client.
+L<XML::Compile::SOAP11::Client|XML::Compile::SOAP11::Client>.
 and server in L<XML::Compile::SOAP11::Server|XML::Compile::SOAP11::Server>.
-
-=head2 STATUS
 
 =head1 METHODS
 
 =head2 Constructors
-
-$obj-E<gt>B<compileMessage>(('SENDER'|'RECEIVER'), OPTIONS)
-
-=over 4
-
- Option        --Defined in     --Default
- body            XML::Compile::SOAP  []
- destination     XML::Compile::SOAP  []
- encodings       XML::Compile::SOAP  {}
- fault           XML::Compile::SOAP  []
- header          XML::Compile::SOAP  undef
- headerfault                      []
- mustUnderstand  XML::Compile::SOAP  []
- role            XML::Compile::SOAP  ULTIMATE
- roles           XML::Compile::SOAP  []
-
-. body => ENTRIES
-
-. destination => ARRAY
-
-. encodings => HASH-of-HASHes
-
-. fault => ENTRIES
-
-. header => ENTRIES
-
-. headerfault => ENTRIES
-
-=over 4
-
-ARRAY of simple name with element references, for all expected
-faults.  There can be unexpected faults, which will not get
-decoded automatically.
-
-=back
-
-. mustUnderstand => STRING|ARRAY-OF-STRING
-
-. role => URI|ARRAY-OF-URI
-
-. roles => ARRAY-OF-URI
-
-=back
 
 $obj-E<gt>B<new>(OPTIONS)
 
@@ -96,15 +52,6 @@ right URI.
 . schemas => C<XML::Compile::Schema> object
 
 . version => STRING
-
-=back
-
-$obj-E<gt>B<roleAbbreviation>(STRING)
-
-=over 4
-
-Translates actor abbreviations into URIs.  The only one defined for
-SOAP1.1 is C<NEXT>.  Returns the unmodified STRING in all other cases.
 
 =back
 
@@ -152,17 +99,52 @@ See L<XML::Compile::SOAP/"Accessors">
 
 =head2 Single messages
 
-=head2 Sender (internals)
-
-$obj-E<gt>B<sender>(ARGS)
+$obj-E<gt>B<compileMessage>(('SENDER'|'RECEIVER'), OPTIONS)
 
 =over 4
 
-See L<XML::Compile::SOAP/"Sender (internals)">
+ Option        --Defined in     --Default
+ body            XML::Compile::SOAP  []
+ destination     XML::Compile::SOAP  []
+ encodings       XML::Compile::SOAP  {}
+ faults          XML::Compile::SOAP  []
+ header          XML::Compile::SOAP  undef
+ headerfault                      []
+ mustUnderstand  XML::Compile::SOAP  []
+ role            XML::Compile::SOAP  ULTIMATE
+ roles           XML::Compile::SOAP  []
+
+. body => ENTRIES
+
+. destination => ARRAY
+
+. encodings => HASH-of-HASHes
+
+. faults => ENTRIES
+
+. header => ENTRIES
+
+. headerfault => ENTRIES
+
+=over 4
+
+ARRAY of simple name with element references, for all expected
+faults.  There can be unexpected faults, which will not get
+decoded automatically.
 
 =back
 
-$obj-E<gt>B<writerConvertFault>(NAME, DATA)
+. mustUnderstand => STRING|ARRAY-OF-STRING
+
+. role => URI|ARRAY-OF-URI
+
+. roles => ARRAY-OF-URI
+
+=back
+
+=head2 Sender (internals)
+
+$obj-E<gt>B<sender>(ARGS)
 
 =over 4
 
@@ -236,6 +218,16 @@ See L<XML::Compile::SOAP/"Receiver (internals)">
 
 =back
 
+$obj-E<gt>B<readerParseFaults>(FAULTSDEF)
+
+=over 4
+
+The decoders for the possible "faults" are compiled.  Returned is a code
+reference which can handle it.  See fault handler specifics in the
+C<DETAILS> chapter below.
+
+=back
+
 $obj-E<gt>B<readerParseHeader>(HEADERDEF)
 
 =over 4
@@ -254,12 +246,101 @@ See L<XML::Compile::SOAP/"Receiver (internals)">
 
 =head2 Helpers
 
+$obj-E<gt>B<replyMustUnderstandFault>(TYPE)
+
+=over 4
+
+See L<XML::Compile::SOAP/"Helpers">
+
+=back
+
+$obj-E<gt>B<roleAbbreviation>(URI)
+
+=over 4
+
+See L<XML::Compile::SOAP/"Helpers">
+
+=back
+
+$obj-E<gt>B<roleURI>(URI|STRING)
+
+=over 4
+
+See L<XML::Compile::SOAP/"Helpers">
+
+=back
+
 =head1 DETAILS
+
+=head2 Using the produced calls
+
+=head2 Calling SOAP without WSDL
+
+=head2 Encodings
+
+=head2 Receiving faults in SOAP1.1
+
+When faults are received, they will be returned with the C<Faults> key
+in the data structure.  So:
+
+  my $answer = $call->($question);
+  if($answer->{Faults}) { ... }
+
+As extra service, for each of the fault types, as defined with
+L<compileMessage(faults)|XML::Compile::SOAP/"Single messages">, a decoded structure is included.  The name
+of that structure can be found like this:
+
+  if(my $faults = $answer->{Faults})
+  {   my $name    = $faults->{_NAME};
+      my $decoded = $answer->{$name};
+      ...
+  }
+
+The untranslated C<$faults> HASH looks like this:
+
+ Fault =>
+   { faultcode => '{http://schemas.xmlsoap.org/soap/envelope/}Server.first'
+   , faultstring => 'my mistake'
+   , faultactor => 'http://schemas.xmlsoap.org/soap/actor/next'
+   , detail => { '{http://test-types}fault_one' => [ XMLNODES ] }
+   , _NAME => 'fault1'
+   }
+
+The C<_NAME> originates from the L<compileMessage(faults)|XML::Compile::SOAP/"Single messages"> option:
+
+   $soap->compileMessage('RECEIVER', ...
+     , faults => [ fault1 => '{http://test-types}fault_one' ] );
+
+Now, automatically the answer will contain the decoded fault
+structure as well:
+
+  fault1 =>
+    { code => '{http://schemas.xmlsoap.org/soap/envelope/}Server.first'
+    , class  => [ 'http://schemas.xmlsoap.org/soap/envelope/'
+         , 'Receiver', 'first' ]
+    , reason => 'my mistake',
+    , role   => 'NEXT'
+    , detail => { help => 'please ignore' }
+    }
+
+The C<detail> is the decoding of the XMLNODES, which are defined to
+be of type C<< {http://test-types}fault_one >>.
+
+The C<class> is an unpacked version of the code.  SOAP1.2 is using the
+(better) terms C<Sender> and C<Receiver>.
+
+C<role> is constructed by decoding the C<faultactor> using
+L<roleAbbreviation()|XML::Compile::SOAP/"Helpers">.  The names are closer to the SOAP1.2 specification.
+
+If the received fault is of an unpredicted type, then key C<unknown>
+is used, and the C<detail> will list the unparsed XMLNODEs.  When there
+are no details, (according to the specs) the error must be caused by
+a header problem, so the C<header> key is used.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.56,
-built on October 12, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.57,
+built on October 18, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

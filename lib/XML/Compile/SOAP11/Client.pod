@@ -1,31 +1,23 @@
 =head1 NAME
 
-XML::Compile::SOAP11::Server - SOAP1.1 server needs
+XML::Compile::SOAP11::Client - SOAP1.1 client needs
 
 =head1 INHERITANCE
 
- XML::Compile::SOAP11::Server
+ XML::Compile::SOAP11::Client
    is a XML::Compile::SOAP11
    is a XML::Compile::SOAP
 
- XML::Compile::SOAP11::Server
-   is a XML::Compile::SOAP::Server
+ XML::Compile::SOAP11::Client
+   is a XML::Compile::SOAP::Client
 
 =head1 SYNOPSIS
 
 =head1 DESCRIPTION
 
-This module does not implement an actual soap server, but the
-needs to create the server side.  The server daemon is implemented
-by L<XML::Compile::SOAP::Daemon|XML::Compile::SOAP::Daemon>
+See L<XML::Compile::SOAP11|XML::Compile::SOAP11>.
 
 =head1 METHODS
-
-$obj-E<gt>B<prepareServer>(SERVER)
-
-=over 4
-
-=back
 
 =head2 Constructors
 
@@ -80,6 +72,14 @@ See L<XML::Compile::SOAP/"Accessors">
 =back
 
 =head2 Single messages
+
+$obj-E<gt>B<compileClient>(OPTIONS)
+
+=over 4
+
+See L<XML::Compile::SOAP::Client/"Single messages">
+
+=back
 
 $obj-E<gt>B<compileMessage>(('SENDER'|'RECEIVER'), OPTIONS)
 
@@ -212,6 +212,18 @@ $obj-E<gt>B<roleURI>(URI|STRING)
 =over 4
 
 See L<XML::Compile::SOAP/"Helpers">
+
+=back
+
+=head2 Debugging
+
+$obj-E<gt>B<fakeServer>([FAKE|undef])
+
+XML::Compile::SOAP11::Client-E<gt>B<fakeServer>([FAKE|undef])
+
+=over 4
+
+See L<XML::Compile::SOAP::Client/"Debugging">
 
 =back
 

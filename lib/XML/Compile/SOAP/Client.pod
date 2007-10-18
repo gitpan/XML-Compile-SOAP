@@ -5,11 +5,13 @@ XML::Compile::SOAP::Client - SOAP message initiators
 =head1 INHERITANCE
 
  XML::Compile::SOAP::Client is extended by
+   XML::Compile::SOAP11::Client
+   XML::Compile::SOAP12::Client
    XML::Compile::SOAP::HTTPClient
 
 =head1 SYNOPSIS
 
- # never used directly.
+ # never used directly, only via XML::Compile::SOAP1[12]::Client
 
 =head1 DESCRIPTION
 
@@ -18,10 +20,44 @@ message exchange protocols must implement.
 
 =head1 METHODS
 
-=head2 Instantiation
+=head2 Constructors
 
 This object can not be instantiated, but is only used as secundary
 base class.  The primary must contain the C<new>.
+
+=head2 Single messages
+
+$obj-E<gt>B<compileClient>(OPTIONS)
+
+=over 4
+
+Combine sending a request, and receiving the answer.  In LIST context,
+both the decoded answer, as a HASH with various trace information is
+returned.  In SCALAR context, only the answer is given.
+
+ Option   --Default
+ kind       'request-response'
+ request    <required>
+ response   <required>
+ transport  <required>
+
+. kind => STRING
+
+=over 4
+
+Four kinds of message exchange are defined in WSDL terminology:
+C<request-response>, C<notification-operation>, C<one-way>, and
+C<solicit-response>.  Only the first one is supported on the moment.
+
+=back
+
+. request => CODE
+
+. response => CODE
+
+. transport => CODE
+
+=back
 
 =head2 Debugging
 
@@ -45,8 +81,8 @@ SOAP client handlers are compiled.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.56,
-built on October 12, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.57,
+built on October 18, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

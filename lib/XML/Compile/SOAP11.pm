@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11;
 use vars '$VERSION';
-$VERSION = '0.56';
+$VERSION = '0.57';
 use base 'XML::Compile::SOAP';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -74,7 +74,7 @@ sub writerHeaderEnv($$$$)
     else {$ucode = $code}
 
     if($actors)
-    {   $actors =~ s/\b(\S+)\b/$self->roleAbbreviation($1)/ge;
+    {   $actors =~ s/\b(\S+)\b/$self->roleURI($1)/ge;
 
         my $a_w = $self->{soap11_a_w} ||=
           $schema->compile
@@ -96,64 +96,94 @@ sub writerHeaderEnv($$$$)
 
 sub sender($)
 {   my ($self, $args) = @_;
+    my $envns = $self->envelopeNS;
     $args->{prefix_table}
      = [ ''         => 'do not use'
-       , 'SOAP-ENV' => $self->envelopeNS
+       , 'SOAP-ENV' => $envns
        , 'SOAP-ENC' => $self->encodingNS
        , xsd        => 'http://www.w3.org/2001/XMLSchema'
        , xsi        => 'http://www.w3.org/2001/XMLSchema-instance'
        ];
+    push @{$args->{body}}, Fault => pack_type($envns, 'Fault');
 
     $self->SUPER::sender($args);
 }
 
-sub writerConvertFault($$)
-{   my ($self, $faultname, $data) = @_;
-    my %copy = %$data;
+sub receiver($)
+{   my ($self, $args) = @_;
+    my $envns = $self->envelopeNS;
 
-    my $code = delete $copy{Code};
-    $copy{faultcode} ||= $self->convertCodeToFaultcode($faultname, $code);
+    push @{$args->{body}}, Fault => pack_type($envns, 'Fault');
 
-    my $reasons = delete $copy{Reason};
-    $copy{faultstring} = $reasons->[0]
-        if ! $copy{faultstring} && ref $reasons eq 'ARRAY';
-
-    delete $copy{Node};
-    my $role  = delete $copy{Role};
-    my $actor = delete $copy{faultactor} || $role;
-    $copy{faultactor} = $self->roleAbbreviation($actor) if $actor;
+    $self->SUPER::receiver($args);
 }
 
-sub convertCodeToFaultcode($$)
-{   my ($self, $faultname, $code) = @_;
 
-    my $value = $code->{Value}
-        or error __x"SOAP1.2 Fault {name} Code requires Value"
-              , name => $faultname;
+sub readerParseFaults($)
+{   my ($self, $faults) = @_;
+    my %rules;
 
-    my ($ns, $class) = unpack_type $value;
-    $ns eq $soap12_env
-        or error __x"SOAP1.2 Fault {name} Code Value {value} not in {ns}"
-              , name => $faultname, value => $value, ns => $soap12_env;
+    my $schema = $self->schemas;
+    my @f      = @$faults;
 
-    my $faultcode
-      = $class eq 'Sender'   ? 'Client'
-      : $class eq 'Receiver' ? 'Server'
-      :                        $class;  # unchanged
-      # DataEncodingUnknown MustUnderstand VersionMismatch
-
-    for(my $sub = $code->{Subcode}; defined $sub; $sub = $sub->{Subcode})
-    {   my $subval = $sub->{Value}
-           or error __x"SOAP1.2 Fault {name} subcode requires Value"
-              , name => $faultname;
-        my ($subns, $sublocal) = unpack_type $subval;
-        $faultcode .= '.' . $sublocal;
+    while(@f)
+    {   my ($label, $element) = splice @f, 0, 2;
+        $rules{$element} =  [$label, $schema->compile(READER => $element)];
     }
 
-    pack_type $soap11_env, $faultcode;
+    sub
+    {   my $data   = shift;
+        my $faults = $data->{Fault} or return;
+
+        my $reports = $faults->{detail} ||= {};
+        my ($label, $details) = (header => undef);
+        foreach my $type (sort keys %$reports)
+        {   my $report  = $reports->{$type} || [];
+            if($rules{$type})
+            {   ($label, my $do) = @{$rules{$type}};
+                $details = [ map { ($do->($_))[1] } @$report ];
+            }
+            else
+            {   ($label, $details) = (unknown => $report);
+            }
+        }
+
+        my ($code_ns, $code_err) = unpack_type $faults->{faultcode};
+        my ($err, @sub_err) = split /\./, $code_err;
+        $err = 'Receiver' if $err eq 'Server';
+        $err = 'Sender'   if $err eq 'Client';
+
+        my %nice =
+          ( code   => $faults->{faultcode}
+          , class  => [ $code_ns, $err, @sub_err ]
+          , reason => $faults->{faultstring}
+          );
+
+        $nice{role}   = $self->roleAbbreviation($faults->{faultactor})
+            if $faults->{faultactor};
+
+        $nice{detail} = (@$details==1 ? $details->[0] : $details)
+            if $details;
+
+        $data->{$label}  = \%nice;
+        $faults->{_NAME} = $label;
+    };
 }
 
+sub replyMustUnderstandFault($)
+{   my ($self, $type) = @_;
 
-sub roleAbbreviation($) { $_[1] eq 'NEXT' ? $actor_next : $_[1] }
+    { Fault =>
+        { faultcode   => pack_type($self->envelopeNS, 'MustUnderstand')
+        , faultstring => "SOAP mustUnderstand $type"
+        }
+    };
+}
+
+sub roleURI($) { $_[1] && $_[1] eq 'NEXT' ? $actor_next : $_[1] }
+
+sub roleAbbreviation($) { $_[1] && $_[1] eq $actor_next ? 'NEXT' : $_[1] }
+
+
 
 1;

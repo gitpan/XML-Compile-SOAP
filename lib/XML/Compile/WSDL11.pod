@@ -11,38 +11,34 @@ XML::Compile::WSDL11 - create SOAP messages defined by WSDL 1.1
 
  # preparation
  my $wsdl    = XML::Compile::WSDL11->new($xml);
- my $schemas = $wsdl->schemas;
+ $wsdl->addWSDL(...additional WSDL file...);
+ $wsdl->importDefinitions(...more schemas...);
+
+ my $call    = $wsdl->prepareClient('GetStockPrice');
+
  my $op      = $wsdl->operation('GetStockPrice');
+ my $call    = $op->prepareClient;
+
+ my $anwer   = $call->(%request);
+ my ($anwer, $trace) = $call->(%request);
 
  my @op_defs = $wsdl->operations;
 
- my $client  = $wsdl->prepareClient('GetStockPrice');
-
- my $server  = XML::Compile::SOAP::HTTPServer->new;
+ # Install XML::Compile::SOAP::Daemon
+ my $server  = XML::Compile::SOAP::HTTPDaemon->new;
  $server->actionsFromWSDL($wsdl);
 
 =head1 DESCRIPTION
 
-### This module is UNDER CONSTRUCTION.  It will only evolve with your
-help.  Please contact the author when you have something to contribute.
-On the moment, the development is primarily targeted to support the
-CPAN6 development.  You can change that with money or time.
-
-Missing: pure HTTP GET/POST bindings; multipart-mime; XML-RPC
-###
+B<< This module is UNDER CONSTRUCTION.
+Missing: pure HTTP GET/POST bindings, multipart-mime; XML-RPC >>
 
 An WSDL file defines a set of schemas and how to use the defined
 types using SOAP connections.  The parsing is based on the WSDL
-schema.  The WSDL definition can get constructed from multiple
-XML trees, each added with L<addWSDL()|XML::Compile::WSDL11/"Extension">.
+schema.
 
-WSDL defines object with QNAMES: name-space qualified names.  When you
-specify such a name, you have to explicitly mention the name-space IRI,
-not the prefix as used in the WSDL file.  This is because prefixes may
-change without notice.
-
-The defined QNAMES are only unique within their CLASS.  Defined
-CLASS types are: service, message, bindings, and portType.
+The WSDL definition can get constructed from multiple XML trees, each
+added with L<addWSDL()|XML::Compile::WSDL11/"Extension"> (wsdl), or L<importDefinitions()|XML::Compile::WSDL11/"Extension"> (schema).
 
 =head1 METHODS
 
@@ -194,15 +190,15 @@ some flexibility is required.
 
  Option   --Default
  operation  <required>
- port       <required>
- service    <required>
+ port       <only when just one>
+ service    <only when just one>
 
 . operation => NAME
 
 =over 4
 
-Optional when the parameter list starts with a NAME (which is an
-alternative for this option).  Also optional when there is only
+Ignored when the parameter list starts with a NAME (which is an
+alternative for this option).  Optional when there is only
 one operation defined within the portType.
 
 =back
@@ -211,7 +207,7 @@ one operation defined within the portType.
 
 =over 4
 
-Optional when the selected service has only one port.
+Required when more than one port is defined.
 
 =back
 
@@ -219,7 +215,7 @@ Optional when the selected service has only one port.
 
 =over 4
 
-Optional when exactly one service is defined.
+Required when more than one service is defined.
 
 =back
 
@@ -291,6 +287,31 @@ per operation.
 
 =head1 DETAILS
 
+=head2 Comparison
+
+=head2 Initializing SOAP operations via WSDL
+
+When you have a WSDL file, then SOAP is simple.  If there is no such file
+at hand, then it is still possible to use SOAP.  See the DETAILS chapter
+in L<XML::Compile::SOAP|XML::Compile::SOAP>.
+
+The WSDL file contains operations, which can be addressed by name.
+In this WSDL file, you need to find the name of the port to be used.
+In most cases, the WSDL has only one service, one port, one binding,
+and one portType and those names can therefore be omitted.  If there is
+a choice, then you are required to select one explicitly.
+
+ use XML::Compile::WSDL11 ();
+
+ # once in your program
+ my $wsdl   = XML::Compile::WSDL11->new('def.wsdl');
+
+ # once for each of the defined operations
+ my $call   = $wsdl->prepareClient('GetStockPrice');
+
+ # see XML::Compile::SOAP chapter DETAILS about call params
+ my $answer = $call->(%request);
+
 =head1 DIAGNOSTICS
 
 Error: cannot find pre-installed name-space files
@@ -311,8 +332,8 @@ Error: don't known how to interpret XML data
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.56,
-built on October 12, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.57,
+built on October 18, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

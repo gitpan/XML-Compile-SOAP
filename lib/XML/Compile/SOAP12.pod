@@ -8,6 +8,7 @@ XML::Compile::SOAP12 - base class for SOAP1.2 implementation
    is a XML::Compile::SOAP
 
  XML::Compile::SOAP12 is extended by
+   XML::Compile::SOAP12::Client
    XML::Compile::SOAP12::Server
 
 =head1 SYNOPSIS
@@ -19,10 +20,8 @@ XML::Compile::SOAP12 - base class for SOAP1.2 implementation
 This module handles the SOAP protocol version 1.2.
 See F<http://www.w3.org/TR/soap12/>).
 
-The client specifics are implemented in XML::Compile::SOAP12::Client,
+The client specifics are implemented in L<XML::Compile::SOAP12::Client|XML::Compile::SOAP12::Client>,
 and the server needs can be found in L<XML::Compile::SOAP12::Server|XML::Compile::SOAP12::Server>.
-
-=head2 STATUS
 
 =head1 METHODS
 
@@ -90,15 +89,6 @@ See L<XML::Compile::SOAP/"Accessors">
 
 =back
 
-$obj-E<gt>B<roleAbbreviation>(STRING)
-
-=over 4
-
-Translates actor abbreviations into URIs.  For SOAP1.2, defined are C<NEXT>,
-C<NONE>, and C<ULTIMATE>.  Returns the unmodified STRING in all other cases.
-
-=back
-
 $obj-E<gt>B<rpcNS>
 
 =over 4
@@ -134,14 +124,6 @@ See L<XML::Compile::SOAP/"Single messages">
 =head2 Sender (internals)
 
 $obj-E<gt>B<sender>(ARGS)
-
-=over 4
-
-See L<XML::Compile::SOAP/"Sender (internals)">
-
-=back
-
-$obj-E<gt>B<writerConvertFault>(NAME, DATA)
 
 =over 4
 
@@ -215,6 +197,14 @@ See L<XML::Compile::SOAP/"Receiver (internals)">
 
 =back
 
+$obj-E<gt>B<readerParseFaults>(FAULTSDEF)
+
+=over 4
+
+See L<XML::Compile::SOAP/"Receiver (internals)">
+
+=back
+
 $obj-E<gt>B<readerParseHeader>(HEADERDEF)
 
 =over 4
@@ -233,12 +223,36 @@ See L<XML::Compile::SOAP/"Receiver (internals)">
 
 =head2 Helpers
 
+$obj-E<gt>B<replyMustUnderstandFault>(TYPE)
+
+=over 4
+
+See L<XML::Compile::SOAP/"Helpers">
+
+=back
+
+$obj-E<gt>B<roleAbbreviation>(URI)
+
+=over 4
+
+See L<XML::Compile::SOAP/"Helpers">
+
+=back
+
+$obj-E<gt>B<roleURI>(URI|STRING)
+
+=over 4
+
+See L<XML::Compile::SOAP/"Helpers">
+
+=back
+
 =head1 DETAILS
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.56,
-built on October 12, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.57,
+built on October 18, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 
