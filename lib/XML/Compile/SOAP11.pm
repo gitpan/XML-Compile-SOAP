@@ -7,21 +7,17 @@ use strict;
 
 package XML::Compile::SOAP11;
 use vars '$VERSION';
-$VERSION = '0.58';
+$VERSION = '0.59';
 use base 'XML::Compile::SOAP';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
-use XML::Compile::Util  qw/pack_type unpack_type/;
-
-my $base       = 'http://schemas.xmlsoap.org/soap';
-my $actor_next = "$base/actor/next";
-my $soap11_env = "$base/envelope/";
-my $soap12_env = 'http://www.w3c.org/2003/05/soap-envelope';
+use XML::Compile::Util       qw/pack_type unpack_type SCHEMA2001/;
+use XML::Compile::SOAP::Util qw/:soap11/;
 
 XML::Compile->addSchemaDirs(__FILE__);
 XML::Compile->knownNamespace
- ( "$base/encoding/" => 'soap-encoding.xsd'
- , $soap11_env       => 'soap-envelope.xsd'
+ ( &SOAP11ENC => 'soap-encoding.xsd'
+ , &SOAP11ENV => 'soap-envelope.xsd'
  );
 
 
@@ -36,8 +32,10 @@ sub init($)
 {   my ($self, $args) = @_;
 
     $args->{version}               ||= 'SOAP11';
-    my $env = $args->{envelope_ns} ||= "$base/envelope/";
-    my $enc = $args->{encoding_ns} ||= "$base/encoding/";
+    $args->{schema_ns}             ||= SCHEMA2001;
+    my $env = $args->{envelope_ns} ||= SOAP11ENV;
+    my $enc = $args->{encoding_ns} ||= SOAP11ENC;
+
     $self->SUPER::init($args);
 
     my $schemas = $self->schemas;
@@ -180,10 +178,9 @@ sub replyMustUnderstandFault($)
     };
 }
 
-sub roleURI($) { $_[1] && $_[1] eq 'NEXT' ? $actor_next : $_[1] }
+sub roleURI($) { $_[1] && $_[1] eq 'NEXT' ? SOAP11NEXT : $_[1] }
 
-sub roleAbbreviation($) { $_[1] && $_[1] eq $actor_next ? 'NEXT' : $_[1] }
-
+sub roleAbbreviation($) { $_[1] && $_[1] eq SOAP11NEXT ? 'NEXT' : $_[1] }
 
 
 1;

@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '0.58';
+$VERSION = '0.59';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 use XML::Compile        ();
@@ -25,37 +25,44 @@ sub new($@)
 
 sub init($)
 {   my ($self, $args) = @_;
-    $self->{env}     = $args->{envelope_ns} || panic "no envelope namespace";
-    $self->{enc}     = $args->{encoding_ns} || panic "no encoding namespace";
-    $self->{mime}    = $args->{media_type}  || 'application/soap+xml';
+    $self->{envns}   = $args->{envelope_ns} || panic "no envelope namespace";
+    $self->{encns}   = $args->{encoding_ns} || panic "no encoding namespace";
+    $self->{schemans}= $args->{schema_ns}   || panic "no schema namespace";
+    $self->{mimens}  = $args->{media_type}  || 'application/soap+xml';
     $self->{schemas} = $args->{schemas}     || XML::Compile::Schema->new;
     $self->{version} = $args->{version}     || panic "no version string";
+
+    $self->{schemains} = $args->{schema_instance_ns}
+      || $self->{schemans}.'-instance';
+
     $self;
 }
 
 
 sub version()    {shift->{version}}
-sub envelopeNS() {shift->{env}}
-sub encodingNS() {shift->{enc}}
+sub envelopeNS() {shift->{envns}}
+sub encodingNS() {shift->{encns}}
+sub schemaNS()   {shift->{schemans}}
+sub schemaInstanceNS() {shift->{schemains}}
 
 
 sub schemas()    {shift->{schemas}}
 
 
-sub prefixPreferences($)
-{   my ($self, $table) = @_;
-    my %allns;
-    my @allns  = @$table;
+sub prefixPreferences($$;$)
+{   my ($self, $table, $new, $used) = @_;
+    my @allns  = ref $new eq 'ARRAY' ? @$new : %$new;
     while(@allns)
     {   my ($prefix, $uri) = splice @allns, 0, 2;
-        $allns{$uri} = {uri => $uri, prefix => $prefix};
+        $table->{$uri} = {uri => $uri, prefix => $prefix, used => $used};
     }
-    \%allns;
+    $table;
 }
 
 
 sub compileMessage($@)
 {   my ($self, $direction, %args) = @_;
+    $args{style} ||= 'document';
 
       $direction eq 'SENDER'   ? $self->sender(\%args)
     : $direction eq 'RECEIVER' ? $self->receiver(\%args)
@@ -73,7 +80,12 @@ sub sender($)
     error __"option 'roles' only for readers" if $args->{roles};
 
     my $envns  = $self->envelopeNS;
-    my $allns  = $self->prefixPreferences($args->{prefix_table} || []);
+    my $allns  = $self->prefixPreferences({}, $args->{prefix_table}, 0);
+    $self->prefixPreferences($allns, $args->{prefixes}, 1)
+        if $args->{prefixes};
+
+    $allns->{$self->schemaInstanceNS}{used}++
+        if $args->{style} eq 'rpc';
 
     # Translate message parts
 
@@ -430,6 +442,22 @@ sub readerEncstyleHook()
       };
 
    { before => $before, after => $after };
+}
+
+
+#------------------------------------------------
+
+
+sub startEncoding(@)
+{   my ($self, %args) = @_;
+    require XML::Compile::SOAP::Encoding;
+    $self->_init_encoding(\%args);
+}
+
+sub startDecoding(@)
+{   my ($self, %args) = @_;
+    require XML::Compile::SOAP::Encoding;
+    $self->_init_decoding(\%args);
 }
 
 #------------------------------------------------

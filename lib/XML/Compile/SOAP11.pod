@@ -36,18 +36,24 @@ To simplify the URIs of the actors, as specified with the C<destination>
 option, you may use the STRING C<NEXT>.  It will be replaced by the
 right URI.
 
- Option     --Defined in     --Default
- encoding_ns  XML::Compile::SOAP  http://schemas.xmlsoap.org/soap/encoding/
- envelope_ns  XML::Compile::SOAP  http://schemas.xmlsoap.org/soap/envelope/
- media_type   XML::Compile::SOAP  application/soap+xml
- schemas      XML::Compile::SOAP  created internally
- version      XML::Compile::SOAP  'SOAP11'
+ Option            --Defined in     --Default
+ encoding_ns         XML::Compile::SOAP  http://schemas.xmlsoap.org/soap/encoding/
+ envelope_ns         XML::Compile::SOAP  http://schemas.xmlsoap.org/soap/envelope/
+ media_type          XML::Compile::SOAP  application/soap+xml
+ schema_instance_ns  XML::Compile::SOAP  $schema_ns . '-instance'
+ schema_ns           XML::Compile::SOAP  http://www.w3.org/2001/XMLSchema
+ schemas             XML::Compile::SOAP  created internally
+ version             XML::Compile::SOAP  'SOAP11'
 
 . encoding_ns => URI
 
 . envelope_ns => URI
 
 . media_type => MIMETYPE
+
+. schema_instance_ns => URI
+
+. schema_ns => URI
 
 . schemas => C<XML::Compile::Schema> object
 
@@ -73,7 +79,23 @@ See L<XML::Compile::SOAP/"Accessors">
 
 =back
 
-$obj-E<gt>B<prefixPreferences>(TABLE)
+$obj-E<gt>B<prefixPreferences>(TABLE, NEW, [USED])
+
+=over 4
+
+See L<XML::Compile::SOAP/"Accessors">
+
+=back
+
+$obj-E<gt>B<schemaInstanceNS>(() {shift->{schemains}})
+
+=over 4
+
+See L<XML::Compile::SOAP/"Accessors">
+
+=back
+
+$obj-E<gt>B<schemaNS>
 
 =over 4
 
@@ -111,8 +133,10 @@ $obj-E<gt>B<compileMessage>(('SENDER'|'RECEIVER'), OPTIONS)
  header          XML::Compile::SOAP  undef
  headerfault                      []
  mustUnderstand  XML::Compile::SOAP  []
+ prefixes        XML::Compile::SOAP  {}
  role            XML::Compile::SOAP  ULTIMATE
  roles           XML::Compile::SOAP  []
+ style           XML::Compile::SOAP  'document'
 
 . body => ENTRIES
 
@@ -136,9 +160,13 @@ decoded automatically.
 
 . mustUnderstand => STRING|ARRAY-OF-STRING
 
+. prefixes => HASH
+
 . role => URI|ARRAY-OF-URI
 
 . roles => ARRAY-OF-URI
+
+. style => 'document'|'rpc'
 
 =back
 
@@ -244,6 +272,8 @@ See L<XML::Compile::SOAP/"Receiver (internals)">
 
 =back
 
+=head2 Transcoding
+
 =head2 Helpers
 
 $obj-E<gt>B<replyMustUnderstandFault>(TYPE)
@@ -339,8 +369,8 @@ a header problem, so the C<header> key is used.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.58,
-built on October 22, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.59,
+built on November 05, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

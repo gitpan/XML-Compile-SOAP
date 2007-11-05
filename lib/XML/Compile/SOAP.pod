@@ -4,6 +4,9 @@ XML::Compile::SOAP - base-class for SOAP implementations
 
 =head1 INHERITANCE
 
+ XML::Compile::SOAP has extra code in
+   XML::Compile::SOAP::Encoding
+
  XML::Compile::SOAP is extended by
    XML::Compile::SOAP11
    XML::Compile::SOAP12
@@ -99,18 +102,24 @@ Create a new SOAP object.  You have to instantiate either the SOAP11 or
 SOAP12 sub-class of this, because there are quite some differences (which
 can be hidden for you)
 
- Option     --Default
- encoding_ns  <required>
- envelope_ns  <required>
- media_type   application/soap+xml
- schemas      created internally
- version      <required>
+ Option            --Default
+ encoding_ns         <required>
+ envelope_ns         <required>
+ media_type          application/soap+xml
+ schema_instance_ns  $schema_ns . '-instance'
+ schema_ns           <required>
+ schemas             created internally
+ version             <required>
 
 . encoding_ns => URI
 
 . envelope_ns => URI
 
 . media_type => MIMETYPE
+
+. schema_instance_ns => URI
+
+. schema_ns => URI
 
 . schemas => C<XML::Compile::Schema> object
 
@@ -145,7 +154,27 @@ $obj-E<gt>B<envelopeNS>
 
 =back
 
-$obj-E<gt>B<prefixPreferences>(TABLE)
+$obj-E<gt>B<prefixPreferences>(TABLE, NEW, [USED])
+
+=over 4
+
+NEW is a HASH or ARRAY-of-PAIRS which define prefix-to-uri relations,
+which are added to the list defined in the TABLE (a HASH-of-HASHes).
+When USED is set, then it will show-up in the output message.  At
+compile-time, the value of USED is auto-detect.
+
+This method is called for the soap specification preferred namespaces,
+and for your L<compileMessage(prefixes)|XML::Compile::SOAP/"Single messages">.
+
+=back
+
+$obj-E<gt>B<schemaInstanceNS>(() {shift->{schemains}})
+
+=over 4
+
+=back
+
+$obj-E<gt>B<schemaNS>
 
 =over 4
 
@@ -189,8 +218,10 @@ to explicitly specify the element to be processed.
  faults          []
  header          undef
  mustUnderstand  []
+ prefixes        {}
  role            ULTIMATE
  roles           []
+ style           'document'
 
 . body => ENTRIES
 
@@ -259,6 +290,15 @@ C<mustUnderstand> attribute set to C<1> (soap1.1) or C<true> (soap1.2).
 
 =back
 
+. prefixes => HASH
+
+=over 4
+
+For the sender only: add additional prefix definitions.  All provided
+names will be used always.
+
+=back
+
 . role => URI|ARRAY-OF-URI
 
 =over 4
@@ -285,6 +325,8 @@ call to the compiled subroutine will return C<undef>.
 Alternative for option C<role>
 
 =back
+
+. style => 'document'|'rpc'
 
 =back
 
@@ -363,6 +405,10 @@ $obj-E<gt>B<receiver>(ARGS)
 =over 4
 
 =back
+
+=head2 Transcoding
+
+SOAP defines encodings, especially for XML-RPC.
 
 =head2 Helpers
 
@@ -530,7 +576,8 @@ taken from the SOAP11 specs section 1.3 example 1.
 
  # for simplification
  my $TestNS   = 'http://test-types';
- my $SchemaNS = 'http://www.w3.org/2001/XMLSchema';
+ use XML::Compile::Util qw/SCHEMA2001/;
+ my $SchemaNS = SCHEMA2001;
 
 First, the schema (hopefully someone else created for you, because they
 can be quite hard to create correctly) is in file C<myschema.xsd>
@@ -632,8 +679,8 @@ equivalent to the C<%data_in> from the client.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.58,
-built on October 22, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.59,
+built on November 05, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

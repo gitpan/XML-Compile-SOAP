@@ -7,17 +7,14 @@ use strict;
 
 package XML::Compile::WSDL11::Operation;
 use vars '$VERSION';
-$VERSION = '0.58';
+$VERSION = '0.59';
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
 use List::Util  'first';
 
-use XML::Compile::Util   qw/pack_type/;
 use Data::Dumper;  # needs to go away
-
-my $soap11 = 'http://schemas.xmlsoap.org/wsdl/soap/';
-my $soap12 = 'http://schemas.xmlsoap.org/wsdl/soap12/';
-my $http   = 'http://schemas.xmlsoap.org/soap/http';
+use XML::Compile::Util       qw/pack_type/;
+use XML::Compile::SOAP::Util qw/:wsdl11 SOAP11HTTP/;
 
 
 sub new(@)
@@ -28,12 +25,16 @@ sub new(@)
 sub init()
 {   my $self = shift;
     my $name = $self->name;
+use Carp;
+confess %$self unless $name;
 
     # autodetect namespaces used
     my $port = $self->port;
     my ($soapns, $version) = ($self->{soap_ns}, $self->{version})
-      = exists $port->{ pack_type $soap11,'address' } ? ($soap11, 'SOAP11')
-      : exists $port->{ pack_type $soap12,'address' } ? ($soap12, 'SOAP12')
+      = exists $port->{pack_type WSDL11SOAP,  'address'}
+      ? (WSDL11SOAP,   'SOAP11')
+      : exists $port->{pack_type WSDL11SOAP12,'address'}
+      ? (WSDL11SOAP12, 'SOAP12')
       : error __x"no supported namespace found for {operation}"
            , operation => $name;
 
@@ -129,12 +130,12 @@ sub prepareClient(@)
 
     my $soapns = $self->soapNameSpace;
     my ($soap, $version);
-    if($soapns eq $soap11)
+    if($soapns eq WSDL11SOAP)
     {   require XML::Compile::SOAP11::Client;
         $soap    = XML::Compile::SOAP11::Client->new(schemas => $self->schemas);
         $version = 'SOAP11';
     }
-    elsif($soapns eq $soap12)
+    elsif($soapns eq WSDL11SOAP12)
     {   require XML::Compile::SOAP12::Client;
         $soap    = XML::Compile::SOAP12::Client->new(schemas => $self->schemas);
         $version = 'SOAP12';
@@ -147,7 +148,7 @@ sub prepareClient(@)
 
     my $proto  = $args{protocol}  || $self->{protocol}
               || ($self->soapAction =~ m/^(\w+)\:/ ? uc($1) : 'HTTP');
-    $proto     = $http if $proto eq 'HTTP';
+    $proto     = SOAP11HTTP if $proto eq 'HTTP';
 
     my $style  = $args{style} || $self->soapStyle || 'document';
 
@@ -165,7 +166,7 @@ sub prepareClient(@)
     ### prepare the transport
     #
 
-    $proto eq $http
+    $proto eq SOAP11HTTP
        or error __x"SORRY: only transport of HTTP implemented, not {protocol}"
                , protocol => $proto;
 

@@ -10,7 +10,7 @@ use lib '../XMLCompile/lib', '../../XMLCompile/lib';
 
 package TestTools;
 use vars '$VERSION';
-$VERSION = '0.58';
+$VERSION = '0.59';
 use base 'Exporter';
 
 use XML::LibXML;
@@ -266,6 +266,7 @@ sub compare_xml($$;$)
     if(!defined $dump) { ; }
     elsif($dump =~ m/\n|\s\s/)
     {   # output expects superfluous blanks
+warn "Duh?";
         $expect =~ s/\n\z//;
     }
     else
