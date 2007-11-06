@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11;
 use vars '$VERSION';
-$VERSION = '0.59';
+$VERSION = '0.6';
 use base 'XML::Compile::SOAP';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -102,7 +102,9 @@ sub sender($)
        , xsd        => 'http://www.w3.org/2001/XMLSchema'
        , xsi        => 'http://www.w3.org/2001/XMLSchema-instance'
        ];
-    push @{$args->{body}}, Fault => pack_type($envns, 'Fault');
+
+    push @{$args->{body}}
+       , Fault => pack_type($envns, 'Fault');
 
     $self->SUPER::sender($args);
 }
@@ -142,7 +144,7 @@ sub readerParseFaults($)
                 $details = [ map { ($do->($_))[1] } @$report ];
             }
             else
-            {   ($label, $details) = (unknown => $report);
+            {   ($label, $details) = (body => $report);
             }
         }
 
@@ -160,8 +162,13 @@ sub readerParseFaults($)
         $nice{role}   = $self->roleAbbreviation($faults->{faultactor})
             if $faults->{faultactor};
 
-        $nice{detail} = (@$details==1 ? $details->[0] : $details)
-            if $details;
+        my @details
+           = map { UNIVERSAL::isa($_,'XML::LibXML::Element')
+                 ? $_->toString(1)
+                 : $_} @$details;
+
+        $nice{detail} = (@details==1 ? $details[0] : \@details)
+            if @details;
 
         $data->{$label}  = \%nice;
         $faults->{_NAME} = $label;

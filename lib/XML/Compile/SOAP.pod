@@ -410,6 +410,98 @@ $obj-E<gt>B<receiver>(ARGS)
 
 SOAP defines encodings, especially for XML-RPC.
 
+=head3 Encoding
+
+$obj-E<gt>B<array>((NAME|undef), ITEM_TYPE, ARRAY-of-ELEMENTS, OPTIONS)
+
+=over 4
+
+See L<XML::Compile::SOAP::Encoding/"Encoding">
+
+=back
+
+$obj-E<gt>B<element>(NAME, TYPE, VALUE)
+
+=over 4
+
+See L<XML::Compile::SOAP::Encoding/"Encoding">
+
+=back
+
+$obj-E<gt>B<enc>(LOCAL, VALUE, [ID])
+
+=over 4
+
+See L<XML::Compile::SOAP::Encoding/"Encoding">
+
+=back
+
+$obj-E<gt>B<href>(NAME, ELEMENT, [ID])
+
+=over 4
+
+See L<XML::Compile::SOAP::Encoding/"Encoding">
+
+=back
+
+$obj-E<gt>B<multidim>((NAME|undef), ITEM_TYPE, ARRAY-of-ELEMENTS, OPTIONS)
+
+=over 4
+
+See L<XML::Compile::SOAP::Encoding/"Encoding">
+
+=back
+
+$obj-E<gt>B<prefixed>(TYPE|(NAMESPACE,LOCAL))
+
+=over 4
+
+See L<XML::Compile::SOAP::Encoding/"Encoding">
+
+=back
+
+$obj-E<gt>B<startEncoding>(OPTIONS)
+
+=over 4
+
+See L<XML::Compile::SOAP::Encoding/"Encoding">
+
+=back
+
+$obj-E<gt>B<typed>(NAME, TYPE, VALUE)
+
+=over 4
+
+See L<XML::Compile::SOAP::Encoding/"Encoding">
+
+=back
+
+=head3 Decoding
+
+$obj-E<gt>B<dec>(XMLNODES)
+
+=over 4
+
+See L<XML::Compile::SOAP::Encoding/"Decoding">
+
+=back
+
+$obj-E<gt>B<decSimplify>(TREE, OPTIONS)
+
+=over 4
+
+See L<XML::Compile::SOAP::Encoding/"Decoding">
+
+=back
+
+$obj-E<gt>B<startDecoding>(OPTIONS)
+
+=over 4
+
+See L<XML::Compile::SOAP::Encoding/"Decoding">
+
+=back
+
 =head2 Helpers
 
 $obj-E<gt>B<replyMustUnderstandFault>(TYPE)
@@ -679,8 +771,8 @@ equivalent to the C<%data_in> from the client.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.59,
-built on November 05, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.6,
+built on November 06, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

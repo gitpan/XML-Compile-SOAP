@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '0.59';
+$VERSION = '0.6';
 use base 'XML::Compile';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -206,7 +206,6 @@ sub operation(@)
      , bind_op  => $bind_op
      , name     => $name
      );
-#warn Dumper $operation;
 
     $operation;
 }

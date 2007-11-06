@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP;  #!!!
 use vars '$VERSION';
-$VERSION = '0.59';
+$VERSION = '0.6';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 use List::Util qw/min first/;
@@ -272,7 +272,7 @@ sub _init_decoding($)
       , replace => sub { $self->_dec_array_hook(@_) }
       };
 
-    $self->{dec} = {reader_opts => [%$r]};
+    $self->{dec} = {reader_opts => [%$r], simplify => $opts->{simplify}};
     $self;
 }
 
@@ -285,6 +285,9 @@ sub dec(@)
 
     my $index = $self->{dec}{index};
     $self->_dec_resolve_hrefs($index);
+
+    $data = $self->decSimplify($data)
+        if $self->{dec}{simplify};
 
     wantarray ? ($data, $index) : $data;
 }
@@ -414,7 +417,6 @@ sub _dec_resolve_hrefs($)
     while(@$hrefs)
     {   my ($to, $where) = (shift @$hrefs, shift @$hrefs);
         my $dest = $index->{$to};
-#warn "TO $to, $dest";
         unless($dest)
         {   warning __x"cannot find id for href {name}", name => $to;
             next;
@@ -425,7 +427,6 @@ sub _dec_resolve_hrefs($)
 
 sub _dec_array_hook($$$)
 {   my ($self, $node, $args, $where, $local) = @_;
-#warn "DECODE ARRAY HOOK", $node->toString;
 
     my $at = $node->getAttributeNS($self->encodingNS, 'arrayType')
         or return $node;
@@ -484,6 +485,34 @@ sub _dec_array_multi_slice($$$)
 
     [ map { $self->_dec_array_multi_slice($childs, $basetype, \@dims) }
         1..$rows ]
+}
+
+
+sub decSimplify($@)
+{   my ($self, $tree, %opts) = @_;
+    $self->_dec_simple($tree, \%opts);
+}
+
+sub _dec_simple($$)
+{   my ($self, $tree, $opts) = @_;
+
+    ref $tree
+        or return $tree;
+
+    if(ref $tree eq 'ARRAY')
+    {   my @a = map { $self->_dec_simple($_, $opts) } @$tree;
+        return @a==1 ? $a[0] : \@a;
+    }
+
+    ref $tree eq 'HASH'
+        or return $tree;
+
+    my %h;
+    while(my ($k, $v) = each %$tree)
+    {   next if $k =~ m/^(?:_NAME$|_TYPE$|id$|\{)/;
+        $h{$k} = ref $v ? $self->_dec_simple($v, $opts) : $v;
+    }
+    keys(%h)==1 && exists $h{_} ? $h{_} : \%h;
 }
 
 1;

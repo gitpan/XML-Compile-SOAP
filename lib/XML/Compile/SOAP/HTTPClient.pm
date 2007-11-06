@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::HTTPClient;
 use vars '$VERSION';
-$VERSION = '0.59';
+$VERSION = '0.6';
 use base 'XML::Compile::SOAP::Client';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -37,9 +37,7 @@ sub new(@)
     my $mpost_id = $args{mpost_id}     || 42;
     my $mime     = $args{mime};
 
-    my $action   = $args{action}
-        or error __x"soap action not specified";
-
+    my $action   = $args{action}       || '';
     my $address  = $args{address};
     unless($address)
     {   $address = $action;
@@ -106,7 +104,7 @@ sub new(@)
 
         my $answer;
         if($response->content_type =~ m![/+]xml$!i)
-        {   $answer = eval {$parser->parser_string($response->decoded_content)};
+        {   $answer = eval {$parser->parse_string($response->decoded_content)};
             $trace{error} = $@ if $@;
         }
         else

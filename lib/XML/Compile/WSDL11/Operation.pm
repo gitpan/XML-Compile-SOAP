@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11::Operation;
 use vars '$VERSION';
-$VERSION = '0.59';
+$VERSION = '0.6';
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
 use List::Util  'first';
@@ -25,8 +25,6 @@ sub new(@)
 sub init()
 {   my $self = shift;
     my $name = $self->name;
-use Carp;
-confess %$self unless $name;
 
     # autodetect namespaces used
     my $port = $self->port;
