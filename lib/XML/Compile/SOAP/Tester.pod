@@ -19,7 +19,7 @@ XML::Compile::SOAP::Tester - test SOAP without daemon
 
  use XML::Compile::WSDL11 ();
  my $wsdl    = XML::Compile::WSDL11->new('my_wsdl.xml');
- my $call    = $wsdl->prepareClient($action);
+ my $call    = $wsdl->compileClient($action);
  $tester->fromWSDL($wsdl);
  $tester->addCallback($action, \&get_stock_price);
 
@@ -100,8 +100,8 @@ the OPTIONS depends partially on the protocol.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.61,
-built on November 06, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.62,
+built on November 19, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

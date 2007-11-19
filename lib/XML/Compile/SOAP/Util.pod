@@ -20,25 +20,26 @@ the moment.
 
 =head2 Constants
 
-The export TAG C<:soap11> groups the exported constants
-C<SOAP11ENV>, C<SOAP11ENC>, actor C<SOAP11NEXT>, and http
+The export TAG C<:soap11> groups the SOAP version 1.1 related exported
+constants C<SOAP11ENV>, C<SOAP11ENC>, actor C<SOAP11NEXT>, and http
 indicator C<SOAP11HTTP>.
 
 =pod
 
-The export TAG C<:soap12> groups the exported constants
-C<SOAP12ENV>, C<SOAP12ENC>, C<SOAP12RPC>, and role abbreviations
+The export TAG C<:soap12> groups the SOAP version 1.2 related exported
+constants C<SOAP12ENV>, C<SOAP12ENC>, C<SOAP12RPC>, and role abbreviations
 C<SOAP12NONE>, C<SOAP12NEXT>, C<SOAP12ULTIMATE>.
 
 =pod
 
-The export TAG C<:wsdl11> groups the exported constants
-C<WSDL11>, C<WSDL11SOAP>, C<WSDL11HTTP>, C<WSDL11MIME>, C<WSDL11SOAP12>.
+The export TAG C<:wsdl11> groups the exported WSDL version 1.1 related
+constants C<WSDL11>, C<WSDL11SOAP>, C<WSDL11HTTP>, C<WSDL11MIME>,
+C<WSDL11SOAP12>.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.61,
-built on November 06, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.62,
+built on November 19, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

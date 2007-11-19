@@ -1,18 +1,20 @@
 # Copyrights 2007 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.02.
+# Pod stripped from pm file by OODoc 1.03.
 use warnings;
 use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '0.61';
+$VERSION = '0.62';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 use XML::Compile         ();
 use XML::Compile::Util   qw/pack_type unpack_type/;
 use XML::Compile::Schema ();
+
+use Time::HiRes          qw/time/;
 
 
 sub new($@)
@@ -67,8 +69,123 @@ sub compileMessage($@)
 
       $direction eq 'SENDER'   ? $self->sender(\%args)
     : $direction eq 'RECEIVER' ? $self->receiver(\%args)
-    : error __x"message direction is 'SENDER' or 'RECEIVER', not {dir}"
+    : error __x"message direction is 'SENDER' or 'RECEIVER', not `{dir}'"
          , dir => $direction;
+}
+
+
+sub _rpcin_default($$$)
+{   my ($soap, $type, $msg) = @_;
+    my $tree   = $soap->dec($msg) or return ();
+    my $simple = $soap->decSimplify($tree) or return ();
+
+    return each %$simple
+    if ref $simple eq 'HASH' && keys %$simple == 1;
+
+    my ($ns, $local) = unpack_type $type;
+    ($local => $simple);
+}
+
+my $rr = 'request-response';
+sub compileClient(@)
+{   my ($self, %args) = @_;
+
+    my $name = $args{name} || 'unnamed';
+    my $kind = $args{kind} || $rr;
+    $kind eq $rr
+        or error __x"only `{rr}' operations are supported, not `{kind}' for {name}"
+             , rr => $rr, kind => $kind, name => $name;
+
+    my $encode = $args{encode}
+        or error __x"encode for client {name} required", name => $name;
+
+    my $decode = $args{decode}
+        or error __x"decode for client {name} required", name => $name;
+
+    my $transport = $args{transport}
+        or error __x"transport for client {name} required", name => $name;
+
+    my $core = sub
+    {   my $start = time;
+        my ($data, $charset) = UNIVERSAL::isa($_[0], 'HASH') ? @_ : ({@_});
+        my $req   = $encode->($data, $charset);
+
+        my %trace;
+        my $ans   = $transport->($req, \%trace);
+
+        wantarray
+            or return defined $ans ? $decode->($ans) : undef;
+
+        $trace{date}   = localtime $start;
+        $trace{start}  = $start;
+        $trace{encode_elapse} = $trace{transport_start} - $start;
+
+        defined $ans
+            or return (undef, \%trace);
+
+        my $dec = $decode->($ans);
+        my $end = time;
+        $trace{decode_elapse} = $end - $trace{transport_end};
+        $trace{elapse} = $end - $start;
+
+        ($dec, \%trace);
+    };
+
+    # Outgoing messages
+
+    my $rpcout = $args{rpcout}
+        or return $core;
+
+    my $rpc_encoder
+      = UNIVERSAL::isa($rpcout, 'CODE') ? $rpcout
+      : $self->schemas->compile
+        ( WRITER => $rpcout
+        , include_namespaces => 1
+        );
+
+    my $out = sub
+      {    @_ % 2  # auto-collect rpc parameters
+      ? ( rpc => [$rpc_encoder, shift], @_ ) # possible header blocks
+      : ( rpc => [$rpc_encoder, [@_] ]     ) # rpc body only
+      };
+
+
+    # Incoming messages
+
+    my $rpcin = $args{rpcin} ||
+      (UNIVERSAL::isa($rpcout, 'CODE') ? \&_rpcin_default : $rpcout.'Response');
+
+    # RPC intelligence wrapper
+
+    if(UNIVERSAL::isa($rpcin, 'CODE'))     # rpc-encoded
+    {   return sub
+        {   my ($dec, $trace) = $core->($out->(@_));
+            return wantarray ? ($dec, $trace) : $dec
+                if $dec->{Fault};
+
+            foreach my $k (keys %$dec)
+            {   my $node = $dec->{$k};
+                ref $node && $node->isa('XML::LibXML::Element')
+                     or next;
+                $self->startDecoding;
+                my ($n, $v) = $rpcin->($self, $k, delete $dec->{$k});
+                $dec->{$n} = $v if defined $v;
+            }
+
+            wantarray ? ($dec, $trace) : $dec;
+        };
+    }
+    else                                   # rpc-literal
+    {   my $rpc_decoder = $self->schemas->compile(READER => $rpcin);
+        (undef, my $rpcin_local) = unpack_type $rpcin;
+
+        return sub
+        {   my ($dec, $trace) = $core->($out->(@_));
+            $dec->{$rpcin_local} = $rpc_decoder->(delete $dec->{$rpcin})
+              if $dec->{$rpcin};
+            wantarray ? ($dec, $trace) : $dec;
+        };
+    }
 }
 
 #------------------------------------------------
@@ -85,72 +202,88 @@ sub sender($)
     $self->prefixPreferences($allns, $args->{prefixes}, 1)
         if $args->{prefixes};
 
-    $allns->{$self->schemaInstanceNS}{used}++
-        if $args->{style} eq 'rpc';
-
-    # Translate message parts
+    # Translate header
 
     my ($header, $hlabels) = $self->writerCreateHeader
       ( $args->{header} || [], $allns
       , $args->{mustUnderstand}, $args->{destination}
       );
 
-    my $headerhook = $self->writerHook($envns, 'Header', @$header);
+    # Translate body (3 options)
 
-    my ($body, $blabels) = $self->writerCreateBody
-      ( $args->{body} || [], $allns );
+    my $style   = $args->{style};
+    my $bodydef = $args->{body} || [];
+
+    if($style eq 'rpc-literal')
+    {   unshift @$bodydef, $self->writerCreateRpcLiteral($allns);
+    }
+    elsif($style eq 'rpc-encoded')
+    {   unshift @$bodydef, $self->writerCreateRpcEncoded($allns);
+    }
+    elsif($style ne 'document')
+    {   error __x"unknown soap message style `{style}'", style => $style;
+    }
+
+    my ($body, $blabels) = $self->writerCreateBody($bodydef, $allns);
+
+    # Translate body faults
 
     my ($fault, $flabels) = $self->writerCreateFault
       ( $args->{faults} || [], $allns
       , pack_type($envns, 'Fault')
       );
 
-    my $bodyhook = $self->writerHook($envns, 'Body', @$body, @$fault);
-    my $encstyle = $self->writerEncstyleHook($allns);
+    my @hooks =
+      ( ($style eq 'rpc-encoded' ? $self->writerEncstyleHook($allns) : ())
+      , $self->writerHook($envns, 'Header', @$header)
+      , $self->writerHook($envns, 'Body', @$body, @$fault)
+      );
 
     #
     # Pack everything together in one procedure
     #
 
     my $envelope = $self->schemas->compile
-     ( WRITER => pack_type($envns, 'Envelope')
-     , hooks  => [ $encstyle, $headerhook, $bodyhook ]
-     , output_namespaces    => $allns
-     , elements_qualified   => 1
-     , attributes_qualified => 1
-     );
+      ( WRITER => pack_type($envns, 'Envelope')
+      , hooks  => \@hooks
+      , output_namespaces    => $allns
+      , elements_qualified   => 1
+      , attributes_qualified => 1
+      );
 
-    sub { my ($values, $charset) = ref $_[0] eq 'HASH' ? @_ : ( {@_}, undef);
-          my $doc   = XML::LibXML::Document->new('1.0', $charset || 'UTF-8');
-          my %copy  = %$values;  # do not destroy the calling hash
-          my %data;
+    sub
+    {   my ($values, $charset) = ref $_[0] eq 'HASH' ? @_ : ( {@_}, undef);
+        my $doc   = XML::LibXML::Document->new('1.0', $charset || 'UTF-8');
+        my %copy  = %$values;  # do not destroy the calling hash
+        my %data;
 
-          $data{$_}   = delete $copy{$_} for qw/Header Body/;
-          $data{Body} ||= {};
+        $data{$_}   = delete $copy{$_} for qw/Header Body/;
+        $data{Body} ||= {};
 
-          foreach my $label (@$hlabels)
-          {   defined $copy{$label} or next;
-              error __x"header part {name} specified twice", name => $label
-                  if defined $data{Header}{$label};
-              $data{Header}{$label} ||= delete $copy{$label}
-          }
+        foreach my $label (@$hlabels)
+        {   defined $copy{$label} or next;
+            error __x"header part {name} specified twice", name => $label
+                if defined $data{Header}{$label};
+            $data{Header}{$label} ||= delete $copy{$label}
+        }
 
-          foreach my $label (@$blabels, @$flabels)
-          {   defined $copy{$label} or next;
-              error __x"body part {name} specified twice", name => $label
-                  if defined $data{Body}{$label};
-              $data{Body}{$label} ||= delete $copy{$label};
-          }
+        foreach my $label (@$blabels, @$flabels)
+        {   defined $copy{$label} or next;
+            error __x"body part {name} specified twice", name => $label
+                if defined $data{Body}{$label};
+            $data{Body}{$label} ||= delete $copy{$label};
+        }
 
-          if(@$blabels==2 && !keys %{$data{Body}} )  # ignore 'Fault'
-          {   $data{Body}{$blabels->[0]} = \%copy; # even when no params
-          }
-          elsif(keys %copy)
-          {   error __x"call data not used: {blocks}", blocks => [keys %copy];
-          }
+        if(@$blabels==2 && !keys %{$data{Body}} ) # ignore 'Fault'
+        {  # even when no params, we fill at least one body element
+            $data{Body}{$blabels->[0]} = \%copy;
+        }
+        elsif(keys %copy)
+        {   error __x"call data not used: {blocks}", blocks => [keys %copy];
+        }
 
-          $envelope->($doc, \%data);
-        };
+        $envelope->($doc, \%data);
+    };
 }
 
 
@@ -159,27 +292,28 @@ sub writerHook($$@)
  
    +{ type    => pack_type($ns, $local)
     , replace =>
-         sub { my ($doc, $data, $path, $tag) = @_;
-               my %data = %$data;
-               my @h = @do;
-               my @childs;
-               while(@h)
-               {   my ($k, $c) = (shift @h, shift @h);
-                   if(my $v = delete $data{$k})
-                   {    my $g = $c->($doc, $v);
-                        push @childs, $g if $g;
-                   }
-               }
-               warning __x"unused values {names}", names => [keys %data]
-                   if keys %data;
+        sub
+        {   my ($doc, $data, $path, $tag) = @_;
+            my %data = %$data;
+            my @h = @do;
+            my @childs;
+            while(@h)
+            {   my ($k, $c) = (shift @h, shift @h);
+                if(my $v = delete $data{$k})
+                {    my $g = $c->($doc, $v);
+                     push @childs, $g if $g;
+                }
+            }
+            warning __x"unused values {names}", names => [keys %data]
+                if keys %data;
 
-               # Body must be present, even empty, Header doesn't
-               @childs || $tag =~ m/Body$/ or return ();
+            # Body must be present, even empty, Header doesn't
+            @childs || $tag =~ m/Body$/ or return ();
 
-               my $node = $doc->createElement($tag);
-               $node->appendChild($_) for @childs;
-               $node;
-             }
+            my $node = $doc->createElement($tag);
+            $node->appendChild($_) for @childs;
+            $node;
+        }
     };
 }
 
@@ -188,22 +322,22 @@ sub writerEncstyleHook($)
 {   my ($self, $allns) = @_;
     my $envns   = $self->envelopeNS;
     my $style_w = $self->schemas->compile
-     ( WRITER => pack_type($envns, 'encodingStyle')
-     , output_namespaces    => $allns
-     , include_namespaces   => 0
-     , attributes_qualified => 1
-     );
+      ( WRITER => pack_type($envns, 'encodingStyle')
+      , output_namespaces    => $allns
+      , include_namespaces   => 0
+      , attributes_qualified => 1
+      );
     my $style;
 
-    my $before  = sub {
-	my ($doc, $values, $path) = @_;
+    my $before  = sub
+      { my ($doc, $values, $path) = @_;
         ref $values eq 'HASH' or return $values;
         $style = $style_w->($doc, delete $values->{encodingStyle});
         $values;
       };
 
-    my $after = sub {
-        my ($doc, $node, $path) = @_;
+    my $after = sub
+      { my ($doc, $node, $path) = @_;
         $node->addChild($style) if defined $style;
         $node;
       };
@@ -226,7 +360,8 @@ sub writerCreateHeader($$$$)
     while(@h)
     {   my ($label, $element) = splice @h, 0, 2;
 
-        my $code = $schema->compile
+        my $code = UNIVERSAL::isa($element,'CODE') ? $element
+         : $schema->compile
            ( WRITER => $element
            , output_namespaces  => $allns
            , include_namespaces => 0
@@ -259,18 +394,58 @@ sub writerCreateBody($$)
     while(@b)
     {   my ($label, $element) = splice @b, 0, 2;
 
-        my $code = $schema->compile
-           ( WRITER => $element
-           , output_namespaces  => $allns
-           , include_namespaces => 0
-           , elements_qualified => 'TOP'
-           );
+        my $code = UNIVERSAL::isa($element, 'CODE') ? $element
+        : $schema->compile
+          ( WRITER => $element
+          , output_namespaces  => $allns
+          , include_namespaces => 0
+          , elements_qualified => 'TOP'
+          );
 
         push @rules, $label => $code;
         push @blabels, $label;
     }
 
     (\@rules, \@blabels);
+}
+
+
+sub writerCreateRpcLiteral($)
+{   my ($self, $allns) = @_;
+    my $lit = sub
+     { my ($doc, $def) = @_;
+       UNIVERSAL::isa($def, 'ARRAY')
+           or error __x"rpc style requires compileClient with rpcin parameters";
+
+       my ($code, $data) = @$def;
+       $code->($doc, $data);
+     };
+
+    (rpc => $lit);
+}
+
+
+sub writerCreateRpcEncoded($)
+{   my ($self, $allns) = @_;
+    my $lit = sub
+     { my ($doc, $def) = @_;
+       UNIVERSAL::isa($def, 'ARRAY')
+           or error __x"rpc style requires compileClient with rpcin parameters";
+
+       my ($code, $data) = @$def;
+       $self->startEncoding(doc => $doc);
+
+       my $top = $code->($self, $doc, $data);
+
+       my $enc = $self->{enc};
+       foreach (sort values %{$enc->{namespaces}})
+       {   $top->setAttribute("xmlns:$_->{prefix}", $_->{uri});
+       }
+
+       $top;
+     };
+
+    (rpc => $lit);
 }
 
 
@@ -297,14 +472,14 @@ sub writerCreateFault($$$)
           );
 
         my $code = sub
-         { my ($doc, $data)  = (shift, shift);
-           my %copy = %$data;
-           $copy{faultactor} = $self->roleURI($copy{faultactor});
-           my $det = delete $copy{detail};
-           my @det = !defined $det ? () : ref $det eq 'ARRAY' ? @$det : $det;
-           $copy{detail}{$type} = [ map {$details->($doc, $_)} @det ];
-           $fault->($doc, \%copy);
-         };
+          { my ($doc, $data)  = (shift, shift);
+            my %copy = %$data;
+            $copy{faultactor} = $self->roleURI($copy{faultactor});
+            my $det = delete $copy{detail};
+            my @det = !defined $det ? () : ref $det eq 'ARRAY' ? @$det : $det;
+            $copy{detail}{$type} = [ map {$details->($doc, $_)} @det ];
+            $fault->($doc, \%copy);
+          };
 
         push @rules, $label => $code;
         push @flabels, $label;
@@ -325,38 +500,47 @@ sub receiver($)
     error __"option 'mustUnderstand' only for writers"
         if $args->{understand};
 
-    my $schema = $self->schemas;
-    my $envns  = $self->envelopeNS;
+    my $style   = $args->{style};
+    my $bodydef = $args->{body} || [];
+
+    $style =~ m/^(?:rpc-literal|rpc-encoded|document)$/
+        or error __x"unknown soap message style `{style}'", style => $style;
 
 # roles are not checked (yet)
 #   my $roles  = $args->{roles} || $args->{role} || 'ULTIMATE';
 #   my @roles  = ref $roles eq 'ARRAY' ? @$roles : $roles;
 
-    my $faultdec   = $self->readerParseFaults($args->{faults} || [], $envns);
-    my $header     = $self->readerParseHeader($args->{header} || []);
-    my $body       = $self->readerParseBody($args->{body} || []);
+    my $faultdec = $self->readerParseFaults($args->{faults} || []);
+    my $header   = $self->readerParseHeader($args->{header} || []);
+    my $body     = $self->readerParseBody($bodydef);
 
-    my $headerhook = $self->readerHook($envns, 'Header', @$header);
-    my $bodyhook   = $self->readerHook($envns, 'Body',   @$body);
-    my $encstyle   = $self->readerEncstyleHook;
+    my $envns    = $self->envelopeNS;
+    my @hooks    = 
+      ( ($style eq 'rpc-encoded' ? $self->readerEncstyleHook : ())
+      , $self->readerHook($envns, 'Header', @$header)
+      , $self->readerHook($envns, 'Body',   @$body)
+      );
 
-    my $envelope   = $self->schemas->compile
+    my $envelope = $self->schemas->compile
      ( READER => pack_type($envns, 'Envelope')
-     , hooks  => [ $encstyle, $headerhook, $bodyhook ]
+     , hooks  => \@hooks
+     , anyElement   => 'TAKE_ALL'
+     , anyAttribute => 'TAKE_ALL'
      );
 
-    sub { my $xml   = shift;
-          my $data  = $envelope->($xml);
-          my @pairs = ( %{delete $data->{Header} || {}}
-                      , %{delete $data->{Body}   || {}});
-          while(@pairs)
-          {  my $k       = shift @pairs;
-             $data->{$k} = shift @pairs;
-          }
-
-          $faultdec->($data);
-          $data;
+    sub
+    {   my $xml   = shift;
+        my $data  = $envelope->($xml);
+        my @pairs = ( %{delete $data->{Header} || {}}
+                    , %{delete $data->{Body}   || {}});
+        while(@pairs)
+        {  my $k       = shift @pairs;
+           $data->{$k} = shift @pairs;
         }
+
+        $faultdec->($data);
+        $data;
+    };
 }
 
 
@@ -364,26 +548,27 @@ sub readerHook($$$@)
 {   my ($self, $ns, $local, @do) = @_;
     my %trans = map { ($_->[1] => [ $_->[0], $_->[2] ]) } @do; # we need copies
  
-   +{ type    => pack_type($ns, $local)
-    , replace =>
-        sub
-          { my ($xml, $trans, $path, $label) = @_;
-            my %h;
-            foreach my $child ($xml->childNodes)
-            {   next unless $child->isa('XML::LibXML::Element');
-                my $type = pack_type $child->namespaceURI, $child->localName;
-                if(my $t = $trans{$type})
-                {   my $v = $t->[1]->($child);
-                    $h{$t->[0]} = $v if defined $v;
-                    next;
-                }
-                return ($label => $self->replyMustUnderstandFault($type))
-                    if $child->getAttribute('mustUnderstand') || 0;
-
-                $h{$type} = $child;  # not decoded
+    my $replace = sub
+      { my ($xml, $trans, $path, $label) = @_;
+        my %h;
+        foreach my $child ($xml->childNodes)
+        {   next unless $child->isa('XML::LibXML::Element');
+            my $type = pack_type $child->namespaceURI, $child->localName;
+            if(my $t = $trans{$type})
+            {   my $v = $t->[1]->($child);
+                $h{$t->[0]} = $v if defined $v;
+                next;
             }
-            ($label => \%h);
-          }
+            return ($label => $self->replyMustUnderstandFault($type))
+                if $child->getAttribute('mustUnderstand') || 0;
+
+            $h{$type} = $child;  # not decoded
+        }
+        ($label => \%h);
+      };
+
+   +{ type    => pack_type($ns, $local)
+    , replace => $replace
     };
 }
 
@@ -396,8 +581,9 @@ sub readerParseHeader($)
     my @h      = @$header;
     while(@h)
     {   my ($label, $element) = splice @h, 0, 2;
-        push @rules, [$label, $element
-          , $schema->compile(READER => $element, anyElement => 'TAKE_ALL')];
+        my $code = UNIVERSAL::isa($element, 'CODE') ? $element
+          : $schema->compile(READER => $element, anyElement => 'TAKE_ALL');
+        push @rules, [$label, $element, $code];
 
     }
 
@@ -413,8 +599,9 @@ sub readerParseBody($)
     my @b      = @$body;
     while(@b)
     {   my ($label, $element) = splice @b, 0, 2;
-        push @rules, [$label, $element
-          , $schema->compile(READER => $element, anyElement => 'TAKE_ALL')];
+        my $code = UNIVERSAL::isa($element, 'CODE') ? $element
+          : $schema->compile(READER => $element, anyElement => 'TAKE_ALL');
+        push @rules, [$label, $element, $code];
     }
 
     \@rules;

@@ -14,10 +14,10 @@ XML::Compile::WSDL11 - create SOAP messages defined by WSDL 1.1
  $wsdl->addWSDL(...additional WSDL file...);
  $wsdl->importDefinitions(...more schemas...);
 
- my $call    = $wsdl->prepareClient('GetStockPrice');
+ my $call    = $wsdl->compileClient('GetStockPrice');
 
  my $op      = $wsdl->operation('GetStockPrice');
- my $call    = $op->prepareClient;
+ my $call    = $op->compileClient;
 
  my $anwer   = $call->(%request);
  my ($anwer, $trace) = $call->(%request);
@@ -31,7 +31,7 @@ XML::Compile::WSDL11 - create SOAP messages defined by WSDL 1.1
 =head1 DESCRIPTION
 
 B<< This module is UNDER CONSTRUCTION.
-Missing: pure HTTP GET/POST bindings, multipart-mime; XML-RPC >>
+Missing: pure HTTP GET/POST bindings, multipart-mime; SOAP-RPC >>
 
 An WSDL file defines a set of schemas and how to use the defined
 types using SOAP connections.  The parsing is based on the WSDL
@@ -153,6 +153,19 @@ C<definition> root element.
 
 =back
 
+$obj-E<gt>B<compileClient>([NAME], OPTIONS)
+
+=over 4
+
+Creates temporarily an L<XML::Compile::WSDL11::Operation|XML::Compile::WSDL11::Operation> with L<operation()|XML::Compile::WSDL11/"Extension">,
+and then calls C<compileClient()> on that; an usual combination.
+
+As OPTIONS are available the combination of all possibilities for
+L<operation()|XML::Compile::WSDL11/"Extension"> and all of L<XML::Compile::WSDL11::Operation::compileClient()|XML::Compile::WSDL11::Operation/"Handlers">.
+For instance, C<transport_hook>.
+
+=back
+
 $obj-E<gt>B<importDefinitions>(XMLDATA, OPTIONS)
 
 =over 4
@@ -221,23 +234,10 @@ Required when more than one service is defined.
 
 =back
 
-$obj-E<gt>B<prepareClient>([NAME], OPTIONS)
-
-=over 4
-
-Creates temporarily an L<XML::Compile::WSDL11::Operation|XML::Compile::WSDL11::Operation> with L<operation()|XML::Compile::WSDL11/"Extension">,
-and then calls C<prepareClient()> on that; an usual combination.
-
-As OPTIONS are available the combination of all possibilities for
-L<operation()|XML::Compile::WSDL11/"Extension"> and all of L<XML::Compile::WSDL11::Operation::prepareClient()|XML::Compile::WSDL11::Operation/"Handlers">.
-For instance, C<transport_hook>.
-
-=back
-
 =head2 Inspection
 
 All of the following methods are usually NOT meant for end-users. End-users
-should stick to the L<operation()|XML::Compile::WSDL11/"Extension"> and L<prepareClient()|XML::Compile::WSDL11/"Extension"> methods.
+should stick to the L<operation()|XML::Compile::WSDL11/"Extension"> and L<compileClient()|XML::Compile::WSDL11/"Extension"> methods.
 
 $obj-E<gt>B<find>(CLASS, [QNAME])
 
@@ -307,7 +307,7 @@ a choice, then you are required to select one explicitly.
  my $wsdl   = XML::Compile::WSDL11->new('def.wsdl');
 
  # once for each of the defined operations
- my $call   = $wsdl->prepareClient('GetStockPrice');
+ my $call   = $wsdl->compileClient('GetStockPrice');
 
  # see XML::Compile::SOAP chapter DETAILS about call params
  my $answer = $call->(%request);
@@ -332,8 +332,8 @@ Error: don't known how to interpret XML data
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.61,
-built on November 06, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.62,
+built on November 19, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

@@ -1,19 +1,19 @@
 # Copyrights 2007 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.02.
+# Pod stripped from pm file by OODoc 1.03.
 use warnings;
 use strict;
 
 package XML::Compile::WSDL11::Operation;
 use vars '$VERSION';
-$VERSION = '0.61';
+$VERSION = '0.62';
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
 use List::Util  'first';
 
 use Data::Dumper;  # needs to go away
-use XML::Compile::Util       qw/pack_type/;
+use XML::Compile::Util       qw/pack_type unpack_type/;
 use XML::Compile::SOAP::Util qw/:wsdl11 SOAP11HTTP/;
 
 
@@ -119,7 +119,7 @@ sub soapStyle() { shift->{style} }
 sub kind() {shift->{kind}}
 
 
-sub prepareClient(@)
+sub compileClient(@)
 {   my ($self, %args) = @_;
 
     #
@@ -148,11 +148,19 @@ sub prepareClient(@)
               || ($self->soapAction =~ m/^(\w+)\:/ ? uc($1) : 'HTTP');
     $proto     = SOAP11HTTP if $proto eq 'HTTP';
 
-    my $style  = $args{style} || $self->soapStyle || 'document';
-
-    $self->canTransport($proto, $style)
-        or error __x"transport {protocol} as {style} not defined in WSDL"
-               , protocol => $proto, style => $style;
+    my $style  = $args{style} || $self->soapStyle;
+    if(defined $style)
+    {   $self->canTransport($proto, $style)
+            or error __x"transport {protocol} as {style} not defined in WSDL"
+                  , protocol => $proto, style => $style;
+    }
+    elsif($self->canTransport($proto, 'document')) { $style = 'document' }
+    elsif($self->canTransport($proto, 'rpc'))      { $style = 'rpc' }
+    else
+    {   error __x"transport {protocol} style not detected in WSDL"
+          , protocol => $proto;
+    }
+    $self->{style} = $style;
 
     #
     ### prepare message processing
@@ -168,22 +176,39 @@ sub prepareClient(@)
        or error __x"SORRY: only transport of HTTP implemented, not {protocol}"
                , protocol => $proto;
 
-    require XML::Compile::SOAP::HTTPClient;
-    my $call = XML::Compile::SOAP::HTTPClient->new
-      ( soap_version   => $version
-      , action         => $self->soapAction
-      , address        => [ $self->endPointAddresses ]
-      , transport_hook => $args{transport_hook}
+    my $transport = $args{transport};
+    unless($transport)
+    {   my $impl = 'XML::Compile::Transport::SOAPHTTP';
+
+        # this is an optimization thing: often, the client and server will
+        # be forking daemons: you do not want to load the module in each
+        # child.  The users will immediately avoid this error.
+        $impl->can('new')
+            or error __x"explicitly put 'use {impl}' in your script"
+                  , impl => $impl;
+
+        $transport = $impl->new
+          ( address  => [ $self->endPointAddresses ]
+          );
+    }
+
+    my $send = $transport->compileClient
+      ( name         => $self->name
+      , kind         => $self->kind
+      , soap_version => $version
+      , action       => $self->soapAction
+      , hook         => $args{transport_hook}
       );
 
-    sub   # pfff finally
-    {   my $req = $encode->( {@_} , 'utf-8');
-        my ($ans, $trace) = $call->($req) or return ();
-
-        ! defined $ans ? (undef, $trace)
-        : wantarray    ? ($decode->($ans), $trace)
-        :                $decode->($ans);
-    };
+    $soap->compileClient
+      ( name         => $self->name
+      , kind         => $self->kind
+      , encode       => $encode
+      , decode       => $decode
+      , transport    => $send
+      , rpcout       => $args{rpcout}
+      , rpcin        => $args{rpcin}
+      );
 }
 
 
@@ -262,24 +287,30 @@ sub collectMessageParts($$$)
 {   my ($self, $args, $portop, $bind) = @_;
     my (%parts, %encodings);
 
-    my $msgname = $portop->{message}
+    my $msgname  = $portop->{message}
         or error __x"no message name in portOperation";
 
-    my $message = $self->wsdl->find(message => $msgname)
+    my $message  = $self->wsdl->find(message => $msgname)
         or error __x"cannot find message {name}", name => $msgname;
-    my $soapns = $self->soapNameSpace;
+    my $soapns   = $self->soapNameSpace;
 
     if(my $bind_body = $bind->{"{$soapns}body"})
-    {   $bind_body_reader ||= $self->schemas->compile(READER => "{$soapns}body");
+    {   $bind_body_reader
+               ||= $self->schemas->compile(READER => "{$soapns}body");
         my $body = ($bind_body_reader->($bind_body->[0]))[1];
-        my $use  = $body->{use} || 'literal';  # default correct?
+#       my $use  = $body->{use} || 'literal';  # default correct?
 
-        my $body_parts = $body->{parts} || [];
-        $parts{body}   = $self->messageSelectParts($message, @$body_parts);
+        if($self->soapStyle eq 'document')
+        {   my $body_parts = $body->{parts} || [];
+            $parts{body}   = $self->messageSelectParts($message, @$body_parts);
+#warn Dumper $body, $body_parts, $parts{body};
+        }
     }
 
     if(my $bind_headers = $bind->{"{$soapns}header"})
-    {   $bind_header_reader ||= $self->schemas->compile(READER => "{$soapns}header");
+    {   $bind_header_reader
+        ||= $self->schemas->compile(READER => "{$soapns}header");
+
         my @headers = map {$bind_header_reader->($_)} @$bind_headers;
 
         foreach my $header (@headers)
@@ -341,8 +372,10 @@ sub messageSelectParts($@)
         {   # hum... no element but we need one... let's fake one
             # (but in which namespace?)  The element name might get
             # overwritten by the next compilation.
+            # Profile says this is not permitted?
             my ($type_ns, $type_local) = unpack_type $type;
             $element = pack_type '', $name;
+#warn "($type, $type_ns, $type_local, $element)";
             $self->schemas->importDefinitions( <<__FAKE_ELEMENT );
 <schema xmlns:xx="$type_ns">
   <element name="$name" type="xx:$type_local" />

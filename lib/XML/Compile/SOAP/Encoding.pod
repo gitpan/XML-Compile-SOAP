@@ -17,7 +17,7 @@ XML::Compile::SOAP::Encoding - SOAP encoding
 
  # create: <code xsi:type="xsd:int">43</code>
  my $int = pack_type SCHEMA2001, 'int';
- my $xml = $client->typed(code => $int, 43);
+ my $xml = $client->typed($int, code => 43);
 
  # create: <ref href="#id-1"/>  (xyz get's id if it hasn't)
  my $xml = $client->href('ref', $xyz);
@@ -51,7 +51,7 @@ code again.  Of course, you can also C<use> this package explicitly.
 
 =head2 Transcoding
 
-SOAP defines encodings, especially for XML-RPC.
+SOAP defines encodings, especially for SOAP-RPC.
 
 =head3 Encoding
 
@@ -159,6 +159,16 @@ example:
 
 =back
 
+$obj-E<gt>B<encAddNamespaces>(PAIRS)
+
+=over 4
+
+Add prefix definitions for this one encoding cyclus.  Each time
+L<startEncoding()|XML::Compile::SOAP::Encoding/"Encoding"> is called, the table is reset.  The namespace
+table is returned.
+
+=back
+
 $obj-E<gt>B<href>(NAME, ELEMENT, [ID])
 
 =over 4
@@ -210,25 +220,56 @@ This needs to be called before any encoding routine, because it
 initializes the internals.  Each call will reset all compiled
 cached translator routines.
 
+When you use the standard RPC-encoded interface, this will be
+called for you.
+
  Option    --Default
  doc         <required>
- namespaces  <required>
+ namespaces  {}
 
 . doc => XML::LibXML::Document
 
-. namespaces => HASH
+. namespaces => HASH|ARRAY
+
+=over 4
+
+Like L<XML::Compile::Schema::compile(output_namespaces)|XML::Compile::Schema/"Compilers">, this can
+be a HASH (see example) or an ARRAY with prefix-uri pairs.
 
 =back
 
-$obj-E<gt>B<typed>(NAME, TYPE, VALUE)
+example: 
+
+ my %ns;
+ $ns{$MYNS} = {uri => $MYNS, prefix => 'm'};
+ $soap->startEncoding(doc => $doc, namespaces => \%ns);
+
+ # or
+ $soap->startEncoding(doc => $doc, namespaces => [ m => $MYNS ]);
+
+=back
+
+$obj-E<gt>B<struct>(TYPE, CHILDS)
+
+=over 4
+
+Create a structure, an element with childs.  The CHILDS must be fully
+prepared XML::LibXML::Element objects.
+
+=back
+
+$obj-E<gt>B<typed>(TYPE, NAME, VALUE)
 
 =over 4
 
 A "typed" element shows its type explicitly, via the "xsi:type" attribute.
 The VALUE will get processed via an auto-generated XML::Compile writer,
-so validated.  The processing is cashed.  When VALUE already is an
-XML::LibXML::Element, then no processing nor value checking will be
-performed.
+so validated.  The processing is cashed.
+
+When VALUE already is an XML::LibXML::Element, then no processing
+nor value checking will be performed.
+
+BE WARNED: the TYPE must be a fully qualified type.
 
 =back
 
@@ -240,7 +281,7 @@ $obj-E<gt>B<dec>(XMLNODES)
 
 Decode the XMLNODES (list of XML::LibXML::Element objects).  Use
 Data::Dumper to figure-out what the produced output is: it is a guess,
-so may not be perfect (do not use XML-RPC but document style soap for
+so may not be perfect (do not use RPC but document style soap for
 good results).
 
 In LIST context, the decoded data is returned and a HASH with the
@@ -301,8 +342,8 @@ an easily accessible output tree.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.61,
-built on November 06, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.62,
+built on November 19, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

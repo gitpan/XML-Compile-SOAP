@@ -1,17 +1,17 @@
 # Copyrights 2007 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.02.
+# Pod stripped from pm file by OODoc 1.03.
 use warnings;
 use strict;
 
 package XML::Compile::SOAP;  #!!!
 use vars '$VERSION';
-$VERSION = '0.61';
+$VERSION = '0.62';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 use List::Util qw/min first/;
-use XML::Compile::Util qw/odd_elements/;
+use XML::Compile::Util qw/odd_elements SCHEMA2001/;
 
 
 # startEncoding is always implemented, loading this class
@@ -22,11 +22,35 @@ sub _init_encoding($)
     $doc && UNIVERSAL::isa($doc, 'XML::LibXML::Document')
         or error __x"encoding required an XML document to work with";
 
-    my $allns = $args->{namespaces}
-        or error __x"encoding requires prepared namespace table";
+    my $ns = $args->{namespaces} || {};
+    if(ref $ns eq 'ARRAY')
+    {   my @ns = @$ns;
+        $ns    = {};
+        while(@ns)
+        {   my ($prefix, $uri) = (shift @ns, shift @ns);
+            $ns->{$uri} = {uri => $uri, prefix => $prefix};
+        }
+    }
 
+    $args->{namespaces} = $ns;
     $self->{enc} = $args;
+
+    $self->encAddNamespaces
+      ( xsd => $self->schemaNS
+      , xsi => $self->schemaInstanceNS
+      );
+
     $self;
+}
+
+
+sub encAddNamespaces(@)
+{   my $ns = shift->{enc}{namespaces};
+    while(@_)
+    {   my ($prefix, $uri) = (shift, shift);
+        $ns->{$uri} = {uri => $uri, prefix => $prefix};
+    }
+    $ns;
 }
 
 
@@ -37,11 +61,6 @@ sub prefixed($;$)
 
     my $def  =  $self->{enc}{namespaces}{$ns}
         or error __x"namespace prefix for your {ns} not defined", ns => $ns;
-
-    # not used at compile-time, but now we see we needed it.
-    $def->{used}
-      or warning __x"explicitly pass namespace {ns} in compileMessage(prefixes)"
-            , ns => $ns;
 
     $def->{prefix}.':'.$local;
 }
@@ -64,9 +83,10 @@ sub enc($$$)
 
 
 sub typed($$$)
-{   my ($self, $name, $type, $value) = @_;
+{   my ($self, $type, $name, $value) = @_;
     my $enc = $self->{enc};
-    my $el  = $enc->{doc}->createElement($name);
+    my $doc = $enc->{doc};
+    my $el  = $doc->createElement($name);
 
     my $typedef = $self->prefixed($self->schemaInstanceNS,'type');
     $el->setAttribute($typedef, $self->prefixed($type));
@@ -77,11 +97,21 @@ sub typed($$$)
          , output_namespaces  => $enc->{namespaces}
          , include_namespaces => 0
          );
-        $value = $write->($enc->{doc}, $value);
+        $value = $write->($doc, $value);
     }
 
     $el->addChild($value);
     $el;
+}
+
+
+sub struct($@)
+{   my ($self, $type, @childs) = @_;
+    my $typedef = $self->prefixed($type);
+    my $doc     = $self->{enc}{doc};
+    my $struct  = $doc->createElement($typedef);
+    $struct->addChild($_) for @childs;
+    $struct;
 }
 
 
@@ -380,10 +410,21 @@ sub _dec_other($)
     my $local = $node->localName;
 
     my $type = pack_type $ns, $local;
-    my $read = $self->_dec_reader($type)
-        or return $node;
+    my $data;
 
-    my $data = $read->($node);
+    my $read = try { $self->_dec_reader($type) };
+    if($@)
+    {    # warn $@->wasFatal->message;  --> element not found
+         # Element not known, so we must autodetect the type
+         if($node->hasChildNodes)
+         {   my @childs = grep {$_->isa('XML::LibXML::Element')} $node->childNodes;
+             $data = { $local => $self->_dec(\@childs) };
+         }
+    }
+    else
+    {    $data = $read->($node);
+    }
+
     $data = { _ => $data } if ref $data ne 'HASH';
     $data->{_NAME} = $type;
 
@@ -490,6 +531,7 @@ sub _dec_array_multi_slice($$$)
 
 sub decSimplify($@)
 {   my ($self, $tree, %opts) = @_;
+    defined $tree or return ();
     $self->_dec_simple($tree, \%opts);
 }
 

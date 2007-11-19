@@ -2,7 +2,6 @@ ChangeLog
 MANIFEST
 Makefile.PL
 README
-README.todo
 examples/namesservice/namesservice.wsdl
 examples/namesservice/namesservice.xsd
 examples/namesservice/run.pl
@@ -12,8 +11,6 @@ lib/XML/Compile/SOAP/Client.pm
 lib/XML/Compile/SOAP/Client.pod
 lib/XML/Compile/SOAP/Encoding.pm
 lib/XML/Compile/SOAP/Encoding.pod
-lib/XML/Compile/SOAP/HTTPClient.pm
-lib/XML/Compile/SOAP/HTTPClient.pod
 lib/XML/Compile/SOAP/Server.pm
 lib/XML/Compile/SOAP/Server.pod
 lib/XML/Compile/SOAP/Tester.pm
@@ -37,6 +34,10 @@ lib/XML/Compile/SOAP12/Server.pod
 lib/XML/Compile/SOAP12/xsd/2003-soap-encoding.xsd
 lib/XML/Compile/SOAP12/xsd/2003-soap-envelope.xsd
 lib/XML/Compile/SOAP12/xsd/2003-soap-rpc.xsd
+lib/XML/Compile/Transport.pm
+lib/XML/Compile/Transport.pod
+lib/XML/Compile/Transport/SOAPHTTP.pm
+lib/XML/Compile/Transport/SOAPHTTP.pod
 lib/XML/Compile/WSDL11.pm
 lib/XML/Compile/WSDL11.pod
 lib/XML/Compile/WSDL11/Operation.pm
@@ -52,6 +53,8 @@ t/11fault11.t
 t/12must11.t
 t/13enc11.t
 t/14dec11.t
+t/15rpclit11.t
+t/16rpcenc11.t
 t/50wsdl11.t
 t/TestTools.pm
 t/pod.t

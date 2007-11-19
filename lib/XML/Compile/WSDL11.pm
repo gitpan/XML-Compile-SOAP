@@ -1,13 +1,13 @@
 # Copyrights 2007 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.02.
+# Pod stripped from pm file by OODoc 1.03.
 use warnings;
 use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '0.61';
+$VERSION = '0.62';
 use base 'XML::Compile';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -211,11 +211,11 @@ sub operation(@)
 }
 
 
-sub prepareClient(@)
+sub compileClient(@)
 {   my $self = shift;
     unshift @_, 'operation' if @_ % 2;
     my $op   = $self->operation(@_) or return ();
-    $op->prepareClient(@_);
+    $op->compileClient(@_);
 }
 
 

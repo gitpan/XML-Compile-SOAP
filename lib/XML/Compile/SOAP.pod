@@ -14,7 +14,7 @@ XML::Compile::SOAP - base-class for SOAP implementations
 =head1 SYNOPSIS
 
  ** WARNING: Implementation not finished (but making progress)
- ** see README.todo in distribution!!!
+ ** see TODO, at the end of this page
 
  use XML::Compile::SOAP11::Client;
  use XML::Compile::Util qw/pack_type/;
@@ -37,7 +37,6 @@ XML::Compile::SOAP - base-class for SOAP implementations
    , body     => [ b1 => $b1el ]
    , destination    => [ h1 => 'NEXT' ]
    , mustUnderstand => 'h1'
-   , encodings => { b1 => { use => 'literal' }}
    );
 
  my $decode_response = $client->compileMessage
@@ -45,13 +44,11 @@ XML::Compile::SOAP - base-class for SOAP implementations
    , header    => [ h2 => $h2el ]
    , body      => [ b2 => $b2el ]
    , faults    => [ ... ]
-   , encodings => { h2 => { use => 'literal' }}
    );
 
- my $http = XML::Compile::SOAP::HTTPClient->new
-   ( action  => 'http://...'
-   , address => $server
-   );
+ my $http = XML::Compile::Transport::SOAPHTTP
+    ->new(address => $server);
+ my $http = $transport->compileClient(action => ...);
 
  # In nice, small steps:
 
@@ -61,16 +58,21 @@ XML::Compile::SOAP - base-class for SOAP implementations
  my $answer   = $decode_response->($response);
  use Data::Dumper;
  warn Dumper $answer;     # see: a HASH with h2 and b2!
- if($answer->{Fault}) ... # error
+ if($answer->{Fault}) ... # error was reported
 
  # Simplify your life
+ # also in this case: if you have a WSDL, this is created for you.
+ # This is Document-style SOAP
 
  my $call   = $client->compileClient
    ( kind      => 'request-response'
-   , request   => $encode_query
-   , response  => $decode_response
+   , name      => 'my first call'
+   , encode    => $encode_query
+   , decode    => $decode_response
    , transport => $http
    );
+
+ # With or without WSDL file the same
 
  my $result = $call->(h1 => ..., b1 => ...);
  print $result->{h2}->{...};
@@ -86,9 +88,26 @@ most often used.  The SOAP1.2 definition (F<http://www.w3.org/TR/soap12/>)
 is quite different; this module tries to define a sufficiently abstract
 interface to hide the protocol differences.
 
-On the moment, B<XML-RPC is not supported>.  There are many more limitations,
-which can be found in the README.todo file which is part of the
-distribution package.
+Be aware that there are three kinds of SOAP:
+
+=over 4
+
+=item 1.
+
+Document style (literal) SOAP, where there is a WSDL file which explicitly
+types all out-going and incoming messages.  Very easy to use.
+
+=item 2.
+
+RPC style SOAP literal.  The WSDL file is not explicit about the
+content of the messages, but all messages must be schema defined types.
+
+=item 3.
+
+RPC style SOAP encoded.  The sent data is nowhere described formally.
+The data is transported in some ad-hoc way.
+
+=back
 
 =head1 METHODS
 
@@ -197,6 +216,94 @@ $obj-E<gt>B<version>
 
 =head2 Single messages
 
+$obj-E<gt>B<compileClient>(OPTIONS)
+
+=over 4
+
+ Option   --Default
+ decode     <required>
+ encode     <required>
+ kind       request-response
+ name       "unnamed"
+ rpcin      <depends on type of rpcout>
+ rpcout     undef
+ transport  <required>
+
+. decode => CODE
+
+=over 4
+
+The CODE reference is produced by L<compileMessage()|XML::Compile::SOAP/"Single messages">, and must be a
+RECEIVER: translate a SOAP message into Perl data.
+
+=back
+
+. encode => CODE
+
+=over 4
+
+The CODE reference is produced by L<compileMessage()|XML::Compile::SOAP/"Single messages">, and must be a
+SENDER: translates Perl data structures into the SOAP message in XML.
+
+=back
+
+. kind => STRING
+
+=over 4
+
+Which kind of client is this.  WSDL11 defines four kinds of client-server
+interaction.  Only C<request-response> (the default) is currently supported.
+
+=back
+
+. name => STRING
+
+=over 4
+
+Currently only used in some error messages, but may be used more intensively
+in the future.
+
+=back
+
+. rpcin => TYPE|CODE
+
+=over 4
+
+The TYPE of the RPC input message (RPC literal style) or a CODE reference
+which can be created to parse the RPC block (RPC encoded style).
+
+If this option is not specified, but there is an C<rpcout> with TYPE
+value, then the value for this options will default for that type name
+with C<Response> concatenated: a commonly used convension.
+
+If this option is not used, but there is an C<rpcout> with CODE
+reference, then a standard decode routine is called.  That routine
+does use L<XML::Compile::SOAP::Encoding::decSimplify()|XML::Compile::SOAP::Encoding/"Decoding"> to get an
+as simple as possible return structure.
+
+=back
+
+. rpcout => TYPE|CODE
+
+=over 4
+
+The TYPE of the RPC output message (RPC literal style) or a CODE reference
+which can be created to produce the RPC block (RPC encoded style).
+
+=back
+
+. transport => CODE
+
+=over 4
+
+The CODE reference is produced by an extensions of
+L<XML::Compile::Transport::compileClient()|XML::Compile::Transport/"Handlers">
+(usually L<XML::Compile::Transport::SOAPHTTP::compileClient()|XML::Compile::Transport::SOAPHTTP/"Handlers">.
+
+=back
+
+=back
+
 $obj-E<gt>B<compileMessage>(('SENDER'|'RECEIVER'), OPTIONS)
 
 =over 4
@@ -214,7 +321,6 @@ to explicitly specify the element to be processed.
  Option        --Default
  body            []
  destination     []
- encodings       {}
  faults          []
  header          undef
  mustUnderstand  []
@@ -227,10 +333,10 @@ to explicitly specify the element to be processed.
 
 =over 4
 
-ARRAY of PAIRS, defining a nice LABEL (free of choice but unique,
-also w.r.t. the header and fault ENTRIES).  The LABEL will appear
-in the Perl HASH only, to be able to refer to a body element in a
-simple way.
+ARRAY of PAIRS, defining a nice LABEL (free of choice but unique, also
+w.r.t. the header and fault ENTRIES) and an element type name or CODE
+reference.  The LABEL will appear in the Perl HASH only, to be able to
+refer to a body element in a simple way.
 
 =back
 
@@ -245,16 +351,6 @@ The ARRAY contains a LIST of key-value pairs, specifing an entry label
 followed by an I<actor> (soap1.1) or I<role> (soap1.2) URI.  You may use
 the predefined actors/roles, like 'NEXT'.  See L<roleURI()|XML::Compile::SOAP/"Helpers"> and
 L<roleAbbreviation()|XML::Compile::SOAP/"Helpers">.
-
-=back
-
-. encodings => HASH-of-HASHes
-
-=over 4
-
-Message components can be encoded, as defined in WSDL.   Typically, some
-message part has a binding C<< use="encoded" >> and C<encodingStyle>
-and C<namespace> parameters.  The encodings are organized per label.
 
 =back
 
@@ -275,8 +371,11 @@ implementation.
 =over 4
 
 ARRAY of PAIRS, defining a nice LABEL (free of choice but unique)
-and an element reference.  The LABEL will appear in the Perl HASH, to
+and an element type name.  The LABEL will appear in the Perl HASH, to
 refer to the element in a simple way.
+
+The element type is used to construct a reader or writer.  You may also
+create your own reader or writer, and then pass a compatible CODE reference.
 
 =back
 
@@ -326,7 +425,7 @@ Alternative for option C<role>
 
 =back
 
-. style => 'document'|'rpc'
+. style => 'document'|'rpc-literal'|'rpc-encoded'
 
 =back
 
@@ -353,6 +452,22 @@ $obj-E<gt>B<writerCreateFault>(FAULT-DEFS, NAMESPACE-TABLE, FAULTTYPE)
 $obj-E<gt>B<writerCreateHeader>(HEADER-DEFS, NS-TABLE, UNDERSTAND, DESTINATION)
 
 =over 4
+
+=back
+
+$obj-E<gt>B<writerCreateRpcEncoded>(NAMESPACE-TABLE)
+
+=over 4
+
+Create a handler which understands RPC encoded specifications.
+
+=back
+
+$obj-E<gt>B<writerCreateRpcLiteral>(NAMESPACE-TABLE)
+
+=over 4
+
+Create a handler which understands RPC literal specifications.
 
 =back
 
@@ -408,7 +523,7 @@ $obj-E<gt>B<receiver>(ARGS)
 
 =head2 Transcoding
 
-SOAP defines encodings, especially for XML-RPC.
+SOAP defines encodings, especially for SOAP-RPC.
 
 =head3 Encoding
 
@@ -429,6 +544,14 @@ See L<XML::Compile::SOAP::Encoding/"Encoding">
 =back
 
 $obj-E<gt>B<enc>(LOCAL, VALUE, [ID])
+
+=over 4
+
+See L<XML::Compile::SOAP::Encoding/"Encoding">
+
+=back
+
+$obj-E<gt>B<encAddNamespaces>(PAIRS)
 
 =over 4
 
@@ -468,7 +591,15 @@ See L<XML::Compile::SOAP::Encoding/"Encoding">
 
 =back
 
-$obj-E<gt>B<typed>(NAME, TYPE, VALUE)
+$obj-E<gt>B<struct>(TYPE, CHILDS)
+
+=over 4
+
+See L<XML::Compile::SOAP::Encoding/"Encoding">
+
+=back
+
+$obj-E<gt>B<typed>(TYPE, NAME, VALUE)
 
 =over 4
 
@@ -537,102 +668,324 @@ C<ULTIMATE>.
 
 =head1 DETAILS
 
-=head2 Using the produced calls
+=head2 SOAP introduction
+
+Although the specification of SOAP1.1 and WSDL1.1 are thin, the number
+of special constructs are many.  And, of course, all poorly documented.
+Both SOAP and WSDL have 1.2 versions, which will clear things up a lot,
+but not used that often yet.
+
+WSDL defines two kinds of messages: B<document> style SOAP and B<rpc>
+style SOAP.  In I<Document style SOAP>, the messages are described in
+great detail in the WSDL: the message components are all defined in
+Schema's; the worst things you can (will) encounter are C<any> schema
+elements which require additional manual processing.
+
+I would like to express my personal disgust over I<RPC style SOAP>.
+In this case, the body of the message is I<not> clearly specified in the
+WSDL... which violates the whole purpose of using interface descriptions
+in the first place!  In a client-server interface definition, you really
+wish to be very explicit in the data you communicate.  Gladly, SOAP1.2
+shares my feelings a little, and speaks against RPC although still
+supporting it.
+
+Anyway, we have to live with this feature.  SOAP-RPC is simple
+to use on strongly typed languages, to exchange data when you create both
+the client software and the server software.  You can simply autogenerate
+the data encoding.  Clients written by third parties have to find the
+documentation on how to use the RPC call in some other way... in text,
+if they are lucky; the WSDL file does not contain the prototype of the
+procedures, but that doesn't mean that they are free-format.
+
+The B<encoded RPC> messsages are shaped to the procedures which are
+being called on the server.  The body of the sent message contains the
+ordered list of parameters to be passed as 'in' and 'in/out' values to the
+remote procedure.  The body of the returned message lists the result value
+of the procedure, followed by the ordered 'out' and 'in/out' parameters.
+
+The B<literal RPC> messages are half-breed document style message: there is
+a schema which tells you how to interpret the body, but the WSDL doesn't
+tell you what the options are.
+
+=head2 Using SOAP calls
+
+=head3 Naming types and elements
+
+XML uses namespaces: URIs which are used as constants, grouping a set
+of type and element definitions.  By using name-spaces, you can avoid
+name clashes, which have frustrate many projects in history, when they
+grew over a certain size... at a certain size, it becomes too hard to
+think of good distriguishable names.  In such case, you must be happy
+when you can place those names in a context, and use the same naming in
+seperate contexts without confusion.
+
+That being said: XML supports both namespace- and non-namespace elements
+and schema's; and of cause many mixed cases.  It is by far preferred to
+use namespace schemas only.  For a schema xsd file, look for the
+C<targetNamespace> attribute of the C<schema> element: if present, it
+uses namespaces.
+
+In XML data, it is seen as a hassle to write the full length of the URI
+each time that a namespace is addressed.  For this reason, prefixes
+are used as abbreviations.  In programs, you can simply assign short
+variable names to long URIs, so we do not need that trick.
+
+Within your program, you use
+
+  $MYSN = 'long URI of namespace';
+  ... $type => "{$MYNS}typename" ...
+
+or nicer
+
+  use XML::Compile::Util qw/pack_type/;
+  use constant MYNS => 'some uri';
+  ... $type => pack_type(MYNS, 'typename') ...
+
+The L<XML::Compile::Util|XML::Compile::Util> module provides a helpfull methods and constants,
+as does the L<XML::Compile::SOAP::Util|XML::Compile::SOAP::Util>.
+
+=head3 Calling the server (Document style)
 
 First, you compile the call either via a WSDL file (see
-L<XML::Compile::WSDL11|XML::Compile::WSDL11>), or in small manual steps, as described in
-the next section.  So, in one of both ways, you end-up with
+L<XML::Compile::WSDL11|XML::Compile::WSDL11>), or in a few manual steps (which are described
+in the next section).  In either way, you end-up with a CODE references
+which can be called multiple times.
 
     # compile once
-    my $call = $soap->compileClient(...);
+    my $call   = $soap->compileClient(...);
 
     # and call often
-    my $anwer = $call->(%request);  # list of pairs
-    my $anwer = $call->(\%request); # same, but HASH
-    my $anwer = $call->(\%request, 'UTF-8');  # same
+    my $answer = $call->(%request);  # list of pairs
+    my $answer = $call->(\%request); # same, but HASH
+    my $answer = $call->(\%request, 'UTF-8');  # same
 
-But what is the structure of C<%request> and C<$answer> ?  Well, there
+But what is the structure of C<%request> and C<$answer>?  Well, there
 are various syntaxes possible: from structurally perfect, to user-friendly.
 
-First, find out which data structures can be present.  When you compiled
+First, find out which data structures can be present: when you compiled
 your messages explicitly, you have picked your own names.  When the
-call was initiated from a WSDL file, then you have to find the names
-of the message parts which can be used.  The component names are for
-header blocks, body blocks, headerfaults, and (body) faults.
+call was initiated from a WSDL file, then you have to find the names of
+the message parts which can be used: the part names for header blocks,
+body blocks, headerfaults, and (body) faults.  Do not worry to much,
+you will get (hopefully understandable) run-time error messages when
+the structure is incorrect.
 
 Let's say that the WSDL defines this (ignoring all name-space issues)
 
- <message name="GetLastTradePriceInput">
-   <part name="count" type="int" />
-   <part name="request" element="TradePriceRequest"/>
- </message>
+ <definitions xmlns:xx="MYNS"
+   <message name="GetLastTradePriceInput">
+    <part name="count" type="int" />
+    <part name="request" element="xx:TradePriceRequest"/>
+   </message>
 
- <message name="GetLastTradePriceOutput">
-   <part name="answer" element="TradePrice"/>
- </message>
+   <message name="GetLastTradePriceOutput">
+    <part name="answer" element="xx:TradePrice"/>
+   </message>
 
- <definitions ...>
-  <binding ...>
-   <operation ...>
-    <input>
-     <soap:header message="GetLastTradePriceInput" part="count"
-     <soap:body message="GetLastTradePriceInput" parts="request"
-    <output>
-     <soap:body message="GetLastTradePriceOutput"
+   <binding
+    <operation
+     <input>
+      <soap:header message="GetLastTradePriceInput" part="count"
+      <soap:body message="GetLastTradePriceInput" parts="request"
+     <output>
+      <soap:body message="GetLastTradePriceOutput"
 
-The input message needs explicitly named parts, in this case, where the
+The input message needs explicitly named parts in this case, where the
 output message simply uses all defined in the body.  So, the input message
-has one header block C<count>, and one body block C<request>.  The output
-message only has one body block C<answer>.
+has one header part C<count>, and one body part C<request>.  The output
+message only has one part named C<answer>, which is all defined for the
+message and therefore its name can be omitted.
 
 Then, the definitions of the blocks:
 
- <element name="TradePriceRequest">
-   <complexType>
+ <schema targetNamespace="MYNS"
+   <element name="TradePriceRequest">
+    <complexType>
      <all>
-       <element name="tickerSymbol" type="string"/>
+      <element name="tickerSymbol" type="string"/>
 
- <element name="TradePrice">
-   <complexType>
+   <element name="TradePrice">
+    <complexType>
      <all>
-       <element name="price" type="float"/>
+      <element name="price" type="float"/>
+ </schema>
 
 Now, calling the compiled function can be done like this:
 
-  my $anwer = $call->(count => 5, request => {tickerSymbol => 'IBM'});
-  my $anwer = $call->(
-      {count => 5, request => {tickerSymbol => 'IBM'}}, 'UTF-8');
+  my $got
+     = $call->(  count => 5, request => {tickerSymbol => 'IBM'}  );
+     = $call->({ count => 5, request => {tickerSymbol => 'IBM'} });
+     = $call->({ count => 5, request => {tickerSymbol => 'IBM'} }
+        , 'UTF-8');
 
-However, in this case you may simplify the call.  First, all pairs
-which use known block names are collected.  Then, if there is exactly
-one body block which is not used yet, it will get all of the left over
-names.  So... in this case, you could also use
+If the first arguments for the code ref is a HASH, then there may be
+a second which specifies the required character-set.  The default is
+C<UTF-8>, which is very much adviced.
+
+=head3 Parameter unpacking (Document Style)
+
+In the example situation of previous section, you may simplify the
+call even further.  To understand how, we need to understand the
+parameter unpacking algorithm.
+
+The structure which we need to end up with, looks like this
+
+  $call->(\%data, $charset);
+  %data = ( Header => {count => 5}
+          , Body   =>
+             { request => {tickerSymbol => 'IBM'} }
+          );
+
+The structure of the SOAP message is directly mapped on this
+nested complex HASH.  But is inconvenient to write each call
+like this, therefore the C<$call> parameters are transformed into
+the required structure according to the following rules:
+
+=over 4
+
+=item 1.
+
+if called with a LIST, then that will become a HASH
+
+=item 2.
+
+when a C<Header> and/or C<Body> are found in the HASH, those are
+used
+
+=item 3.
+
+if there are more parameters in the HASH, then those with names of
+known header and headerfault message parts are moved to the C<Header>
+sub-structure.  Body and fault message parts are moved to the C<Body>
+sub-structure.
+
+=item 4.
+
+If the C<Body> sub-structure is empty, and there is only one body part
+expected, then all remaining parameters are put in a HASH for that part.
+This also happens if there are not parameters: it will result in an
+empty HASH for that block.
+
+=back
+
+So, in our case this will also do, because C<count> is a known part,
+and C<request> gets all left-overs, being the only body part.
 
  my $got = $call->(count => 5, tickerSymbol => 'IBM');
 
 This does not work if the block element is a simple type.  In most
-existing SOAP schemas, this simplification probably is possible.
+existing Document style SOAP schemas, this simplification probably
+is possible.
 
-The C<$got> is a HASH, which will not be simplified.  The return
-might be (Data::Dumper is your friend)
+=head3 Understanding the output (Document style)
+
+The C<$got> is a HASH, which will not be simplified automatically:
+it may change with future extensions of the interface.  The return
+is a complex nested structure, and Data::Dumper is your friend.
 
  $got = { answer => { price => 16.3 } }
 
 To access the value use
 
  printf "%.2f US\$\n", $got->{answer}->{price};
- printf "%.2f US\$\n", $got->{answer}{price};
+ printf "%.2f US\$\n", $got->{answer}{price};   # same
 
-=head3 Faults
+or
+
+ my $answer = $got->{answer};
+ printf "%.2f US\$\n", $answer->{price};
+
+=head3 Calling the server (SOAP-RPC style literal)
+
+SOAP-RPC style messages which have C<<use=literal>> cannot be used
+without a little help.  However, one extra definition per procedure
+call suffices.
+
+This a complete code example, although you need to fill in some
+specifics about your environment.  If you have a WSDL file, then it
+will be a little simpler, see L<XML::Compile::WSDL11::compileClient()|XML::Compile::WSDL11/"Extension">.
+
+ # You probably need these
+ use XML::Compile::SOAP11::Client;
+ use XML::Compile::Transport::SOAPHTTP;
+ use XML::Compile::Util  qw/pack_type/;
+
+ # Literal style RPC
+ my $outtype = pack_type $MYNS, 'myFunction';
+ my $intype  = pack_type $MYNS, 'myFunctionResponse';
+ my $style   = 'rpc-literal';
+
+ # Encoded style RPC (see next section on these functions)
+ my $outtype = \&my_pack_params;
+ my $in type = \&my_unpack_params;
+ my $style   = 'rpc-encoded';
+
+ # For all RPC calls, you need this only once:
+ my $transp  = XML::Compile::Transport::SOAPHTTP->new(...);
+ my $http    = $transp->compileClient(...);
+ my $soap    = XML::Compile::SOAP11::Client->new(...);
+ my $send    = $soap->compileMessage('SENDER',   style => $style, ...);
+ my $get     = $soap->compileMessage('RECEIVER', style => $style, ...);
+
+ # Per RPC procedure
+ my $myproc = $soap->compileClient
+   ( name   => 'MyProc'
+   , encode => $send, decode => $get, transport => $http
+   , rpcout => $outtype, rpcin => $intype
+   );
+
+ my $answer = $myproc->(@parameters);   # as document style
+
+Actually, the C<< @paramers >> are slightly less flexible as in document
+style SOAP.  If you use header blocks, then the called CODE reference
+will not be able to distinguish between parameters for the RPC block and
+parameters for the header blocks.  Therefore, in that situation, you
+MUST separate the rpc data explicitly as one argument.
+
+  my $answer = $trade_price
+    ->( {symbol => 'IBM'}    # the RPC package implicit
+      , transaction => 5     # in the header
+      );
+
+  my $answer = $trade_price  # RPC very explicit
+    ->(rpc => {symbol => 'IBM'}, transaction => 5);
+
+When the number of arguments is odd, the first is indicating the RPC
+element, and the other pairs refer to header blocks.
+
+The C<$answer> structure may contain a C<Fault> entry, or a decoded
+datastructure with the results of your query.  One call using
+Data::Dumper will show you more than I can explain in a few hundred
+words.
+
+=head3 Calling the server (SOAP-RPC style, encoded)
+
+SOAP-RPC is a simplification of the interface description: basically,
+the interface is not described at all but left to good communication
+between the client and server authors.  In strongly typed languages,
+this is quite simple to enforce: the client side and server side use
+the same (remote) method prototype.  However, in Perl we are blessed
+without these typed prototypes...
+
+The approach of SOAP::Lite, is to guess the types of the passed
+parameters.  For instance, "42" will get passed as Integer.  This
+may lead to nasty problems: a float parameter "2.0" will get passed
+as integer "2", or a string representing a house number "8" is passed
+as an number.  This may not be accepted by the SOAP server.
+
+So, using SOAP-RPC in L<XML::Compile::SOAP|XML::Compile::SOAP> will ask a little more
+effort from you: you have to state parameter types explicitly.
+
+=head3 Faults (Document and RPC style)
 
 Faults and headerfaults are a slightly different story: the type which
 is specified with them is not of the fault XML node itself, but of the
-C<details> sub-element within the standard fault structure.
+C<detail> sub-element within the standard fault structure.
 
 When producing the data for faults, you must be aware of the fact that
 the structure is different for SOAP1.1 and SOAP1.2.  When interpreting
 faults, the same problems are present, although the implementation
-tries to help you.
+tries to help you by hiding the differences.
 
 Check whether SOAP1.1 or SOAP1.2 is used by looking for a C<faultcode>
 (SOAP1.1) or a C<Code> (SOAP1.2) field in the data:
@@ -644,7 +997,7 @@ Check whether SOAP1.1 or SOAP1.2 is used by looking for a C<faultcode>
   }
 
 In either protocol case, the following will get you at a compatible
-structure:
+structure in two steps:
 
   if(my $fault = $got->{Fault})
   {   my $decoded = $got->{$fault->{_NAME}};
@@ -653,13 +1006,15 @@ structure:
   }
 
 See the respective manuals L<XML::Compile::SOAP11|XML::Compile::SOAP11> and
-L<XML::Compile::SOAP12|XML::Compile::SOAP12> for the (ugly) specifics.
+L<XML::Compile::SOAP12|XML::Compile::SOAP12> for the hairy details.  But one thing can be said:
+when the fault is declared formally, then the C<_NAME> will be the name
+of that part.
 
-=head2 Calling SOAP without WSDL
+=head2 SOAP without WSDL (Document style)
 
-See the manual page of L<XML::Compile::WSDL11|XML::Compile::WSDL11> to see how simple
-you can use this module when you have a WSDL file at hand.  The
-creation of a correct WSDL file is NOT SIMPLE.
+See the manual page of L<XML::Compile::WSDL11|XML::Compile::WSDL11> to see how simple you
+can use this module when you have a WSDL file at hand.  The creation of
+a correct WSDL file is NOT SIMPLE.
 
 When using SOAP without WSDL file, it gets a little bit more complicate
 to use: you need to describe the content of the messages yourself.
@@ -751,7 +1106,7 @@ And the output is:
  </SOAP-ENV:Envelope>
 
 Some transport protocol will sent this data from the client to the
-server.  See L<XML::Compile::SOAP::HTTPClient|XML::Compile::SOAP::HTTPClient>, as one example.
+server.  See L<XML::Compile::Transport::SOAPHTTP|XML::Compile::Transport::SOAPHTTP>, as one example.
 
 On the SOAP server side, we will parse the message.  The string C<$soap>
 contains the XML.  The program looks like this:
@@ -767,12 +1122,10 @@ contains the XML.  The program looks like this:
 Now, the C<$data_out> reference on the server, is stucturally exactly 
 equivalent to the C<%data_in> from the client.
 
-=head2 Encodings
-
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.61,
-built on November 06, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.62,
+built on November 19, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

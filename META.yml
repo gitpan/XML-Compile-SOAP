@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                XML-Compile-SOAP
-version:             0.61
+version:             0.62
 abstract:            XML over SOAP, client side
 license:             perl
 generated_by:        ExtUtils::MakeMaker version 6.32

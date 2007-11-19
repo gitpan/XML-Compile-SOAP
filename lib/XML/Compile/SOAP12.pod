@@ -135,6 +135,14 @@ See L<XML::Compile::SOAP/"Accessors">
 
 =head2 Single messages
 
+$obj-E<gt>B<compileClient>(OPTIONS)
+
+=over 4
+
+See L<XML::Compile::SOAP/"Single messages">
+
+=back
+
 $obj-E<gt>B<compileMessage>(('SENDER'|'RECEIVER'), OPTIONS)
 
 =over 4
@@ -170,6 +178,22 @@ See L<XML::Compile::SOAP/"Sender (internals)">
 =back
 
 $obj-E<gt>B<writerCreateHeader>(HEADER-DEFS, NS-TABLE, UNDERSTAND, DESTINATION)
+
+=over 4
+
+See L<XML::Compile::SOAP/"Sender (internals)">
+
+=back
+
+$obj-E<gt>B<writerCreateRpcEncoded>(NAMESPACE-TABLE)
+
+=over 4
+
+See L<XML::Compile::SOAP/"Sender (internals)">
+
+=back
+
+$obj-E<gt>B<writerCreateRpcLiteral>(NAMESPACE-TABLE)
 
 =over 4
 
@@ -275,8 +299,8 @@ See L<XML::Compile::SOAP/"Helpers">
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.61,
-built on November 06, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.62,
+built on November 19, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

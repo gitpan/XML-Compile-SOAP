@@ -1,0 +1,190 @@
+=head1 NAME
+
+XML::Compile::Transport - base class for XML transporters
+
+=head1 INHERITANCE
+
+ XML::Compile::Transport is extended by
+   XML::Compile::Transport::SOAPHTTP
+
+=head1 SYNOPSIS
+
+ use XML::Compile::Transport::SOAPHTTP;
+ my $trans  = XML::Compile::Transport::SOAPHTTP->new(...);
+ my $call   = $trans->compileClient(...);
+
+ my ($xmlout, $trace) = $call->($xmlin);
+ my $xmlout = $call->($xmlin);   # when no trace needed
+
+=head1 DESCRIPTION
+
+This module defines the exchange of (XML) messages. The module does not
+known how to parse or compose XML, but only worries about the transport
+aspects.
+
+On the moment, there is only one transporter implementation: the
+L<XML::Compile::Transport::SOAPHTTP|XML::Compile::Transport::SOAPHTTP>.
+
+=head1 METHODS
+
+=head2 Constructors
+
+XML::Compile::Transport-E<gt>B<new>(OPTIONS)
+
+=over 4
+
+ Option --Default
+ address  'localhost'
+ charset  'utf-8'
+
+. address => URI|ARRAY-of-URI
+
+=over 4
+
+One or more URI which represents the servers.
+
+=back
+
+. charset => STRING
+
+=back
+
+=head2 Accessors
+
+$obj-E<gt>B<address>
+
+=over 4
+
+Get a server address to contact. If multiple addresses were specified,
+than one is chosen at random.
+
+=back
+
+$obj-E<gt>B<addresses>
+
+=over 4
+
+Returns a list of all server contact addresses (URIs)
+
+=back
+
+$obj-E<gt>B<charset>
+
+=over 4
+
+Returns the charset to be used when sending,
+
+=back
+
+=head2 Handlers
+
+$obj-E<gt>B<compileClient>(OPTIONS)
+
+=over 4
+
+Compile a client handler.  Returned is a subroutine which is called
+with a text represenation of the XML request, or an XML::LibXML tree.
+In SCALAR context, an XML::LibXML parsed tree of the answer message
+is returned.  In LIST context, that answer is followed by a HASH which
+contains trace information.
+
+ Option--Default
+ hook    <undef>
+
+. hook => CODE
+
+=over 4
+
+See section L<DETAILS/Use of the transport hook>.
+When defined, the hook will be called, in stead of transmitting the
+message.  The hook will get a two parameters passed in: the textual
+representation of the XML message to be transmitted, and the trace
+HASH with all values collected so far.  The trace HASH will have a
+massive amount of additional information added as well.
+
+You may add information to the trace.  You have to return a textual
+representation of the XML answer, or C<undef> to indicate that the
+message was totally unacceptable.
+
+=back
+
+=back
+
+=head1 DETAILS
+
+=head2 Use of the transport hook
+
+A transport hook can be used to follow the process of creating a
+message to its furthest extend: it will be called with the data
+as used by the actual protocol, but will not actually connect to
+the internet.  Within the transport hook routine, you have to
+simulate the remote server's activities.
+
+There are two reasons to use a hook:
+
+=over 4
+
+=item .
+
+You may need to modify the request or answer messages outside the
+reach of L<XML::Compile::SOAP|XML::Compile::SOAP>, because something is wrong in either
+your WSDL of L<XML::Compile|XML::Compile> message processing.
+
+=item .
+
+You want to fake a server, to produce a test environment.
+
+=back
+
+=head3 Transport hook for debugging
+
+The transport hook is a perfect means for producing automated tests.  Also,
+the XML::Compile::SOAP module tests use it extensively.  It works like this
+(for the SOAPHTTP simluation):
+
+ use Test::More;
+
+ sub fake_server($$)
+ {  my ($request, $trace) = @_;
+    my $content = $request->decoded_content;
+    is($content, <<__EXPECTED_CONTENT);
+<SOAP-ENV:Envelope>...</SOAP-ENV:Envelope>
+__EXPECTED_CONTENT
+
+    HTTP::Response->new(200, 'Constant'
+      , [ 'Content-Type' => 'text/xml' ]
+      , <<__ANSWER
+<SOAP-ENV:Envelope>...</SOAP-ENV:Envelope>
+__ANSWER
+ }
+ 
+Then, the fake server is initiated in one of the following ways:
+
+  my $transport = XML::Compile::Transport::SOAPHTTP->new(...);
+  my $http = $transport->createClient(hook => \&fake_server, ...);
+
+or
+
+  my $soap = XML::Compile::SOAP11::Client->new(...);
+  my $call = $soap->compileClient(encode => ..., decode => ...,
+      transport_hook => \&fake_server);
+
+or
+
+  my $wsdl = XML::Compile::WSDL11->new(...);
+  $wsdl->compileClient('GetLastTracePrice',
+      transport_hook => \&fake_server);
+
+=head1 SEE ALSO
+
+This module is part of XML-Compile-SOAP distribution version 0.62,
+built on November 19, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+
+=head1 LICENSE
+
+Copyrights 2007 by Mark Overmeer. For other contributors see ChangeLog.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+See F<http://www.perl.com/perl/misc/Artistic.html>
+
