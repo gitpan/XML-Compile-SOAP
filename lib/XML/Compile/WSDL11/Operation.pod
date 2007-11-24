@@ -195,6 +195,7 @@ when successfull.
  style           new(style)|'document'
  transport_hook  undef
  transporter     <created>
+ use             'literal'
 
 . protocol => URI|'HTTP'
 
@@ -245,6 +246,8 @@ compatible to the protocol is created.  However, in most cases you
 want to reuse one (HTTP1.1) connection to a server.
 
 =back
+
+. use => 'literal'|'encoded'
 
 =back
 
@@ -311,8 +314,8 @@ all are all returned.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.62,
-built on November 19, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.63,
+built on November 24, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '0.62';
+$VERSION = '0.63';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 use XML::Compile         ();
@@ -74,16 +74,10 @@ sub compileMessage($@)
 }
 
 
-sub _rpcin_default($$$)
-{   my ($soap, $type, $msg) = @_;
-    my $tree   = $soap->dec($msg) or return ();
-    my $simple = $soap->decSimplify($tree) or return ();
-
-    return each %$simple
-    if ref $simple eq 'HASH' && keys %$simple == 1;
-
-    my ($ns, $local) = unpack_type $type;
-    ($local => $simple);
+sub _rpcin_default($@)
+{   my ($soap, @msgs) = @_;
+    my $tree   = $soap->dec(@msgs) or return ();
+    $soap->decSimplify($tree);
 }
 
 my $rr = 'request-response';
@@ -149,7 +143,6 @@ sub compileClient(@)
       : ( rpc => [$rpc_encoder, [@_] ]     ) # rpc body only
       };
 
-
     # Incoming messages
 
     my $rpcin = $args{rpcin} ||
@@ -163,13 +156,29 @@ sub compileClient(@)
             return wantarray ? ($dec, $trace) : $dec
                 if $dec->{Fault};
 
+            my @raw;
             foreach my $k (keys %$dec)
             {   my $node = $dec->{$k};
-                ref $node && $node->isa('XML::LibXML::Element')
-                     or next;
-                $self->startDecoding;
-                my ($n, $v) = $rpcin->($self, $k, delete $dec->{$k});
-                $dec->{$n} = $v if defined $v;
+                if(   ref $node eq 'ARRAY' && @$node
+                   && $node->[0]->isa('XML::LibXML::Element'))
+                {   push @raw, @$node;
+                    delete $dec->{$k};
+                }
+                elsif(ref $node && $node->isa('XML::LibXML::Element'))
+                {   push @raw, delete $dec->{$k};
+                }
+            }
+
+            if(@raw)
+            {   $self->startDecoding(simplify => 1);
+                my @parsed = $rpcin->($self, @raw);
+                if(@parsed==1) { $dec = $parsed[0] }
+                else
+                {   while(@parsed)
+                    {   my $n = shift @parsed;
+                        $dec->{$n} = shift @parsed;
+                    }
+                }
             }
 
             wantarray ? ($dec, $trace) : $dec;
@@ -436,11 +445,15 @@ sub writerCreateRpcEncoded($)
        $self->startEncoding(doc => $doc);
 
        my $top = $code->($self, $doc, $data);
+       $top->setAttribute($allns->{$self->envelopeNS}{prefix}.':encodingStyle'
+           , $self->encodingNS);
 
        my $enc = $self->{enc};
-       foreach (sort values %{$enc->{namespaces}})
-       {   $top->setAttribute("xmlns:$_->{prefix}", $_->{uri});
-       }
+
+       # add namespaces to top element.  Sorted for reproducible results
+       $top->setAttribute("xmlns:$_->{prefix}", $_->{uri})
+           for sort {$a->{prefix} cmp $b->{prefix}}
+                   values %{$enc->{namespaces}};
 
        $top;
      };
@@ -562,7 +575,10 @@ sub readerHook($$$@)
             return ($label => $self->replyMustUnderstandFault($type))
                 if $child->getAttribute('mustUnderstand') || 0;
 
-            $h{$type} = $child;  # not decoded
+            # not decoded right now: rpc
+            if(! exists $h{$type}) { $h{$type} = $child }
+            elsif(ref $h{$type} eq 'ARRAY') { push @{$h{$type}}, $child }
+            else { $h{$type} = [ $h{$type}, $child ] }
         }
         ($label => \%h);
       };

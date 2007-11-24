@@ -1,9 +1,9 @@
 --- #YAML:1.0
 name:                XML-Compile-SOAP
-version:             0.62
+version:             0.63
 abstract:            XML over SOAP, client side
 license:             perl
-generated_by:        ExtUtils::MakeMaker version 6.32
+generated_by:        ExtUtils::MakeMaker version 6.36_01
 distribution_type:   module
 requires:     
     Log::Report:                   0.11
@@ -12,7 +12,7 @@ requires:
     Test::More:                    0.54
     Test::Pod:                     1.00
     Time::HiRes:                   0
-    XML::Compile:                  0.58
+    XML::Compile:                  0.6
 meta-spec:
     url:     http://module-build.sourceforge.net/META-spec-v1.2.html
     version: 1.2

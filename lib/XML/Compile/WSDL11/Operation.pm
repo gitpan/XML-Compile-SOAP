@@ -7,13 +7,13 @@ use strict;
 
 package XML::Compile::WSDL11::Operation;
 use vars '$VERSION';
-$VERSION = '0.62';
+$VERSION = '0.63';
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
 use List::Util  'first';
 
 use Data::Dumper;  # needs to go away
-use XML::Compile::Util       qw/pack_type unpack_type/;
+use XML::Compile::Util       qw/pack_type unpack_type odd_elements/;
 use XML::Compile::SOAP::Util qw/:wsdl11 SOAP11HTTP/;
 
 
@@ -43,10 +43,13 @@ sub init()
     # our life by saying that only 2 out-of 4 predefined types can actually
     # be used at present.
     my @order    = @{$self->portOperation->{_ELEMENT_ORDER}};
+    my $wsdlns   = $self->wsdlNS;
+    my $intype   = pack_type $wsdlns, 'input';
+    my $outtype  = pack_type $wsdlns, 'output';
     my ($first_in, $first_out);
     for(my $i = 0; $i<@order; $i++)
-    {   $first_in  = $i if !defined $first_in  && $order[$i] eq 'input';
-        $first_out = $i if !defined $first_out && $order[$i] eq 'output';
+    {   $first_in  = $i if !defined $first_in  && $order[$i] eq $intype;
+        $first_out = $i if !defined $first_out && $order[$i] eq $outtype;
     }
 
     $self->{kind}
@@ -66,6 +69,7 @@ sub port()     {shift->{port}}
 sub binding()  {shift->{binding}}
 sub portType() {shift->{portType}}
 sub wsdl()     {shift->{wsdl}}
+sub wsdlNS()   {shift->{wsdl}->wsdlNamespace}
 sub schemas()  {shift->{wsdl}->schemas}
 
 sub portOperation() {shift->{port_op}}
@@ -114,6 +118,11 @@ sub soapAction()
 }
 
 sub soapStyle() { shift->{style} }
+
+sub soapUse(;$)
+{   my $self = shift;
+    @_ ? ($self->{use} = shift) : $self->{use};
+}
 
 
 sub kind() {shift->{kind}}
@@ -166,7 +175,8 @@ sub compileClient(@)
     ### prepare message processing
     #
 
-    my ($encode, $decode) = $self->compileMessages(\%args, 'CLIENT', $soap);
+    my ($encode, $decode)
+      = $self->compileMessages(\%args, 'CLIENT', $soap);
 
     #
     ### prepare the transport
@@ -265,17 +275,24 @@ sub compileMessages($$$)
     my ($fault_parts,  $fault_enc)
      = $self->collectFaultParts  ($args, $port->{fault}, $bind->{fault});
 
-    my $encodings = { %$output_enc, %$input_enc, %$fault_enc };
-#warn Dumper $input_parts, $output_parts, $fault_parts, $encodings;
+    # encodings is not supported by ::SOAP anymore, because there may
+    # only be one part only in rpc-encoded which is capable of it
+    # my $encodings = { %$output_enc, %$input_enc, %$fault_enc };
+
+    my $use_style = $self->soapStyle;
+    $use_style .= '-' . $self->soapUse
+        if $use_style eq 'rpc';
 
     my $input = $soap->compileMessage
       ( ($role eq 'CLIENT' ? 'SENDER' : 'RECEIVER')
-      , %$input_parts,  %$fault_parts, encodings => $encodings
+      , %$input_parts,  %$fault_parts,
+      , style => $use_style
       );
 
     my $output = $soap->compileMessage
       ( ($role eq 'CLIENT' ? 'RECEIVER' : 'SENDER')
-      , %$output_parts, %$fault_parts, encodings => $encodings
+      , %$output_parts, %$fault_parts
+      , style => $use_style
       );
 
     ($input, $output);
@@ -298,12 +315,14 @@ sub collectMessageParts($$$)
     {   $bind_body_reader
                ||= $self->schemas->compile(READER => "{$soapns}body");
         my $body = ($bind_body_reader->($bind_body->[0]))[1];
-#       my $use  = $body->{use} || 'literal';  # default correct?
 
         if($self->soapStyle eq 'document')
         {   my $body_parts = $body->{parts} || [];
-            $parts{body}   = $self->messageSelectParts($message, @$body_parts);
+            $parts{body} = [$self->messageSelectParts($message, @$body_parts)];
 #warn Dumper $body, $body_parts, $parts{body};
+        }
+        else  # only for RPC?
+        {   $self->soapUse($body->{use} || 'literal');  # correct default?
         }
     }
 
@@ -313,7 +332,7 @@ sub collectMessageParts($$$)
 
         my @headers = map {$bind_header_reader->($_)} @$bind_headers;
 
-        foreach my $header (@headers)
+        foreach my $header (odd_elements @headers)
         {   my $use = $header->{use}
                 or error __x"message {name} header requires use attribute"
                       , name => $msgname;
@@ -389,7 +408,7 @@ __FAKE_ELEMENT
         push @sel, $name => $element;
     }
 
-    \@sel;
+    @sel;
 }
 
 

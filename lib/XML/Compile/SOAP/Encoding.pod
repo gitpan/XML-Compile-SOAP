@@ -24,7 +24,7 @@ XML::Compile::SOAP::Encoding - SOAP encoding
  my $xml = $client->href('ref', $xyz, 'id-1');  # explicit label
  
  # create: <number>3</number>   (gets validated as well!)
- my $xml = $client->element(number => $int, 3);
+ my $xml = $client->element($int, number => 3);
 
  # create one-dimensional array of ints
  my $xml = $client->array(undef, $int, \@xml);
@@ -128,12 +128,17 @@ element)
 
 =back
 
-$obj-E<gt>B<element>(NAME, TYPE, VALUE)
+$obj-E<gt>B<element>(TYPE, NAME, VALUE)
 
 =over 4
 
 Create an element.  The NAME is for node, where a namespace component
-is translated into a prefix.
+is translated into a prefix.  When you wish for a C<type> attribute,
+use L<typed()|XML::Compile::SOAP::Encoding/"Encoding">.
+
+When the TYPE does not contain a namespace indication, it is taken
+in the selected schema namespace.  If the VALUE already is a
+XML::LibXML::Element, then that one is used (and the NAME ignored).
 
 =back
 
@@ -195,6 +200,18 @@ length of its first element.
  id      undef
 
 . id => STRING
+
+=back
+
+$obj-E<gt>B<nil>([TYPE], NAME)
+
+=over 4
+
+Create an element with NAME which explicitly has the C<xsi:nil> attribute.
+If the NAME is full (has a namespace to it), it will be translated into
+a QNAME, otherwise, it is considered not namespace qualified.
+
+If a TYPE is given, then an explicit type parameter is added.
 
 =back
 
@@ -267,9 +284,20 @@ The VALUE will get processed via an auto-generated XML::Compile writer,
 so validated.  The processing is cashed.
 
 When VALUE already is an XML::LibXML::Element, then no processing
-nor value checking will be performed.
+nor value checking will be performed.  The NAME will be ignored.
 
-BE WARNED: the TYPE must be a fully qualified type.
+If the TYPE is not qualified, then it is interpreted as basic type, as
+defined by the selected schema (see L<new(schema_ns)|XML::Compile::SOAP/"Constructors">).  If you explicitly
+need a non-namespace typed item, then use an empty namespace.  In any
+case, the type must be defined and the value is validated.
+
+example: 
+
+ my $xml = $soap->typed(int => count => 5);
+ my $xml = $soap->typed(pack_type(SCHEMA1999, 'int'), count => 5);
+
+ my $xml = $soap->typed(pack_type('', 'mine'), a => 1);
+ my $xml = $soap->typed('{}mine'), a => 1); #same
 
 =back
 
@@ -284,11 +312,10 @@ Data::Dumper to figure-out what the produced output is: it is a guess,
 so may not be perfect (do not use RPC but document style soap for
 good results).
 
-In LIST context, the decoded data is returned and a HASH with the
-C<id> index are returned.  In SCALAR context, only the decoded data is
-returned.  When L<startDecoding(simplify)|XML::Compile::SOAP::Encoding/"Decoding"> is true, then the returned
-data is concise but may be sloppy.  Otherwise, a HASH is returned
-containing as much info as could be extracted from the tree.
+The decoded data is returned.  When L<startDecoding(simplify)|XML::Compile::SOAP::Encoding/"Decoding"> is true,
+then the returned data is compact but may be sloppy.  Otherwise,
+a HASH is returned containing as much info as could be extracted from
+the tree.
 
 =back
 
@@ -342,8 +369,8 @@ an easily accessible output tree.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.62,
-built on November 19, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.63,
+built on November 24, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

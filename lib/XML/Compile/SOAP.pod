@@ -13,7 +13,7 @@ XML::Compile::SOAP - base-class for SOAP implementations
 
 =head1 SYNOPSIS
 
- ** WARNING: Implementation not finished (but making progress)
+ ** WARNING: This implementation is quite new!  Only SOAP1.1
  ** see TODO, at the end of this page
 
  use XML::Compile::SOAP11::Client;
@@ -56,6 +56,7 @@ XML::Compile::SOAP - base-class for SOAP implementations
  my $request  = $encode_query->($query);
  my ($response, $trace) = $http->($request);
  my $answer   = $decode_response->($response);
+
  use Data::Dumper;
  warn Dumper $answer;     # see: a HASH with h2 and b2!
  if($answer->{Fault}) ... # error was reported
@@ -78,7 +79,7 @@ XML::Compile::SOAP - base-class for SOAP implementations
  print $result->{h2}->{...};
  print $result->{b2}->{...};
 
- my ($result, $trace) = $call->(...);
+ my ($result, $trace) = $call->(...);  # LIST with show trace
 
 =head1 DESCRIPTION
 
@@ -535,7 +536,7 @@ See L<XML::Compile::SOAP::Encoding/"Encoding">
 
 =back
 
-$obj-E<gt>B<element>(NAME, TYPE, VALUE)
+$obj-E<gt>B<element>(TYPE, NAME, VALUE)
 
 =over 4
 
@@ -568,6 +569,14 @@ See L<XML::Compile::SOAP::Encoding/"Encoding">
 =back
 
 $obj-E<gt>B<multidim>((NAME|undef), ITEM_TYPE, ARRAY-of-ELEMENTS, OPTIONS)
+
+=over 4
+
+See L<XML::Compile::SOAP::Encoding/"Encoding">
+
+=back
+
+$obj-E<gt>B<nil>([TYPE], NAME)
 
 =over 4
 
@@ -917,10 +926,10 @@ will be a little simpler, see L<XML::Compile::WSDL11::compileClient()|XML::Compi
 
  # Encoded style RPC (see next section on these functions)
  my $outtype = \&my_pack_params;
- my $in type = \&my_unpack_params;
+ my $intype  = \&my_unpack_params;
  my $style   = 'rpc-encoded';
 
- # For all RPC calls, you need this only once:
+ # For all RPC calls, you need this only once (or have a WSDL):
  my $transp  = XML::Compile::Transport::SOAPHTTP->new(...);
  my $http    = $transp->compileClient(...);
  my $soap    = XML::Compile::SOAP11::Client->new(...);
@@ -1124,8 +1133,8 @@ equivalent to the C<%data_in> from the client.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.62,
-built on November 19, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.63,
+built on November 24, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 
