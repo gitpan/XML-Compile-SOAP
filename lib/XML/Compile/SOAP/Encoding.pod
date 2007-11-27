@@ -164,6 +164,14 @@ example:
 
 =back
 
+$obj-E<gt>B<encAddNamespace>(PAIRS)
+
+=over 4
+
+Convenience alternative for L<encAddNamespaces()|XML::Compile::SOAP::Encoding/"Encoding">.
+
+=back
+
 $obj-E<gt>B<encAddNamespaces>(PAIRS)
 
 =over 4
@@ -369,8 +377,8 @@ an easily accessible output tree.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.63,
-built on November 24, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.64,
+built on November 27, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

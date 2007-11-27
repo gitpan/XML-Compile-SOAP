@@ -146,7 +146,7 @@ can be hidden for you)
 =over 4
 
 Use this when you have already processed some schema definitions.  Otherwise,
-you can add schemas later with C<< $soap->schames->importDefinitions() >>
+you can add schemas later with C<< $soap->schemas->importDefinitions() >>
 
 =back
 
@@ -225,7 +225,7 @@ $obj-E<gt>B<compileClient>(OPTIONS)
  decode     <required>
  encode     <required>
  kind       request-response
- name       "unnamed"
+ name       <from rpcout> or "unnamed"
  rpcin      <depends on type of rpcout>
  rpcout     undef
  transport  <required>
@@ -262,7 +262,8 @@ interaction.  Only C<request-response> (the default) is currently supported.
 =over 4
 
 Currently only used in some error messages, but may be used more intensively
-in the future.
+in the future.  When C<rpcout> is a TYPE, then the local name of that type
+is used as default.
 
 =back
 
@@ -545,6 +546,14 @@ See L<XML::Compile::SOAP::Encoding/"Encoding">
 =back
 
 $obj-E<gt>B<enc>(LOCAL, VALUE, [ID])
+
+=over 4
+
+See L<XML::Compile::SOAP::Encoding/"Encoding">
+
+=back
+
+$obj-E<gt>B<encAddNamespace>(PAIRS)
 
 =over 4
 
@@ -1133,8 +1142,8 @@ equivalent to the C<%data_in> from the client.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.63,
-built on November 24, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.64,
+built on November 27, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

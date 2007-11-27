@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '0.63';
+$VERSION = '0.64';
 use base 'XML::Compile';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';

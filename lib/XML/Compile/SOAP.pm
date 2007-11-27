@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '0.63';
+$VERSION = '0.64';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 use XML::Compile         ();
@@ -84,7 +84,15 @@ my $rr = 'request-response';
 sub compileClient(@)
 {   my ($self, %args) = @_;
 
-    my $name = $args{name} || 'unnamed';
+    my $name   = $args{name};
+    my $rpcout = $args{rpcout};
+
+    unless(defined $name)
+    {   (undef, $name) = unpack_type $rpcout
+            if $rpcout && ! ref $rpcout;
+        $name ||= 'unnamed';
+    }
+
     my $kind = $args{kind} || $rr;
     $kind eq $rr
         or error __x"only `{rr}' operations are supported, not `{kind}' for {name}"
@@ -127,7 +135,7 @@ sub compileClient(@)
 
     # Outgoing messages
 
-    my $rpcout = $args{rpcout}
+    defined $rpcout
         or return $core;
 
     my $rpc_encoder
@@ -135,10 +143,11 @@ sub compileClient(@)
       : $self->schemas->compile
         ( WRITER => $rpcout
         , include_namespaces => 1
+        , elements_qualified => 'TOP'
         );
 
     my $out = sub
-      {    @_ % 2  # auto-collect rpc parameters
+      {    @_ && @_ % 2  # auto-collect rpc parameters
       ? ( rpc => [$rpc_encoder, shift], @_ ) # possible header blocks
       : ( rpc => [$rpc_encoder, [@_] ]     ) # rpc body only
       };
@@ -444,9 +453,15 @@ sub writerCreateRpcEncoded($)
        my ($code, $data) = @$def;
        $self->startEncoding(doc => $doc);
 
-       my $top = $code->($self, $doc, $data);
+       my $top = $code->($self, $doc, $data)
+           or return ();
+
+       my ($topns, $toplocal) = ($top->namespaceURI, $top->localName);
+       $topns || index($toplocal, ':') >= 0
+           or error __x"rpc top element requires namespace";
+
        $top->setAttribute($allns->{$self->envelopeNS}{prefix}.':encodingStyle'
-           , $self->encodingNS);
+          , $self->encodingNS);
 
        my $enc = $self->{enc};
 
