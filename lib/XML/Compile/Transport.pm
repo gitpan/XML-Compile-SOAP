@@ -1,4 +1,4 @@
-# Copyrights 2007 by Mark Overmeer.
+# Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 1.03.
@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport;
 use vars '$VERSION';
-$VERSION = '0.64';
+$VERSION = '0.65';
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 
 use XML::LibXML ();
@@ -52,6 +52,7 @@ my $parser = XML::LibXML->new;
 sub compileClient(@)
 {   my ($self, %args) = @_;
     my $call  = $self->_prepare_call(\%args);
+    my $kind  = $args{kind} || 'request-response';
 
     sub
     {   my ($xmlout, $trace) = @_;
@@ -69,9 +70,16 @@ sub compileClient(@)
         {   $xmlin = eval {$parser->parse_string($textin)};
             $trace->{error} = $@ if $@;
         }
-        else
-        {   $trace->{error} = 'no xml as answer';
+
+        my $answer;
+        if($kind eq 'one-way')
+        {   my $response = $trace->{http_response};
+            my $code = defined $response ? $response->code : -1;
+            if($code==202) { $answer = $xmlin || {} }
+            else { $trace->{error} = "call failed with code $code" }
         }
+        elsif($xmlin) { $answer  = $xmlin }
+        else { $trace->{error} = 'no xml as answer' }
 
         my $end = $trace->{transport_end} = time;
 
@@ -79,7 +87,7 @@ sub compileClient(@)
         $trace->{connect_elapse}   = $connected - $stringify;
         $trace->{parse_elapse}     = $end - $connected;
         $trace->{transport_elapse} = $end - $start;
-        $xmlin;
+        $answer;
     }
 }
 

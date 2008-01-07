@@ -66,7 +66,7 @@ XML::Compile::SOAP - base-class for SOAP implementations
  # This is Document-style SOAP
 
  my $call   = $client->compileClient
-   ( kind      => 'request-response'
+   ( kind      => 'request-response'  # default
    , name      => 'my first call'
    , encode    => $encode_query
    , decode    => $decode_response
@@ -235,7 +235,9 @@ $obj-E<gt>B<compileClient>(OPTIONS)
 =over 4
 
 The CODE reference is produced by L<compileMessage()|XML::Compile::SOAP/"Single messages">, and must be a
-RECEIVER: translate a SOAP message into Perl data.
+RECEIVER: translate a SOAP message into Perl data.  Even in one-way
+operation, this decode should be provided: some servers may pass back
+some XML in case of errors.
 
 =back
 
@@ -253,7 +255,8 @@ SENDER: translates Perl data structures into the SOAP message in XML.
 =over 4
 
 Which kind of client is this.  WSDL11 defines four kinds of client-server
-interaction.  Only C<request-response> (the default) is currently supported.
+interaction.  Only C<request-response> (the default) and C<one-way> are
+currently supported.
 
 =back
 
@@ -1142,12 +1145,12 @@ equivalent to the C<%data_in> from the client.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.64,
-built on November 27, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.65,
+built on January 07, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 
-Copyrights 2007 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2008 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

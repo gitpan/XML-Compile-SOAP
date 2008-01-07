@@ -1,4 +1,4 @@
-# Copyrights 2007 by Mark Overmeer.
+# Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 1.03.
@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11::Operation;
 use vars '$VERSION';
-$VERSION = '0.64';
+$VERSION = '0.65';
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
 use List::Util  'first';
@@ -302,6 +302,10 @@ sub compileMessages($$$)
 my ($bind_body_reader, $bind_header_reader);
 sub collectMessageParts($$$)
 {   my ($self, $args, $portop, $bind) = @_;
+
+    defined $portop          # communication not in two directions
+        or return ({}, {});
+
     my (%parts, %encodings);
 
     my $msgname  = $portop->{message}

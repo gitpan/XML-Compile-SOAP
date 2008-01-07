@@ -13,7 +13,6 @@ examples/namesservice/rpc-encoded.pl
 examples/namesservice/rpc-encoded2.pl
 examples/namesservice/rpc-literal.pl
 examples/namesservice/rpc-literal2.pl
-examples/namesservice/run.pl
 lib/XML/Compile/SOAP.pm
 lib/XML/Compile/SOAP.pod
 lib/XML/Compile/SOAP/Client.pm
@@ -66,6 +65,7 @@ t/15rpclit11.t
 t/16rpcenc11.t
 t/50wsdl11.t
 t/51wsdl11enc.t
+t/52wsdl11one.t
 t/TestTools.pm
 t/pod.t
 META.yml                                 Module meta-data (added by MakeMaker)

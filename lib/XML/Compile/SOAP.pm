@@ -1,4 +1,4 @@
-# Copyrights 2007 by Mark Overmeer.
+# Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 1.03.
@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '0.64';
+$VERSION = '0.65';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 use XML::Compile         ();
@@ -94,8 +94,8 @@ sub compileClient(@)
     }
 
     my $kind = $args{kind} || $rr;
-    $kind eq $rr
-        or error __x"only `{rr}' operations are supported, not `{kind}' for {name}"
+    $kind eq $rr || $kind eq 'one-way'
+        or error __x"operation direction `{kind}' not supported for {name}"
              , rr => $rr, kind => $kind, name => $name;
 
     my $encode = $args{encode}
@@ -115,15 +115,15 @@ sub compileClient(@)
         my %trace;
         my $ans   = $transport->($req, \%trace);
 
-        wantarray
-            or return defined $ans ? $decode->($ans) : undef;
+        wantarray or return
+            UNIVERSAL::isa($ans, 'XML::LibXML::Node') ? $decode->($ans) : $ans;
 
         $trace{date}   = localtime $start;
         $trace{start}  = $start;
         $trace{encode_elapse} = $trace{transport_start} - $start;
 
-        defined $ans
-            or return (undef, \%trace);
+        UNIVERSAL::isa($ans, 'XML::LibXML::Node')
+            or return ($ans, \%trace);
 
         my $dec = $decode->($ans);
         my $end = time;

@@ -1,4 +1,4 @@
-# Copyrights 2007 by Mark Overmeer.
+# Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 1.03.
@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::Tester;
 use vars '$VERSION';
-$VERSION = '0.64';
+$VERSION = '0.65';
 
 use XML::Compile::SOAP::Client ();
 

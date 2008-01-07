@@ -30,15 +30,23 @@ XML::Compile::WSDL11 - create SOAP messages defined by WSDL 1.1
 
 =head1 DESCRIPTION
 
-B<< This module is UNDER CONSTRUCTION.
-Missing: pure HTTP GET/POST bindings, multipart-mime; SOAP-RPC >>
+This module is QUITE NEW, so needs more exposure to the outside world.
+It currently only supports WSDL 1.1 on SOAP 1.1, with HTTP-SOAP.  Missing
+are pure HTTP GET/POST bindings and multipart-mime transport protocols.
 
-An WSDL file defines a set of schemas and how to use the defined
-types using SOAP connections.  The parsing is based on the WSDL
-schema.
+An WSDL file defines a set of messages to be send and received over SOAP
+connections.  As end-user, you do not have to worry about the complex
+details of the messages and the exchange of them: it's all Perl to you.
+Also faults are handled automatically.
 
-The WSDL definition can get constructed from multiple XML trees, each
-added with L<addWSDL()|XML::Compile::WSDL11/"Extension"> (wsdl), or L<importDefinitions()|XML::Compile::WSDL11/"Extension"> (schema).
+The only complication you have to worry about, is to shape
+a nested HASH structure to the sending message structure.
+L<XML::Compile::Schema::template()|XML::Compile::Schema/"Compilers"> may help you.
+
+When the definitions are spread over multiple files, you will need to
+use L<addWSDL()|XML::Compile::WSDL11/"Extension"> (wsdl), or L<importDefinitions()|XML::Compile::WSDL11/"Extension"> (additional schema's)
+explicitly, because L<XML::Compile::Schema|XML::Compile::Schema> does not wish dynamic internet
+download magic to happen.
 
 =head1 METHODS
 
@@ -306,6 +314,11 @@ a choice, then you are required to select one explicitly.
  # once in your program
  my $wsdl   = XML::Compile::WSDL11->new('def.wsdl');
 
+ # XML::Compile::Schema does not want to follow "include" and
+ # "import" commands, so you need to invoke them explicitly.
+ # $wsdl->addWSDL('file2.wsdl');            # optional
+ # $wsdl->importDefinitions('schema1.xsd'); # optional
+
  # once for each of the defined operations
  my $call   = $wsdl->compileClient('GetStockPrice');
 
@@ -332,12 +345,12 @@ Error: don't known how to interpret XML data
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.64,
-built on November 27, 2007. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.65,
+built on January 07, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 
-Copyrights 2007 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2008 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

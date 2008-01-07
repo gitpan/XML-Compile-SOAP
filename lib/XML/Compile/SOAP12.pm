@@ -1,4 +1,4 @@
-# Copyrights 2007 by Mark Overmeer.
+# Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 1.03.
@@ -7,11 +7,12 @@ use strict;
 
 package XML::Compile::SOAP12;
 use vars '$VERSION';
-$VERSION = '0.64';
+$VERSION = '0.65';
 use base 'XML::Compile::SOAP';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 
+use XML::Compile::Util       qw/SCHEMA2001/;
 use XML::Compile::SOAP::Util qw/:soap12/;
 
 my %roles =
@@ -37,6 +38,7 @@ sub new($@)
 sub init($)
 {   my ($self, $args) = @_;
     $args->{version}               ||= 'SOAP12';
+    $args->{schema_ns}             ||= SCHEMA2001;
     my $env = $args->{envelope_ns} ||= SOAP12ENV;
     my $enc = $args->{encoding_ns} ||= SOAP12ENC;
     $self->SUPER::init($args);
