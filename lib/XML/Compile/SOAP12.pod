@@ -13,9 +13,9 @@ XML::Compile::SOAP12 - base class for SOAP1.2 implementation
 
 =head1 SYNOPSIS
 
-=head1 DESCRIPTION
-
 **WARNING** Implementation not finished: not usable!!
+
+=head1 DESCRIPTION
 
 This module handles the SOAP protocol version 1.2.
 See F<http://www.w3.org/TR/soap12/>).
@@ -134,14 +134,6 @@ See L<XML::Compile::SOAP/"Accessors">
 =back
 
 =head2 Single messages
-
-$obj-E<gt>B<compileClient>(OPTIONS)
-
-=over 4
-
-See L<XML::Compile::SOAP/"Single messages">
-
-=back
 
 $obj-E<gt>B<compileMessage>(('SENDER'|'RECEIVER'), OPTIONS)
 
@@ -299,8 +291,8 @@ See L<XML::Compile::SOAP/"Helpers">
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.65,
-built on January 07, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.66,
+built on January 31, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

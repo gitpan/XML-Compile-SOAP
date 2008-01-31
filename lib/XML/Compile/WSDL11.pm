@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '0.65';
+$VERSION = '0.66';
 use base 'XML::Compile';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -133,6 +133,8 @@ sub namesFor($)
 }
 
 
+# new options, then also add them to the list in compileClient()
+
 sub operation(@)
 {   my $self = shift;
     my $name = @_ % 2 ? shift : undef;
@@ -217,6 +219,8 @@ sub compileClient(@)
     my $op   = $self->operation(@_) or return ();
     $op->compileClient(@_);
 }
+
+#---------------------
 
 
 sub index(;$$)
@@ -311,6 +315,8 @@ sub operations(@)
 
     @ops;
 }
+
+#--------------------------------
 
 
 

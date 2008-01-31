@@ -89,22 +89,6 @@ See L<XML::Compile::SOAP/"Accessors">
 
 =head2 Single messages
 
-$obj-E<gt>B<compileClient>(OPTIONS)
-
-=over 4
-
-See L<XML::Compile::SOAP::Client/"Single messages">
-
-=back
-
-$obj-E<gt>B<compileClient>(OPTIONS)
-
-=over 4
-
-See L<XML::Compile::SOAP/"Single messages">
-
-=back
-
 $obj-E<gt>B<compileMessage>(('SENDER'|'RECEIVER'), OPTIONS)
 
 =over 4
@@ -257,6 +241,16 @@ See L<XML::Compile::SOAP/"Helpers">
 
 =back
 
+=head2 Handlers
+
+$obj-E<gt>B<compileClient>(OPTIONS)
+
+=over 4
+
+See L<XML::Compile::SOAP::Client/"Handlers">
+
+=back
+
 =head2 Debugging
 
 $obj-E<gt>B<fakeServer>([FAKE|undef])
@@ -273,8 +267,8 @@ See L<XML::Compile::SOAP::Client/"Debugging">
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.65,
-built on January 07, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.66,
+built on January 31, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

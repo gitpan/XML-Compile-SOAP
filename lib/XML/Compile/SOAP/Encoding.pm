@@ -7,11 +7,11 @@ use strict;
 
 package XML::Compile::SOAP;  #!!!
 use vars '$VERSION';
-$VERSION = '0.65';
+$VERSION = '0.66';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 use List::Util qw/min first/;
-use XML::Compile::Util qw/odd_elements SCHEMA2001/;
+use XML::Compile::Util qw/odd_elements SCHEMA2001 unpack_type/;
 
 
 # startEncoding is always implemented, loading this class

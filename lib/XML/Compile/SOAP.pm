@@ -7,11 +7,11 @@ use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '0.65';
+$VERSION = '0.66';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 use XML::Compile         ();
-use XML::Compile::Util   qw/pack_type unpack_type/;
+use XML::Compile::Util   qw/pack_type/;
 use XML::Compile::Schema ();
 
 use Time::HiRes          qw/time/;
@@ -71,139 +71,6 @@ sub compileMessage($@)
     : $direction eq 'RECEIVER' ? $self->receiver(\%args)
     : error __x"message direction is 'SENDER' or 'RECEIVER', not `{dir}'"
          , dir => $direction;
-}
-
-
-sub _rpcin_default($@)
-{   my ($soap, @msgs) = @_;
-    my $tree   = $soap->dec(@msgs) or return ();
-    $soap->decSimplify($tree);
-}
-
-my $rr = 'request-response';
-sub compileClient(@)
-{   my ($self, %args) = @_;
-
-    my $name   = $args{name};
-    my $rpcout = $args{rpcout};
-
-    unless(defined $name)
-    {   (undef, $name) = unpack_type $rpcout
-            if $rpcout && ! ref $rpcout;
-        $name ||= 'unnamed';
-    }
-
-    my $kind = $args{kind} || $rr;
-    $kind eq $rr || $kind eq 'one-way'
-        or error __x"operation direction `{kind}' not supported for {name}"
-             , rr => $rr, kind => $kind, name => $name;
-
-    my $encode = $args{encode}
-        or error __x"encode for client {name} required", name => $name;
-
-    my $decode = $args{decode}
-        or error __x"decode for client {name} required", name => $name;
-
-    my $transport = $args{transport}
-        or error __x"transport for client {name} required", name => $name;
-
-    my $core = sub
-    {   my $start = time;
-        my ($data, $charset) = UNIVERSAL::isa($_[0], 'HASH') ? @_ : ({@_});
-        my $req   = $encode->($data, $charset);
-
-        my %trace;
-        my $ans   = $transport->($req, \%trace);
-
-        wantarray or return
-            UNIVERSAL::isa($ans, 'XML::LibXML::Node') ? $decode->($ans) : $ans;
-
-        $trace{date}   = localtime $start;
-        $trace{start}  = $start;
-        $trace{encode_elapse} = $trace{transport_start} - $start;
-
-        UNIVERSAL::isa($ans, 'XML::LibXML::Node')
-            or return ($ans, \%trace);
-
-        my $dec = $decode->($ans);
-        my $end = time;
-        $trace{decode_elapse} = $end - $trace{transport_end};
-        $trace{elapse} = $end - $start;
-
-        ($dec, \%trace);
-    };
-
-    # Outgoing messages
-
-    defined $rpcout
-        or return $core;
-
-    my $rpc_encoder
-      = UNIVERSAL::isa($rpcout, 'CODE') ? $rpcout
-      : $self->schemas->compile
-        ( WRITER => $rpcout
-        , include_namespaces => 1
-        , elements_qualified => 'TOP'
-        );
-
-    my $out = sub
-      {    @_ && @_ % 2  # auto-collect rpc parameters
-      ? ( rpc => [$rpc_encoder, shift], @_ ) # possible header blocks
-      : ( rpc => [$rpc_encoder, [@_] ]     ) # rpc body only
-      };
-
-    # Incoming messages
-
-    my $rpcin = $args{rpcin} ||
-      (UNIVERSAL::isa($rpcout, 'CODE') ? \&_rpcin_default : $rpcout.'Response');
-
-    # RPC intelligence wrapper
-
-    if(UNIVERSAL::isa($rpcin, 'CODE'))     # rpc-encoded
-    {   return sub
-        {   my ($dec, $trace) = $core->($out->(@_));
-            return wantarray ? ($dec, $trace) : $dec
-                if $dec->{Fault};
-
-            my @raw;
-            foreach my $k (keys %$dec)
-            {   my $node = $dec->{$k};
-                if(   ref $node eq 'ARRAY' && @$node
-                   && $node->[0]->isa('XML::LibXML::Element'))
-                {   push @raw, @$node;
-                    delete $dec->{$k};
-                }
-                elsif(ref $node && $node->isa('XML::LibXML::Element'))
-                {   push @raw, delete $dec->{$k};
-                }
-            }
-
-            if(@raw)
-            {   $self->startDecoding(simplify => 1);
-                my @parsed = $rpcin->($self, @raw);
-                if(@parsed==1) { $dec = $parsed[0] }
-                else
-                {   while(@parsed)
-                    {   my $n = shift @parsed;
-                        $dec->{$n} = shift @parsed;
-                    }
-                }
-            }
-
-            wantarray ? ($dec, $trace) : $dec;
-        };
-    }
-    else                                   # rpc-literal
-    {   my $rpc_decoder = $self->schemas->compile(READER => $rpcin);
-        (undef, my $rpcin_local) = unpack_type $rpcin;
-
-        return sub
-        {   my ($dec, $trace) = $core->($out->(@_));
-            $dec->{$rpcin_local} = $rpc_decoder->(delete $dec->{$rpcin})
-              if $dec->{$rpcin};
-            wantarray ? ($dec, $trace) : $dec;
-        };
-    }
 }
 
 #------------------------------------------------
@@ -300,7 +167,10 @@ sub sender($)
         {   error __x"call data not used: {blocks}", blocks => [keys %copy];
         }
 
-        $envelope->($doc, \%data);
+        my $root = $envelope->($doc, \%data)
+            or return;
+        $doc->setDocumentElement($root);
+        $doc;
     };
 }
 
@@ -318,8 +188,7 @@ sub writerHook($$@)
             while(@h)
             {   my ($k, $c) = (shift @h, shift @h);
                 if(my $v = delete $data{$k})
-                {    my $g = $c->($doc, $v);
-                     push @childs, $g if $g;
+                {   push @childs, $c->($doc, $v);
                 }
             }
             warning __x"unused values {names}", names => [keys %data]
@@ -453,24 +322,30 @@ sub writerCreateRpcEncoded($)
        my ($code, $data) = @$def;
        $self->startEncoding(doc => $doc);
 
-       my $top = $code->($self, $doc, $data)
+       my @body = $code->($self, $doc, $data)
            or return ();
 
+       $_->isa('XML::LibXML::Element')
+           or error __x"rpc body must contain elements, not {el}", el => $_
+              foreach @body;
+
+       my $top = $body[0];
        my ($topns, $toplocal) = ($top->namespaceURI, $top->localName);
        $topns || index($toplocal, ':') >= 0
-           or error __x"rpc top element requires namespace";
+           or error __x"rpc first body element requires namespace";
 
        $top->setAttribute($allns->{$self->envelopeNS}{prefix}.':encodingStyle'
           , $self->encodingNS);
 
        my $enc = $self->{enc};
 
-       # add namespaces to top element.  Sorted for reproducible results
+       # add namespaces to first body element.  Sorted for reproducible
+       # results there may be problems with multiple body elements.
        $top->setAttribute("xmlns:$_->{prefix}", $_->{uri})
            for sort {$a->{prefix} cmp $b->{prefix}}
                    values %{$enc->{namespaces}};
 
-       $top;
+       @body;
      };
 
     (rpc => $lit);

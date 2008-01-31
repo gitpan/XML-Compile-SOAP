@@ -81,9 +81,9 @@ document.
 
 =head2 Accessors
 
-$obj-E<gt>B<addSchemaDirs>(DIRECTORIES)
+$obj-E<gt>B<addSchemaDirs>(DIRECTORIES|PACKAGE)
 
-XML::Compile::WSDL11-E<gt>B<addSchemaDirs>(DIRECTORIES)
+XML::Compile::WSDL11-E<gt>B<addSchemaDirs>(DIRECTORIES|PACKAGE)
 
 =over 4
 
@@ -169,8 +169,16 @@ Creates temporarily an L<XML::Compile::WSDL11::Operation|XML::Compile::WSDL11::O
 and then calls C<compileClient()> on that; an usual combination.
 
 As OPTIONS are available the combination of all possibilities for
-L<operation()|XML::Compile::WSDL11/"Extension"> and all of L<XML::Compile::WSDL11::Operation::compileClient()|XML::Compile::WSDL11::Operation/"Handlers">.
-For instance, C<transport_hook>.
+L<operation()|XML::Compile::WSDL11/"Extension"> (i.e. C<service> and C<port>) and all of
+L<XML::Compile::WSDL11::Operation::compileClient()|XML::Compile::WSDL11::Operation/"Handlers"> (a whole lot,
+for instance C<transport_hook>).
+
+example: 
+
+  $wsdl->compileClient
+    ( operation => 'HelloWorld'
+    , port      => 'PrefillSoap' # only needed in multiple ports
+    );
 
 =back
 
@@ -345,8 +353,8 @@ Error: don't known how to interpret XML data
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.65,
-built on January 07, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.66,
+built on January 31, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 
