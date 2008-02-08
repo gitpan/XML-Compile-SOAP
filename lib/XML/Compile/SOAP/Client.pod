@@ -94,7 +94,17 @@ with C<Response> concatenated: a commonly used convension.
 If this option is not used, but there is an C<rpcout> with CODE
 reference, then a standard decode routine is called.  That routine
 does use L<XML::Compile::SOAP::Encoding::decSimplify()|XML::Compile::SOAP::Encoding/"Decoding"> to get an
-as simple as possible return structure.
+as simple as possible return structure.  This function tries hard, and
+does some validation as well, however many RPC schemas are horribly
+broken, and thereby the automatic decoding fails.
+
+As alternative, you can try C<XMLin> from XML::LibXML::Simple or
+XML::Simple (SAX based parser).
+
+    rpcin => sub { my $soap = shift; [ map { XMLin($_) } @_ ] }
+
+Each of the body parts now get decoded.  However, this does not resolve
+references and such: the output datastructure is far more verbose.
 
 =back
 
@@ -525,8 +535,8 @@ equivalent to the C<%data_in> from the client.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.66,
-built on January 31, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.67,
+built on February 08, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

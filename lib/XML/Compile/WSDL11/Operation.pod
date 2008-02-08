@@ -188,14 +188,23 @@ will return then answer, or C<undef> in case of failure.  An 'one-way'
 operation with return C<undef> in case of failure, and a true value
 when successfull.
 
- Option        --Default
- protocol        new(protocol)|<from soapAction>
- rpcin           undef
- rpcout          undef
- style           new(style)|'document'
- transport_hook  undef
- transporter     <created>
- use             'literal'
+ Option          --Default
+ endpoint_address  <from WSDL>
+ protocol          new(protocol)|<from soapAction>
+ rpcin             undef
+ rpcout            undef
+ style             new(style)|'document'
+ transport         <created>
+ transport_hook    undef
+ use               'literal'
+
+. endpoint_address => URI
+
+=over 4
+
+Overrule the destination address.
+
+=back
 
 . protocol => URI|'HTTP'
 
@@ -226,6 +235,18 @@ See L<XML::Compile::SOAP::Client::compileClient(rpcout)|XML::Compile::SOAP::Clie
 
 . style => 'document'|'rpc'
 
+. transport => CODE
+
+=over 4
+
+The routine which will be used to exchange the
+data with the server.  This code is usually created by
+L<XML::Compile::Transport::SOAPHTTP::compileClient()|XML::Compile::Transport::SOAPHTTP/"Handlers"> By default, a
+transporter compatible to the protocol is created.  However, in most
+cases you want to reuse one (HTTP1.1) connection to a server.
+
+=back
+
 . transport_hook => CODE
 
 =over 4
@@ -233,17 +254,6 @@ See L<XML::Compile::SOAP::Client::compileClient(rpcout)|XML::Compile::SOAP::Clie
 Passed to L<XML::Compile::Transport::compileClient(hook)|XML::Compile::Transport/"Handlers">.  Can be
 used to create off-line tests and last resort work-arounds.  See the
 DETAILs chapter in the L<XML::Compile::Transport|XML::Compile::Transport> manual page.
-
-=back
-
-. transporter => XML::Compile::Transport object
-
-=over 4
-
-Usually an L<XML::Compile::Transport::SOAPHTTP|XML::Compile::Transport::SOAPHTTP> object, which is
-used to exchange the data with the server.  By default, a transporter
-compatible to the protocol is created.  However, in most cases you
-want to reuse one (HTTP1.1) connection to a server.
 
 =back
 
@@ -314,8 +324,8 @@ all are all returned.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.66,
-built on January 31, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.67,
+built on February 08, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

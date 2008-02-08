@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11::Operation;
 use vars '$VERSION';
-$VERSION = '0.66';
+$VERSION = '0.67';
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
 use List::Util  'first';
@@ -186,8 +186,8 @@ sub compileClient(@)
        or error __x"SORRY: only transport of HTTP implemented, not {protocol}"
                , protocol => $proto;
 
-    my $transport = $args{transport};
-    unless($transport)
+    my $send = $args{transport};
+    unless($send)
     {   my $impl = 'XML::Compile::Transport::SOAPHTTP';
 
         # this is an optimization thing: often, the client and server will
@@ -197,18 +197,18 @@ sub compileClient(@)
             or error __x"explicitly put 'use {impl}' in your script"
                   , impl => $impl;
 
-        $transport = $impl->new
-          ( address  => [ $self->endPointAddresses ]
+        my $transport = $impl->new
+          ( address  => [ $args{endpoint_address} || $self->endPointAddresses ]
+          );
+
+        $send = $transport->compileClient
+          ( name         => $self->name
+          , kind         => $self->kind
+          , soap_version => $version
+          , action       => $self->soapAction
+          , hook         => $args{transport_hook}
           );
     }
-
-    my $send = $transport->compileClient
-      ( name         => $self->name
-      , kind         => $self->kind
-      , soap_version => $version
-      , action       => $self->soapAction
-      , hook         => $args{transport_hook}
-      );
 
     $soap->compileClient
       ( name         => $self->name

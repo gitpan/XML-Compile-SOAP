@@ -72,8 +72,8 @@ L<XML::Compile::Schema::new()|XML::Compile::Schema/"Constructors">
 =over 4
 
 Force to accept only WSDL descriptions which are in this namespace.  If
-not specified, the name-space is enforced which is found in the first WSDL
-document.
+not specified, the name-space  which is found in the first WSDL document
+is used.
 
 =back
 
@@ -353,8 +353,8 @@ Error: don't known how to interpret XML data
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.66,
-built on January 31, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.67,
+built on February 08, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 
