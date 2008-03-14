@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                XML-Compile-SOAP
-version:             0.67
+version:             0.68
 abstract:            XML over SOAP, client side
 license:             perl
 author:              

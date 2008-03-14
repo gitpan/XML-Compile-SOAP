@@ -78,7 +78,8 @@ XML::Compile::SOAP - base-class for SOAP implementations
  print $result->{h2}->{...};
  print $result->{b2}->{...};
 
- my ($result, $trace) = $call->(...);  # LIST with show trace
+ my ($result, $trace) = $call->(...);  # LIST will show trace
+ # $trace is an XML::Compile::SOAP::Trace object
 
 =head1 DESCRIPTION
 
@@ -683,8 +684,8 @@ Net::Server, which may have some portability restrictions.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.67,
-built on February 08, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.68,
+built on March 14, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

@@ -1,13 +1,13 @@
 # Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.03.
+# Pod stripped from pm file by OODoc 1.04.
 use warnings;
 use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '0.67';
+$VERSION = '0.68';
 use base 'XML::Compile';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -87,7 +87,7 @@ sub addWSDL($)
      , after        => 'ELEMENT_ORDER'
      );
 
-    my $reader  = $schemas->compile        # to parse the WSDL
+    my $reader    = $schemas->compile        # to parse the WSDL
      ( READER       => pack_type($wsdlns, 'definitions')
      , anyElement   => 'TAKE_ALL'
      , anyAttribute => 'TAKE_ALL'

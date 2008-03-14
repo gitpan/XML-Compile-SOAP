@@ -269,9 +269,6 @@ Prepare the routines which will decode the request and encode the answer,
 as will be run on the server.  The L<XML::Compile::SOAP::Server|XML::Compile::SOAP::Server> will
 connect these.
 
-Returned is a LIST of three: the soapAction string, the request decoder
-CODE reference, and the answer encoder CODE reference.
-
  Option--Default
  soap    <required>
 
@@ -311,6 +308,9 @@ $obj-E<gt>B<compileMessages>(ARGS, 'CLIENT'|'SERVER', SOAP)
 
 =over 4
 
+The ARGS is a HASH which contains options for L<collectMessageParts()|XML::Compile::WSDL11::Operation/"Helpers">
+and for L<XML::Compile::Schema::compile()|XML::Compile::Schema/"Compilers">.
+
 =back
 
 $obj-E<gt>B<messageSelectParts>(MESSAGE, [NAMES])
@@ -324,8 +324,8 @@ all are all returned.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.67,
-built on February 08, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.68,
+built on March 14, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

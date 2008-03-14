@@ -1,13 +1,13 @@
 # Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.03.
+# Pod stripped from pm file by OODoc 1.04.
 use warnings;
 use strict;
 
 package XML::Compile::SOAP::Server;
 use vars '$VERSION';
-$VERSION = '0.67';
+$VERSION = '0.68';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 
@@ -30,14 +30,14 @@ sub compileHandler(@)
     sub
     {   my ($xmlin) = @_;
         my $doc  = XML::LibXML::Document->new('1.0', 'UTF-8');
-        my $data;
+        my ($data, $answer);
 
         if($decode)
         {   $data = try { $decode->($xmlin) };
             if($@)
             {   my $exception = $@->wasFatal;
                 $exception->throw(reason => 'info');
-                $data = $self->faultValidationFailed($doc, $name,
+                $answer = $self->faultValidationFailed($doc, $name,
                     $exception->message->toString);
             }
         }
@@ -45,10 +45,15 @@ sub compileHandler(@)
         {   $data = $xmlin;
         }
 
-        my $answer = $callback->($self, $doc, $data);
+        $answer = $callback->($self, $doc, $data) if $data;
 
         return $answer
             if UNIVERSAL::isa($answer, 'XML::LibXML::Document');
+
+        unless($answer)
+        {   warning "handler {name} did not return an answer", name => $name;
+            $answer = $self->faultNoAnswerProduced($doc);
+        }
 
         $encode->($doc, $answer);
     };

@@ -1,6 +1,6 @@
 =head1 NAME
 
-XML::Compile::SOAP::Server - SOAP message handlers
+XML::Compile::SOAP::Server - server-side SOAP message processing
 
 =head1 INHERITANCE
 
@@ -27,7 +27,7 @@ XML::Compile::SOAP::Server - SOAP message handlers
 
 =head1 DESCRIPTION
 
-This class defines methods that each server side of the SOAP
+This class defines methods that each server for the SOAP
 message exchange protocols must implement.
 
 =head1 METHODS
@@ -52,8 +52,9 @@ $obj-E<gt>B<compileHandler>(OPTIONS)
 
 =over 4
 
-A possible SOAPAction string from the HTTP header.  It might be used
-to identify an incoming message (but probably not).
+A possible SOAPaction string from the HTTP header.  It might be used
+to identify an incoming message (but probably not, because it is against
+the official intent of the header field which is routing only).
 
 =back
 
@@ -75,8 +76,8 @@ user.
 The CODE reference is used to decode the (parsed) XML input message
 into the pure Perl request.  The reference is a READER, created with
 L<XML::Compile::Schema::compile()|XML::Compile::Schema/"Compilers">.  If no input decoder is specified,
-then the handler will be called with the un-decoded XML::LibXML node
-itself.
+then the  callbackhandler will be called with the un-decoded
+XML::LibXML::Document node.
 
 =back
 
@@ -84,10 +85,11 @@ itself.
 
 =over 4
 
-The CODE reference is used to encode the Perl answer structure
-into the output message.  The reference is a WRITER.  created with
+The CODE reference is used to encode the Perl answer structure into the
+output message.  The reference is a WRITER.  created with
 L<XML::Compile::Schema::compile()|XML::Compile::Schema/"Compilers">.  If no output encoder is specified,
-then the handler must return an XML::LibXML document.
+then the callback must return an XML::LibXML::Document, or only
+produce error messages.
 
 =back
 
@@ -96,8 +98,10 @@ then the handler must return an XML::LibXML document.
 =over 4
 
 The identification for this action, for instance used for logging.  When
-the action is created via a WSDL, the portname will be used here.  It is
-a pitty that the portname is not passed in the SOAP message.
+the action is created via a WSDL, the portname will be used here.
+
+It is a pitty that the portname is not passed in the SOAP message,
+because it is not so easy to detect which handler must be called.
 
 =back
 
@@ -105,8 +109,8 @@ a pitty that the portname is not passed in the SOAP message.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.67,
-built on February 08, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.68,
+built on March 14, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

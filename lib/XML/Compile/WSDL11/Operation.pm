@@ -1,13 +1,13 @@
 # Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.03.
+# Pod stripped from pm file by OODoc 1.04.
 use warnings;
 use strict;
 
 package XML::Compile::WSDL11::Operation;
 use vars '$VERSION';
-$VERSION = '0.67';
+$VERSION = '0.68';
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
 use List::Util  'first';
@@ -224,11 +224,10 @@ sub compileClient(@)
 
 sub prepareServer(@)
 {   my ($self, %args) = @_;
-    my ($input, $output);
 
+ ### lot of work to do
     my $soap = $args{soap} or panic "no soap to prepare server";
-
-    ($self->soapAction, $input, $output);
+    undef;
 }
 
 
@@ -287,12 +286,14 @@ sub compileMessages($$$)
       ( ($role eq 'CLIENT' ? 'SENDER' : 'RECEIVER')
       , %$input_parts,  %$fault_parts,
       , style => $use_style
+      , %$args
       );
 
     my $output = $soap->compileMessage
       ( ($role eq 'CLIENT' ? 'RECEIVER' : 'SENDER')
       , %$output_parts, %$fault_parts
       , style => $use_style
+      , %$args
       );
 
     ($input, $output);
@@ -323,7 +324,6 @@ sub collectMessageParts($$$)
         if($self->soapStyle eq 'document')
         {   my $body_parts = $body->{parts} || [];
             $parts{body} = [$self->messageSelectParts($message, @$body_parts)];
-#warn Dumper $body, $body_parts, $parts{body};
         }
         else  # only for RPC?
         {   $self->soapUse($body->{use} || 'literal');  # correct default?

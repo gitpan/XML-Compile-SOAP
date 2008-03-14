@@ -1,16 +1,19 @@
 # Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.03.
+# Pod stripped from pm file by OODoc 1.04.
 use warnings;
 use strict;
 
 package XML::Compile::SOAP::Client;
 use vars '$VERSION';
-$VERSION = '0.67';
+$VERSION = '0.68';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
+
 use XML::Compile::Util qw/unpack_type/;
+use XML::Compile::SOAP::Trace;
+use Time::HiRes        qw/time/;
 
 
 sub new(@) { panic __PACKAGE__." only secundary in multiple inheritance" }
@@ -61,7 +64,6 @@ sub compileClient(@)
         wantarray or return
             UNIVERSAL::isa($ans, 'XML::LibXML::Node') ? $decode->($ans) : $ans;
 
-        $trace{date}   = localtime $start;
         $trace{start}  = $start;
         $trace{encode_elapse} = $trace{transport_start} - $start;
 
@@ -73,7 +75,7 @@ sub compileClient(@)
         $trace{decode_elapse} = $end - $trace{transport_end};
         $trace{elapse} = $end - $start;
 
-        ($dec, \%trace);
+        ($dec, XML::Compile::SOAP::Trace->new(\%trace));
     };
 
     # Outgoing messages

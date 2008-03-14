@@ -23,6 +23,8 @@ lib/XML/Compile/SOAP/Server.pm
 lib/XML/Compile/SOAP/Server.pod
 lib/XML/Compile/SOAP/Tester.pm
 lib/XML/Compile/SOAP/Tester.pod
+lib/XML/Compile/SOAP/Trace.pm
+lib/XML/Compile/SOAP/Trace.pod
 lib/XML/Compile/SOAP/Util.pm
 lib/XML/Compile/SOAP/Util.pod
 lib/XML/Compile/SOAP11.pm
