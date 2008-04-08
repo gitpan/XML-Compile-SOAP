@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::Tester;
 use vars '$VERSION';
-$VERSION = '0.68';
+$VERSION = '0.69';
 
 use XML::Compile::SOAP::Client ();
 

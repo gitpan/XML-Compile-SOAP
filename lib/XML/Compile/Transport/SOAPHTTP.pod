@@ -11,12 +11,12 @@ XML::Compile::Transport::SOAPHTTP - exchange XML via HTTP
 
  use XML::Compile::Transport::SOAPHTTP;
 
- my $transporter = XML::Compile::Transport::SOAPHTTP->new(@options);
- my $http = $transporter->compileClient(@options2);
+ my $http = XML::Compile::Transport::SOAPHTTP->new(@options);
+ my $send = $transporter->compileClient(@options2);
 
  my $call = $wsdl->compileClient
   ( operation => 'some-port-name'
-  , transport => $http
+  , transport => $send
   );
 
  my ($xmlout, $trace) = $call->($xmlin);
@@ -35,14 +35,42 @@ XML::Compile::Transport::SOAPHTTP-E<gt>B<new>(OPTIONS)
 
 =over 4
 
+The C<keep_alive> and C<timeout> options are used when an LWP::UserAgent
+is created, and ignored when you provide such an object.  In the latter
+case, the values for those are inquired such that you can see the setting
+directly from the passed object.
+
+If you need to change UserAgent settings later, you can always directly
+access the LWP::UserAgent object via L<userAgent()|XML::Compile::Transport::SOAPHTTP/"Accessors">.
+
  Option    --Defined in     --Default
  address     XML::Compile::Transport  'localhost'
  charset     XML::Compile::Transport  'utf-8'
+ keep_alive                   <true>
+ timeout                      180
  user_agent                   <created when needed>
 
 . address => URI|ARRAY-of-URI
 
 . charset => STRING
+
+. keep_alive => BOOLEAN
+
+=over 4
+
+When connection can be re-used.
+
+=back
+
+. timeout => SECONDS
+
+=over 4
+
+The maximum time for a single connection before the client will close it.
+The server may close it earlier.  Do not set the timeout too long, because
+you want objects to be cleaned-up.
+
+=back
 
 . user_agent => LWP::UserAgent object
 
@@ -83,7 +111,7 @@ See L<XML::Compile::Transport/"Accessors">
 
 =back
 
-$obj-E<gt>B<userAgent>([AGENT])
+$obj-E<gt>B<userAgent>([AGENT|(undef, OPTIONS)])
 
 =over 4
 
@@ -108,15 +136,15 @@ In SCALAR context, an XML::LibXML parsed tree of the answer message
 is returned.  In LIST context, that answer is followed by a HASH which
 contains trace information.
 
- Option      --Defined in     --Default
- action                         <required>
- header                         <created>
- hook          XML::Compile::Transport  <undef>
- kind          XML::Compile::Transport  'request-response'
- method                         'POST'
- mime_type                      <depends on soap version>
- mpost_id                       42
- soap_version                   'SOAP11'
+ Option   --Defined in     --Default
+ action                      ''
+ header                      <created>
+ hook       XML::Compile::Transport  <undef>
+ kind       XML::Compile::Transport  'request-response'
+ method                      'POST'
+ mime_type                   <depends on soap version>
+ mpost_id                    42
+ soap                        'SOAP11'
 
 . action => URI
 
@@ -154,7 +182,7 @@ to be grouped.
 
 =back
 
-. soap_version => 'SOAP11'|'SOAP12'
+. soap => 'SOAP11'|'SOAP12'|OBJECT
 
 example: create a client
 
@@ -191,8 +219,8 @@ is being created.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.68,
-built on March 14, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.69,
+built on April 08, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

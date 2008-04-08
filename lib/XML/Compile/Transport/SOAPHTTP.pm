@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport::SOAPHTTP;
 use vars '$VERSION';
-$VERSION = '0.68';
+$VERSION = '0.69';
 use base 'XML::Compile::Transport';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -30,7 +30,12 @@ my $http_ext_id = SOAP11ENV;
 sub init($)
 {   my ($self, $args) = @_;
     $self->SUPER::init($args);
-    $self->userAgent($args->{user_agent});
+
+    $self->userAgent
+     ( $args->{user_agent}
+     , keep_alive => (exists $args->{keep_alive} ? $args->{keep_alive} : 1)
+     , timeout => ($args->{timeout} || 180)
+     );
     $self;
 }
 
@@ -38,23 +43,28 @@ sub init($)
 
 
 sub userAgent(;$)
-{   my ($self, $agent) = @_;
+{   my ($self, $agent) = (shift, shift);
     return $self->{user_agent} = $agent
         if defined $agent;
 
     $self->{user_agent}
     ||= LWP::UserAgent->new
          ( requests_redirectable => [ qw/GET HEAD POST M-POST/ ]
+         , parse_head => 0
+         , protocols_allowed => [ qw/http https/ ]
+         , @_
          );
 }
 
 #-------------------------------------------
 
 
+# SUPER::compileClient() calls this method to do the real work
 sub _prepare_call($)
 {   my ($self, $args) = @_;
     my $method   = $args->{method}       || 'POST';
-    my $version  = $args->{soap_version} || 'SOAP11';
+    my $soap     = $args->{soap}         || 'SOAP11';
+    my $version  = ref $soap ? $soap->version : $soap;
     my $mpost_id = $args->{mpost_id}     || 42;
     my $mime     = $args->{mime};
     my $action   = $args->{action}       || '';
@@ -100,6 +110,7 @@ sub _prepare_call($)
     # one as long as possible.
     my $server  = $self->address;
     my $request = HTTP::Request->new($method => $server, $header);
+    $request->protocol('HTTP/1.1');
 
     # Create handler
     # The "content" must be a byte-string, with the utf8 flag

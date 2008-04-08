@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                XML-Compile-SOAP
-version:             0.68
+version:             0.69
 abstract:            XML over SOAP, client side
 license:             perl
 author:              
@@ -14,7 +14,7 @@ requires:
     Test::More:                    0.54
     Test::Pod:                     1.00
     Time::HiRes:                   0
-    XML::Compile:                  0.68
+    XML::Compile:                  0.73
 meta-spec:
     url:     http://module-build.sourceforge.net/META-spec-v1.3.html
     version: 1.3

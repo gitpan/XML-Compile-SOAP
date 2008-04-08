@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '0.68';
+$VERSION = '0.69';
 use base 'XML::Compile';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -98,11 +98,11 @@ sub addWSDL($)
     my $tns  = $spec->{targetNamespace}
         or error __x"WSDL sets no targetNamespace";
 
-    # WSDL 1.1 par 2.1.1 says: WSDL defs all in own name-space
+    # WSDL 1.1 par 2.1.1 says: WSDL def types each in own name-space
     my $index     = $self->{index};
     my $toplevels = $spec->{gr_import} || [];  # silly WSDL structure
     foreach my $toplevel (@$toplevels)
-    {   my ($which, $def) = %$toplevel;   # only one
+    {   my ($which, $def) = %$toplevel;        # always only one
         $index->{$which}{pack_type $tns, $def->{name}} = $def
             if $which =~ m/^(?:service|message|binding|portType)$/;
     }

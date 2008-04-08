@@ -7,11 +7,11 @@ use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '0.68';
+$VERSION = '0.69';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 use XML::Compile         ();
-use XML::Compile::Util   qw/pack_type/;
+use XML::Compile::Util   qw/pack_type type_of_node/;
 use XML::Compile::Schema ();
 
 use Time::HiRes          qw/time/;
@@ -71,6 +71,33 @@ sub compileMessage($@)
     : $direction eq 'RECEIVER' ? $self->receiver(\%args)
     : error __x"message direction is 'SENDER' or 'RECEIVER', not `{dir}'"
          , dir => $direction;
+}
+
+
+sub messageStructure($)
+{   my ($thing, $xml) = @_;
+    my $env = $xml->isa('XML::LibXML::Document') ? $xml->documentElement :$xml;
+
+    my (@header, @body);
+    if(my ($header) = $env->getChildrenByLocalName('Header'))
+    {   @header = map { $_->isa('XML::LibXML::Element') ? type_of_node($_) : ()}
+           $header->childNodes;
+    }
+
+    if(my ($body) = $env->getChildrenByLocalName('Body'))
+    {   @body = map { $_->isa('XML::LibXML::Element') ? type_of_node($_) : () }
+           $body->childNodes;
+    }
+
+    +{ header => \@header
+     , body   => \@body
+     };
+}
+
+
+sub importDefinitions(@)
+{   my $schemas = shift->schemas;
+    $schemas->importDefinitions(@_);
 }
 
 #------------------------------------------------
@@ -302,7 +329,7 @@ sub writerCreateRpcLiteral($)
     my $lit = sub
      { my ($doc, $def) = @_;
        UNIVERSAL::isa($def, 'ARRAY')
-           or error __x"rpc style requires compileClient with rpcin parameters";
+           or error __x"rpc style requires compileClient with rpcin parameters as array";
 
        my ($code, $data) = @$def;
        $code->($doc, $data);
@@ -485,6 +512,9 @@ sub readerParseHeader($)
 
     my $schema = $self->schemas;
     my @h      = @$header;
+    @h % 2
+       and error __x"reader header definition list has odd length";
+
     while(@h)
     {   my ($label, $element) = splice @h, 0, 2;
         my $code = UNIVERSAL::isa($element, 'CODE') ? $element
@@ -503,6 +533,9 @@ sub readerParseBody($)
 
     my $schema = $self->schemas;
     my @b      = @$body;
+    @b % 2
+       and error __x"reader body definition list has odd length";
+
     while(@b)
     {   my ($label, $element) = splice @b, 0, 2;
         my $code = UNIVERSAL::isa($element, 'CODE') ? $element

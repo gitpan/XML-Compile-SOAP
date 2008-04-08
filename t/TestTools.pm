@@ -10,7 +10,7 @@ use lib '../XMLCompile/lib', '../LogReport/lib';
 
 package TestTools;
 use vars '$VERSION';
-$VERSION = '0.68';
+$VERSION = '0.69';
 use base 'Exporter';
 
 use XML::LibXML;

@@ -36,10 +36,15 @@ The export TAG C<:wsdl11> groups the exported WSDL version 1.1 related
 constants C<WSDL11>, C<WSDL11SOAP>, C<WSDL11HTTP>, C<WSDL11MIME>,
 C<WSDL11SOAP12>.
 
+=pod
+
+The export TAG C<:daemon> refers currently only to the constant C<MSEXT>,
+which refers to the MicroSoft Extension Framework namespace.
+
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.68,
-built on March 14, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.69,
+built on April 08, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

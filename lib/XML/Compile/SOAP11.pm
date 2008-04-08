@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11;
 use vars '$VERSION';
-$VERSION = '0.68';
+$VERSION = '0.69';
 use base 'XML::Compile::SOAP';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -43,6 +43,8 @@ sub init($)
     $schemas->importDefinitions($enc);
     $self;
 }
+
+#-----------------------------------
 
 
 sub writerHeaderEnv($$$$)
@@ -92,6 +94,9 @@ sub writerHeaderEnv($$$$)
     $ucode;
 }
 
+#------------------------------------------------
+
+
 sub sender($)
 {   my ($self, $args) = @_;
     my $envns = $self->envelopeNS;
@@ -108,6 +113,9 @@ sub sender($)
 
     $self->SUPER::sender($args);
 }
+
+#------------------------------------------------
+
 
 sub receiver($)
 {   my ($self, $args) = @_;
@@ -141,7 +149,7 @@ sub readerParseFaults($)
         {   my $report  = $reports->{$type} || [];
             if($rules{$type})
             {   ($label, my $do) = @{$rules{$type}};
-                $details = [ map { ($do->($_))[1] } @$report ];
+                $details = [ map { $do->($_) } @$report ];
             }
             else
             {   ($label, $details) = (body => $report);

@@ -7,12 +7,11 @@ use strict;
 
 package XML::Compile::WSDL11::Operation;
 use vars '$VERSION';
-$VERSION = '0.68';
+$VERSION = '0.69';
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
 use List::Util  'first';
 
-use Data::Dumper;  # needs to go away
 use XML::Compile::Util       qw/pack_type unpack_type odd_elements/;
 use XML::Compile::SOAP::Util qw/:wsdl11 SOAP11HTTP/;
 
@@ -128,6 +127,7 @@ sub soapUse(;$)
 sub kind() {shift->{kind}}
 
 
+my ($soap11_client, $soap12_client, %transporters);
 sub compileClient(@)
 {   my ($self, %args) = @_;
 
@@ -139,12 +139,14 @@ sub compileClient(@)
     my ($soap, $version);
     if($soapns eq WSDL11SOAP)
     {   require XML::Compile::SOAP11::Client;
-        $soap    = XML::Compile::SOAP11::Client->new(schemas => $self->schemas);
+        $soap    = $soap11_client
+               ||= XML::Compile::SOAP11::Client->new(schemas => $self->schemas);
         $version = 'SOAP11';
     }
     elsif($soapns eq WSDL11SOAP12)
     {   require XML::Compile::SOAP12::Client;
-        $soap    = XML::Compile::SOAP12::Client->new(schemas => $self->schemas);
+        $soap    = $soap12_client
+               ||= XML::Compile::SOAP12::Client->new(schemas => $self->schemas);
         $version = 'SOAP12';
     }
     else { panic "NameSpace $soapns not supported for WSDL11 operation" }
@@ -197,16 +199,17 @@ sub compileClient(@)
             or error __x"explicitly put 'use {impl}' in your script"
                   , impl => $impl;
 
-        my $transport = $impl->new
-          ( address  => [ $args{endpoint_address} || $self->endPointAddresses ]
-          );
+        my @endpoints = $args{endpoint_address} || $self->endPointAddresses;
+        my $endpoints = join ';', @endpoints;
+        my $transport = $transporters{$impl}{$endpoints}
+                    ||= $impl->new(address => \@endpoints);
 
         $send = $transport->compileClient
-          ( name         => $self->name
-          , kind         => $self->kind
-          , soap_version => $version
-          , action       => $self->soapAction
-          , hook         => $args{transport_hook}
+          ( name     => $self->name
+          , kind     => $self->kind
+          , soap     => $version
+          , action   => $self->soapAction
+          , hook     => $args{transport_hook}
           );
     }
 
@@ -222,12 +225,23 @@ sub compileClient(@)
 }
 
 
-sub prepareServer(@)
+sub compileHandler(@)
 {   my ($self, %args) = @_;
 
- ### lot of work to do
-    my $soap = $args{soap} or panic "no soap to prepare server";
-    undef;
+    my $soap     = $args{soap};
+    my $callback = $args{callback};
+
+    my ($decode, $encode, $selector)
+      = $self->compileMessages(\%args, 'SERVER', $soap);
+
+    $soap->compileHandler
+      ( name      => $self->name
+      , kind      => $self->kind
+      , selector  => $selector
+      , encode    => $encode
+      , decode    => $decode
+      , callback  => $callback
+      );
 }
 
 
@@ -244,19 +258,15 @@ sub canTransport($$)
             or error __x"soap transport binding not found in binding";
 
         my $bind_r   = $self->schemas->compile(READER => $bindtype);
+        my @bindings = map { $bind_r->($_) } @$bindxml;
   
-        my %bindings = map {$bind_r->($_)} @$bindxml;
-        $_->{style} ||= 'document' for values %bindings;
+        $_->{style} ||= 'document' for @bindings;
+        my %bindings;
+        push @{$bindings{$_->{transport}}{$_->{style}}}, $_ for @bindings;
         $self->{trans} = $trans = \%bindings;
     }
 
-    my @proto    = grep {$_->{transport} eq $proto} values %$trans;
-    @proto or return ();
-
-    my $op_style = $self->soapStyle;
-    return $op_style eq $style if defined $op_style; # explicit style
-
-    first {$_->{style} eq $style} @proto;         # the default style
+    $trans->{$proto}{$style};
 }
 
 
@@ -278,7 +288,7 @@ sub compileMessages($$$)
     # only be one part only in rpc-encoded which is capable of it
     # my $encodings = { %$output_enc, %$input_enc, %$fault_enc };
 
-    my $use_style = $self->soapStyle;
+    my $use_style = $self->soapStyle || 'document';
     $use_style .= '-' . $self->soapUse
         if $use_style eq 'rpc';
 
@@ -296,7 +306,10 @@ sub compileMessages($$$)
       , %$args
       );
 
-    ($input, $output);
+    my $filter = $role ne 'SERVER' ? undef
+      : $soap->compileFilter(%$input_parts);
+
+    ($input, $output, $filter);
 }
 
 
@@ -319,9 +332,9 @@ sub collectMessageParts($$$)
     if(my $bind_body = $bind->{"{$soapns}body"})
     {   $bind_body_reader
                ||= $self->schemas->compile(READER => "{$soapns}body");
-        my $body = ($bind_body_reader->($bind_body->[0]))[1];
+        my $body = $bind_body_reader->($bind_body->[0]);
 
-        if($self->soapStyle eq 'document')
+        if(!defined $self->soapStyle || $self->soapStyle eq 'document')
         {   my $body_parts = $body->{parts} || [];
             $parts{body} = [$self->messageSelectParts($message, @$body_parts)];
         }

@@ -117,13 +117,17 @@ which can be created to produce the RPC block (RPC encoded style).
 
 =back
 
-. transport => CODE
+. transport => CODE|OBJECT
 
 =over 4
 
 The CODE reference is produced by an extensions of
-L<XML::Compile::Transport::compileClient()|XML::Compile::Transport/"Handlers">
-(usually L<XML::Compile::Transport::SOAPHTTP::compileClient()|XML::Compile::Transport::SOAPHTTP/"Handlers">.
+L<XML::Compile::Transport::compileClient()|XML::Compile::Transport/"Handlers"> (usually
+L<XML::Compile::Transport::SOAPHTTP::compileClient()|XML::Compile::Transport::SOAPHTTP/"Handlers">.
+
+If you pass a L<XML::Compile::Transport::SOAPHTTP|XML::Compile::Transport::SOAPHTTP> object, the
+compileClient will be called for you.  This is possible in case you do
+not have any configuration options to pass with the compileClient().
 
 =back
 
@@ -535,8 +539,8 @@ equivalent to the C<%data_in> from the client.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.68,
-built on March 14, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.69,
+built on April 08, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 
