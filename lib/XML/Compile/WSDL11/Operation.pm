@@ -7,12 +7,12 @@ use strict;
 
 package XML::Compile::WSDL11::Operation;
 use vars '$VERSION';
-$VERSION = '0.70';
+$VERSION = '0.71';
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
 use List::Util  'first';
 
-use XML::Compile::Util       qw/pack_type unpack_type odd_elements/;
+use XML::Compile::Util       qw/pack_type unpack_type/;
 use XML::Compile::SOAP::Util qw/:wsdl11 SOAP11HTTP/;
 
 
@@ -349,7 +349,7 @@ sub collectMessageParts($$$)
 
         my @headers = map {$bind_header_reader->($_)} @$bind_headers;
 
-        foreach my $header (odd_elements @headers)
+        foreach my $header (@headers)
         {   my $use = $header->{use}
                 or error __x"message {name} header requires use attribute"
                      , name => $msgname;

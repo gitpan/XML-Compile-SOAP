@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport::SOAPHTTP;
 use vars '$VERSION';
-$VERSION = '0.70';
+$VERSION = '0.71';
 use base 'XML::Compile::Transport';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -113,19 +113,15 @@ sub _prepare_call($)
     $request->protocol('HTTP/1.1');
 
     # Create handler
-    # The "content" must be a byte-string, with the utf8 flag
-    # cleared (if present); therefore we have to call encode().
 
     my $hook = $args->{hook};
 
       $hook
     ? sub  # hooked code
       { my $trace = $_[1];
-        if(utf8::is_utf8($_[0]))
-        {   my $u = encode($charset, $_[0]);
-            $request->content($u);
-        }
-        else { $request->content($_[0]) }
+        my $u = encode($charset, $_[0]);
+        $request->content($u);
+        { use bytes; $request->header('Content-Length' => length $u); }
  
         $trace->{http_request}  = $request;
         $trace->{action}        = $action;
@@ -146,11 +142,9 @@ sub _prepare_call($)
 
     : sub  # normal code
       { my $trace = $_[1];
-        if(utf8::is_utf8($_[0]))
-        {   my $u = encode($charset, $_[0]);
-            $request->content($u);
-        }
-        else { $request->content($_[0]) }
+        my $u = encode($charset, $_[0]);
+        $request->content($u);
+        { use bytes; $request->header('Content-Length' => length $u); }
 
         $trace->{http_request}  = $request;
 
