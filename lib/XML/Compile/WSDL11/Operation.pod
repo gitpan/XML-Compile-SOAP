@@ -188,6 +188,10 @@ will return then answer, or C<undef> in case of failure.  An 'one-way'
 operation with return C<undef> in case of failure, and a true value
 when successfull.
 
+Besides the OPTIONS listed, you can also specify anything which is
+accepted by L<XML::Compile::Schema::compile()|XML::Compile::Schema/"Compilers">, like
+C<< sloppy_integers => 1 >> or hooks.
+
  Option          --Default
  endpoint_address  <from WSDL>
  protocol          new(protocol)|<from soapAction>
@@ -325,8 +329,8 @@ all are all returned.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.71,
-built on April 12, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.72,
+built on April 16, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 

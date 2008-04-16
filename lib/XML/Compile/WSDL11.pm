@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '0.71';
+$VERSION = '0.72';
 use base 'XML::Compile';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -36,7 +36,7 @@ sub init($)
 {   my ($self, $args) = @_;
     $self->SUPER::init($args);
 
-    $self->{schemas} = XML::Compile::Schema->new(undef, %$args);
+    $self->{schemas} = $args->{schemas} || XML::Compile::Schema->new;
     $self->{index}   = {};
     $self->{wsdl_ns} = $args->{wsdl_namespace};
 
@@ -56,15 +56,24 @@ sub wsdlNamespace(;$)
 
 sub addWSDL($)
 {   my ($self, $data) = @_;
+
     defined $data or return;
     my ($node, %details) = $self->dataToXML($data)
         or return $self;
+
+    my $schemas = $self->schemas;
+
+    # Collect the user schema
 
     $node    = $node->documentElement
         if $node->isa('XML::LibXML::Document');
 
     $node->localName eq 'definitions'
         or error __x"root element for WSDL is not 'definitions'";
+
+    $schemas->importDefinitions($node, details => \%details);
+
+    # Collect the WSDL schemata
 
     my $wsdlns  = $node->namespaceURI;
     my $corens  = $self->wsdlNamespace || $self->wsdlNamespace($wsdlns);
@@ -73,14 +82,11 @@ sub addWSDL($)
         or error __x"wsdl in namespace {wsdlns}, where already using {ns}"
                , wsdlns => $wsdlns, ns => $corens;
 
-    my $schemas = $self->schemas;
-
-    # take all defintions from the WSDL, including the types
-    $schemas->importDefinitions($wsdlns, %details);
-
     $wsdlns eq WSDL11
         or error __x"don't known how to handle {wsdlns} WSDL files"
                , wsdlns => $wsdlns;
+
+    $schemas->importDefinitions($wsdlns, %details);
 
     my %hook_kind =
      ( type         => pack_type($wsdlns, 'tOperation')

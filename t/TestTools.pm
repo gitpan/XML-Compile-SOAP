@@ -10,7 +10,7 @@ use lib '../XMLCompile/lib', '../LogReport/lib';
 
 package TestTools;
 use vars '$VERSION';
-$VERSION = '0.71';
+$VERSION = '0.72';
 use base 'Exporter';
 
 use XML::LibXML;
@@ -260,8 +260,8 @@ sub test_rw($$$$;$$)
 
 sub compare_xml($$;$)
 {   my ($tree, $expect, $msg) = @_;
-    my $dump = ref $tree ? $tree->toString : $tree;
 
+    my $dump = ref $tree ? $tree->toString : $tree;
     for($dump, $expect)
     {   defined $_ or next;
         s/\>\s+/>/gs;

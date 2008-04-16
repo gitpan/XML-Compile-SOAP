@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '0.71';
+$VERSION = '0.72';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 use XML::Compile         ();
@@ -119,6 +119,7 @@ sub sender($)
     my ($header, $hlabels) = $self->writerCreateHeader
       ( $args->{header} || [], $allns
       , $args->{mustUnderstand}, $args->{destination}
+      , $args
       );
 
     # Translate body (3 options)
@@ -136,7 +137,7 @@ sub sender($)
     {   error __x"unknown soap message style `{style}'", style => $style;
     }
 
-    my ($body, $blabels) = $self->writerCreateBody($bodydef, $allns);
+    my ($body, $blabels) = $self->writerCreateBody($bodydef, $allns, $args);
 
     # Translate body faults
 
@@ -157,6 +158,7 @@ sub sender($)
 
     my $envelope = $self->schemas->compile
       ( WRITER => pack_type($envns, 'Envelope')
+      , %$args
       , hooks  => \@hooks
       , output_namespaces    => $allns
       , elements_qualified   => 1
@@ -261,7 +263,7 @@ sub writerEncstyleHook($)
 
 
 sub writerCreateHeader($$$$)
-{   my ($self, $header, $allns, $understand, $destination) = @_;
+{   my ($self, $header, $allns, $understand, $destination, $opts) = @_;
     my (@rules, @hlabels);
     my $schema      = $self->schemas;
     my %destination = ref $destination eq 'ARRAY' ? @$destination : ();
@@ -276,7 +278,7 @@ sub writerCreateHeader($$$$)
 
         my $code = UNIVERSAL::isa($element,'CODE') ? $element
          : $schema->compile
-           ( WRITER => $element
+           ( WRITER => $element, %$opts
            , output_namespaces  => $allns
            , include_namespaces => 0
            , elements_qualified => 'TOP'
@@ -301,7 +303,7 @@ sub writerCreateHeader($$$$)
 
 
 sub writerCreateBody($$)
-{   my ($self, $body, $allns) = @_;
+{   my ($self, $body, $allns, $opts) = @_;
     my (@rules, @blabels);
     my $schema = $self->schemas;
     my @b      = @$body;
@@ -310,7 +312,7 @@ sub writerCreateBody($$)
 
         my $code = UNIVERSAL::isa($element, 'CODE') ? $element
         : $schema->compile
-          ( WRITER => $element
+          ( WRITER => $element, %$opts
           , output_namespaces  => $allns
           , include_namespaces => 0
           , elements_qualified => 'TOP'
@@ -441,8 +443,8 @@ sub receiver($)
 #   my @roles  = ref $roles eq 'ARRAY' ? @$roles : $roles;
 
     my $faultdec = $self->readerParseFaults($args->{faults} || []);
-    my $header   = $self->readerParseHeader($args->{header} || []);
-    my $body     = $self->readerParseBody($bodydef);
+    my $header   = $self->readerParseHeader($args->{header} || [], $args);
+    my $body     = $self->readerParseBody($bodydef, $args);
 
     my $envns    = $self->envelopeNS;
     my @hooks    = 
@@ -506,8 +508,8 @@ sub readerHook($$$@)
 }
 
 
-sub readerParseHeader($)
-{   my ($self, $header) = @_;
+sub readerParseHeader($$)
+{   my ($self, $header, $opts) = @_;
     my @rules;
 
     my $schema = $self->schemas;
@@ -518,7 +520,10 @@ sub readerParseHeader($)
     while(@h)
     {   my ($label, $element) = splice @h, 0, 2;
         my $code = UNIVERSAL::isa($element, 'CODE') ? $element
-          : $schema->compile(READER => $element, anyElement => 'TAKE_ALL');
+          : $schema->compile
+              ( READER => $element, %$opts
+              , anyElement => 'TAKE_ALL'
+              );
         push @rules, [$label, $element, $code];
 
     }
@@ -527,8 +532,8 @@ sub readerParseHeader($)
 }
 
 
-sub readerParseBody($)
-{   my ($self, $body) = @_;
+sub readerParseBody($$$)
+{   my ($self, $body, $opts) = @_;
     my @rules;
 
     my $schema = $self->schemas;
@@ -539,7 +544,10 @@ sub readerParseBody($)
     while(@b)
     {   my ($label, $element) = splice @b, 0, 2;
         my $code = UNIVERSAL::isa($element, 'CODE') ? $element
-          : $schema->compile(READER => $element, anyElement => 'TAKE_ALL');
+          : $schema->compile
+              ( READER => $element, %$opts
+              , anyElement => 'TAKE_ALL'
+              );
         push @rules, [$label, $element, $code];
     }
 

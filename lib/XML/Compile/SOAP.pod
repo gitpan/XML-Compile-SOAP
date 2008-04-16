@@ -231,6 +231,11 @@ the type where it belongs to.  The element of an entry (the value) is
 defined as an C<any> element in the schema, and therefore you will need
 to explicitly specify the element to be processed.
 
+As OPTIONS, you can specify any listed here, but also anything which is
+accepted by L<XML::Compile::Schema::compile()|XML::Compile::Schema/"Compilers">, like
+C<< sloppy_integers => 1 >> and hooks.  These are applied to all header
+and body elements (not to the SOAP wrappers)
+
  Option        --Default
  body            []
  destination     []
@@ -374,7 +379,7 @@ $obj-E<gt>B<sender>(ARGS)
 
 =back
 
-$obj-E<gt>B<writerCreateBody>(BODY-DEFS, NAMESPACE-TABLE)
+$obj-E<gt>B<writerCreateBody>(BODY-DEFS, NAMESPACE-TABLE, OPTS)
 
 =over 4
 
@@ -386,7 +391,7 @@ $obj-E<gt>B<writerCreateFault>(FAULT-DEFS, NAMESPACE-TABLE, FAULTTYPE)
 
 =back
 
-$obj-E<gt>B<writerCreateHeader>(HEADER-DEFS, NS-TABLE, UNDERSTAND, DESTINATION)
+$obj-E<gt>B<writerCreateHeader>(HEADER-DEFS, NS-TABLE, UNDERSTAND, DESTINATION, OPTS)
 
 =over 4
 
@@ -434,7 +439,7 @@ $obj-E<gt>B<readerHook>(NAMESPACE, LOCAL, ACTIONS)
 
 =back
 
-$obj-E<gt>B<readerParseBody>(BODYDEF)
+$obj-E<gt>B<readerParseBody>(BODYDEF, OPTS)
 
 =over 4
 
@@ -446,7 +451,7 @@ $obj-E<gt>B<readerParseFaults>(FAULTSDEF)
 
 =back
 
-$obj-E<gt>B<readerParseHeader>(HEADERDEF)
+$obj-E<gt>B<readerParseHeader>(HEADERDEF, OPTS)
 
 =over 4
 
@@ -708,8 +713,8 @@ Net::Server, which may have some portability restrictions.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.71,
-built on April 12, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.72,
+built on April 16, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 =head1 LICENSE
 
