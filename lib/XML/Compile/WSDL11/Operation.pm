@@ -7,7 +7,8 @@ use strict;
 
 package XML::Compile::WSDL11::Operation;
 use vars '$VERSION';
-$VERSION = '0.72';
+$VERSION = '0.73';
+
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
 use List::Util  'first';
@@ -188,8 +189,8 @@ sub compileClient(@)
     {   my $impl = 'XML::Compile::Transport::SOAPHTTP';
  
         $proto eq SOAP11HTTP
-           or error __x"SORRY: only transport of HTTP implemented, not {protocol}"
-               , protocol => $proto;
+           or error __x"only transport of HTTP implemented, not {protocol}"
+                , protocol => $proto;
 
         # this is an optimization thing: often, the client and server will
         # be forking daemons: you do not want to load the module in each

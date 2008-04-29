@@ -7,7 +7,8 @@ use strict;
 
 package XML::Compile::Transport;
 use vars '$VERSION';
-$VERSION = '0.72';
+$VERSION = '0.73';
+
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 
 use XML::LibXML ();

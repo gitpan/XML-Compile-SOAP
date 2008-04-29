@@ -5,9 +5,10 @@
 use warnings;
 use strict;
 
-package XML::Compile::SOAP;  #!!!
+package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '0.72';
+$VERSION = '0.73';
+  #!!!
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 use List::Util qw/min first/;
