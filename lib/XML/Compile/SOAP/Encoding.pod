@@ -262,6 +262,7 @@ called for you.
  Option    --Default
  doc         <required>
  namespaces  {}
+ prefixes    {}
 
 . doc => XML::LibXML::Document
 
@@ -269,7 +270,15 @@ called for you.
 
 =over 4
 
-Like L<XML::Compile::Schema::compile(output_namespaces)|XML::Compile::Schema/"Compilers">, this can
+Pre release 0.74 name for option C<prefixes>.
+
+=back
+
+. prefixes => HASH|ARRAY
+
+=over 4
+
+Like L<XML::Compile::Schema::compile(prefixes)|XML::Compile::Schema/"Compilers">, this can
 be a HASH (see example) or an ARRAY with prefix-uri pairs.
 
 =back
@@ -278,10 +287,10 @@ example:
 
  my %ns;
  $ns{$MYNS} = {uri => $MYNS, prefix => 'm'};
- $soap->startEncoding(doc => $doc, namespaces => \%ns);
+ $soap->startEncoding(doc => $doc, prefixes => \%ns);
 
  # or
- $soap->startEncoding(doc => $doc, namespaces => [ m => $MYNS ]);
+ $soap->startEncoding(doc => $doc, prefixes => [ m => $MYNS ]);
 
 =back
 
@@ -388,18 +397,21 @@ an easily accessible output tree.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.73,
-built on April 29, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
-All modules in this suite:
-L</XML::Compile>,
-L</XML::Compile::SOAP>,
-L</XML::Compile::SOAP::Daemon>,
-L</XML::Compile::Tester>,
-L</XML::Compile::Dumper>.
+This module is part of XML-Compile-SOAP distribution version 0.74,
+built on July 18, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
-Please post questions or ideas to
-F<http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/xml-compile|the mailinglist>
-For life contact with other developers, visit the #xml-compile channal on IRC.
+All modules in this suite:
+L<XML::Compile>,
+L<XML::Compile::SOAP>,
+L<XML::Compile::SOAP::Daemon>,
+L<XML::Compile::Tester>,
+L<XML::Compile::Cache>,
+L<XML::Compile::Dumper>.
+
+Please post questions or ideas to the mailinglist at
+F<http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/xml-compile>
+For life contact with other developers, visit the C<#xml-compile> channel
+on C<irc.perl.org>.
 
 =head1 LICENSE
 

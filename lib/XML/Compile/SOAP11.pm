@@ -1,13 +1,13 @@
 # Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.04.
+# Pod stripped from pm file by OODoc 1.05.
 use warnings;
 use strict;
 
 package XML::Compile::SOAP11;
 use vars '$VERSION';
-$VERSION = '0.73';
+$VERSION = '0.74';
 
 use base 'XML::Compile::SOAP';
 
@@ -58,9 +58,9 @@ sub writerHeaderEnv($$$$)
     if($understand)
     {   my $u_w = $self->{soap11_u_w} ||=
           $schema->compile
-            ( WRITER => pack_type($envns, 'mustUnderstand')
-            , output_namespaces    => $allns
-            , include_namespaces   => 0
+            ( WRITER   => pack_type($envns, 'mustUnderstand')
+            , prefixes => $allns
+            , include_namespaces => 0
             );
 
         $ucode =
@@ -77,9 +77,9 @@ sub writerHeaderEnv($$$$)
 
         my $a_w = $self->{soap11_a_w} ||=
           $schema->compile
-            ( WRITER => pack_type($envns, 'actor')
-            , output_namespaces    => $allns
-            , include_namespaces   => 0
+            ( WRITER   => pack_type($envns, 'actor')
+            , prefixes => $allns
+            , include_namespaces => 0
             );
 
         return

@@ -1,7 +1,7 @@
 # Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.04.
+# Pod stripped from pm file by OODoc 1.05.
 # This is an exerpt of the script you need you use username/password
 # login with the WS-Security specification.
 #

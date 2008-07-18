@@ -1,13 +1,13 @@
 # Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.04.
+# Pod stripped from pm file by OODoc 1.05.
 use warnings;
 use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '0.73';
+$VERSION = '0.74';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -50,7 +50,7 @@ sub schemaNS()   {shift->{schemans}}
 sub schemaInstanceNS() {shift->{schemains}}
 
 
-sub schemas()    {shift->{schemas}}
+sub schemas() {shift->{schemas}}
 
 
 sub prefixPreferences($$;$)
@@ -161,7 +161,7 @@ sub sender($)
       ( WRITER => pack_type($envns, 'Envelope')
       , %$args
       , hooks  => \@hooks
-      , output_namespaces    => $allns
+      , prefixes    => $allns
       , elements_qualified   => 1
       , attributes_qualified => 1
       );
@@ -240,7 +240,7 @@ sub writerEncstyleHook($)
     my $envns   = $self->envelopeNS;
     my $style_w = $self->schemas->compile
       ( WRITER => pack_type($envns, 'encodingStyle')
-      , output_namespaces    => $allns
+      , prefixes    => $allns
       , include_namespaces   => 0
       , attributes_qualified => 1
       );
@@ -280,7 +280,7 @@ sub writerCreateHeader($$$$)
         my $code = UNIVERSAL::isa($element,'CODE') ? $element
          : $schema->compile
            ( WRITER => $element, %$opts
-           , output_namespaces  => $allns
+           , prefixes  => $allns
            , include_namespaces => 0
            , elements_qualified => 'TOP'
            );
@@ -314,7 +314,7 @@ sub writerCreateBody($$)
         my $code = UNIVERSAL::isa($element, 'CODE') ? $element
         : $schema->compile
           ( WRITER => $element, %$opts
-          , output_namespaces  => $allns
+          , prefixes  => $allns
           , include_namespaces => 0
           , elements_qualified => 'TOP'
           );
@@ -373,7 +373,7 @@ sub writerCreateRpcEncoded($)
        # results there may be problems with multiple body elements.
        $top->setAttribute("xmlns:$_->{prefix}", $_->{uri})
            for sort {$a->{prefix} cmp $b->{prefix}}
-                   values %{$enc->{namespaces}};
+                   values %{$enc->{prefixes}};
 
        @body;
      };
@@ -388,8 +388,8 @@ sub writerCreateFault($$$)
 
     my $schema = $self->schemas;
     my $fault  = $schema->compile
-      ( WRITER => $faulttype
-      , output_namespaces  => $allns
+      ( WRITER   => $faulttype
+      , prefixes => $allns
       , include_namespaces => 0
       , elements_qualified => 'TOP'
       );
@@ -398,8 +398,8 @@ sub writerCreateFault($$$)
     while(@f)
     {   my ($label, $type) = splice @f, 0, 2;
         my $details = $schema->compile
-          ( WRITER => $type
-          , output_namespaces  => $allns
+          ( WRITER   => $type
+          , prefixes => $allns
           , include_namespaces => 0
           , elements_qualified => 'TOP'
           );
@@ -459,6 +459,7 @@ sub receiver($)
      , hooks  => \@hooks
      , anyElement   => 'TAKE_ALL'
      , anyAttribute => 'TAKE_ALL'
+     , elements_qualified => 'ALL'
      );
 
     sub
@@ -523,6 +524,7 @@ sub readerParseHeader($$)
         my $code = UNIVERSAL::isa($element, 'CODE') ? $element
           : $schema->compile
               ( READER => $element, %$opts
+              , elements_qualified => 'TOP'
               , anyElement => 'TAKE_ALL'
               );
         push @rules, [$label, $element, $code];
@@ -547,6 +549,7 @@ sub readerParseBody($$$)
         my $code = UNIVERSAL::isa($element, 'CODE') ? $element
           : $schema->compile
               ( READER => $element, %$opts
+              , elements_qualified => 'TOP'
               , anyElement => 'TAKE_ALL'
               );
         push @rules, [$label, $element, $code];
@@ -591,7 +594,7 @@ sub readerEncstyleHook()
 }
 
 #------------------------------------------------
-
+# Implemented in XML::Compile::SOAP::Encoding;
 
 sub startEncoding(@)
 {   my ($self, %args) = @_;

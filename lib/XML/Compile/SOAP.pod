@@ -352,9 +352,9 @@ $obj-E<gt>B<importDefinitions>(XMLDATA, OPTIONS)
 =over 4
 
 Add definitions to the schema.  Simply calls
-L<XML::Compile::Schema::importDefinitions()|XML::Compile::Schema/"Accessors"> for this SOAP object's
+L<XML::Compile::Schema::importDefinitions()|XML::Compile::Schema/"Administration"> for this SOAP object's
 schema with all the parameters provided.  XMLDATA can be everything
-accepted by L<XML::Compile::dataToXML()|XML::Compile/"Read XML"> plus an ARRAY of these things.
+accepted by L<XML::Compile::dataToXML()|XML::Compile/"Compilers"> plus an ARRAY of these things.
 
 =back
 
@@ -460,134 +460,6 @@ $obj-E<gt>B<readerParseHeader>(HEADERDEF, OPTS)
 $obj-E<gt>B<receiver>(ARGS)
 
 =over 4
-
-=back
-
-=head2 Transcoding
-
-SOAP defines encodings, especially for SOAP-RPC.
-
-=head3 Encoding
-
-$obj-E<gt>B<array>((NAME|undef), ITEM_TYPE, ARRAY-of-ELEMENTS, OPTIONS)
-
-=over 4
-
-See L<XML::Compile::SOAP::Encoding/"Encoding">
-
-=back
-
-$obj-E<gt>B<element>(TYPE, NAME, VALUE)
-
-=over 4
-
-See L<XML::Compile::SOAP::Encoding/"Encoding">
-
-=back
-
-$obj-E<gt>B<enc>(LOCAL, VALUE, [ID])
-
-=over 4
-
-See L<XML::Compile::SOAP::Encoding/"Encoding">
-
-=back
-
-$obj-E<gt>B<encAddNamespace>(PAIRS)
-
-=over 4
-
-See L<XML::Compile::SOAP::Encoding/"Encoding">
-
-=back
-
-$obj-E<gt>B<encAddNamespaces>(PAIRS)
-
-=over 4
-
-See L<XML::Compile::SOAP::Encoding/"Encoding">
-
-=back
-
-$obj-E<gt>B<href>(NAME, ELEMENT, [ID])
-
-=over 4
-
-See L<XML::Compile::SOAP::Encoding/"Encoding">
-
-=back
-
-$obj-E<gt>B<multidim>((NAME|undef), ITEM_TYPE, ARRAY-of-ELEMENTS, OPTIONS)
-
-=over 4
-
-See L<XML::Compile::SOAP::Encoding/"Encoding">
-
-=back
-
-$obj-E<gt>B<nil>([TYPE], NAME)
-
-=over 4
-
-See L<XML::Compile::SOAP::Encoding/"Encoding">
-
-=back
-
-$obj-E<gt>B<prefixed>(TYPE|(NAMESPACE,LOCAL))
-
-=over 4
-
-See L<XML::Compile::SOAP::Encoding/"Encoding">
-
-=back
-
-$obj-E<gt>B<startEncoding>(OPTIONS)
-
-=over 4
-
-See L<XML::Compile::SOAP::Encoding/"Encoding">
-
-=back
-
-$obj-E<gt>B<struct>(TYPE, CHILDS)
-
-=over 4
-
-See L<XML::Compile::SOAP::Encoding/"Encoding">
-
-=back
-
-$obj-E<gt>B<typed>(TYPE, NAME, VALUE)
-
-=over 4
-
-See L<XML::Compile::SOAP::Encoding/"Encoding">
-
-=back
-
-=head3 Decoding
-
-$obj-E<gt>B<dec>(XMLNODES)
-
-=over 4
-
-See L<XML::Compile::SOAP::Encoding/"Decoding">
-
-=back
-
-$obj-E<gt>B<decSimplify>(TREE, OPTIONS)
-
-=over 4
-
-See L<XML::Compile::SOAP::Encoding/"Decoding">
-
-=back
-
-$obj-E<gt>B<startDecoding>(OPTIONS)
-
-=over 4
-
-See L<XML::Compile::SOAP::Encoding/"Decoding">
 
 =back
 
@@ -713,18 +585,21 @@ Net::Server, which may have some portability restrictions.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.73,
-built on April 29, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
-All modules in this suite:
-L</XML::Compile>,
-L</XML::Compile::SOAP>,
-L</XML::Compile::SOAP::Daemon>,
-L</XML::Compile::Tester>,
-L</XML::Compile::Dumper>.
+This module is part of XML-Compile-SOAP distribution version 0.74,
+built on July 18, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
-Please post questions or ideas to
-F<http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/xml-compile|the mailinglist>
-For life contact with other developers, visit the #xml-compile channal on IRC.
+All modules in this suite:
+L<XML::Compile>,
+L<XML::Compile::SOAP>,
+L<XML::Compile::SOAP::Daemon>,
+L<XML::Compile::Tester>,
+L<XML::Compile::Cache>,
+L<XML::Compile::Dumper>.
+
+Please post questions or ideas to the mailinglist at
+F<http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/xml-compile>
+For life contact with other developers, visit the C<#xml-compile> channel
+on C<irc.perl.org>.
 
 =head1 LICENSE
 

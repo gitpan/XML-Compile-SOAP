@@ -60,7 +60,7 @@ XML::Compile::WSDL11-E<gt>B<new>(XML, OPTIONS)
 =over 4
 
 The XML is the WSDL file, which is anything accepted by
-L<XML::Compile::dataToXML()|XML::Compile/"Read XML">.  All options are also passed
+L<XML::Compile::dataToXML()|XML::Compile/"Compilers">.  All options are also passed
 to create an internal L<XML::Compile::Schema|XML::Compile::Schema> object.  See
 L<XML::Compile::Schema::new()|XML::Compile::Schema/"Constructors">
 
@@ -87,27 +87,9 @@ is used.
 
 =head2 Accessors
 
-$obj-E<gt>B<addSchemaDirs>(DIRECTORIES|PACKAGE)
+$obj-E<gt>B<addSchemaDirs>(DIRECTORIES|FILENAME)
 
-XML::Compile::WSDL11-E<gt>B<addSchemaDirs>(DIRECTORIES|PACKAGE)
-
-=over 4
-
-See L<XML::Compile/"Accessors">
-
-=back
-
-$obj-E<gt>B<findSchemaFile>(FILENAME)
-
-=over 4
-
-See L<XML::Compile/"Accessors">
-
-=back
-
-$obj-E<gt>B<knownNamespace>(NAMESPACE|PAIRS)
-
-XML::Compile::WSDL11-E<gt>B<knownNamespace>(NAMESPACE|PAIRS)
+XML::Compile::WSDL11-E<gt>B<addSchemaDirs>(DIRECTORIES|FILENAME)
 
 =over 4
 
@@ -134,23 +116,41 @@ document root element is defined.
 
 =back
 
-=head2 Read XML
+=head2 Compilers
 
 $obj-E<gt>B<dataToXML>(NODE|REF-XML-STRING|XML-STRING|FILENAME|FILEHANDLE|KNOWN)
 
 =over 4
 
-See L<XML::Compile/"Read XML">
+See L<XML::Compile/"Compilers">
 
 =back
 
-=head2 Filters
+=head2 Administration
+
+$obj-E<gt>B<findSchemaFile>(FILENAME)
+
+=over 4
+
+See L<XML::Compile/"Administration">
+
+=back
+
+$obj-E<gt>B<knownNamespace>(NAMESPACE|PAIRS)
+
+XML::Compile::WSDL11-E<gt>B<knownNamespace>(NAMESPACE|PAIRS)
+
+=over 4
+
+See L<XML::Compile/"Administration">
+
+=back
 
 $obj-E<gt>B<walkTree>(NODE, CODE)
 
 =over 4
 
-See L<XML::Compile/"Filters">
+See L<XML::Compile/"Administration">
 
 =back
 
@@ -160,7 +160,7 @@ $obj-E<gt>B<addWSDL>(XMLDATA)
 
 =over 4
 
-Some XMLDATA, accepted by L<XML::Compile::dataToXML()|XML::Compile/"Read XML"> is provided,
+Some XMLDATA, accepted by L<XML::Compile::dataToXML()|XML::Compile/"Compilers"> is provided,
 which should represent the top-level of a (partial) WSDL document.
 The specification can be spread over multiple files, which each have a
 C<definition> root element.
@@ -375,18 +375,21 @@ Error: don't known how to interpret XML data
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.73,
-built on April 29, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
-All modules in this suite:
-L</XML::Compile>,
-L</XML::Compile::SOAP>,
-L</XML::Compile::SOAP::Daemon>,
-L</XML::Compile::Tester>,
-L</XML::Compile::Dumper>.
+This module is part of XML-Compile-SOAP distribution version 0.74,
+built on July 18, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
-Please post questions or ideas to
-F<http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/xml-compile|the mailinglist>
-For life contact with other developers, visit the #xml-compile channal on IRC.
+All modules in this suite:
+L<XML::Compile>,
+L<XML::Compile::SOAP>,
+L<XML::Compile::SOAP::Daemon>,
+L<XML::Compile::Tester>,
+L<XML::Compile::Cache>,
+L<XML::Compile::Dumper>.
+
+Please post questions or ideas to the mailinglist at
+F<http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/xml-compile>
+For life contact with other developers, visit the C<#xml-compile> channel
+on C<irc.perl.org>.
 
 =head1 LICENSE
 

@@ -1,13 +1,13 @@
 # Copyrights 2007-2008 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.04.
+# Pod stripped from pm file by OODoc 1.05.
 use warnings;
 use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '0.73';
+$VERSION = '0.74';
   #!!!
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -23,7 +23,7 @@ sub _init_encoding($)
     $doc && UNIVERSAL::isa($doc, 'XML::LibXML::Document')
         or error __x"encoding required an XML document to work with";
 
-    my $ns = $args->{namespaces} || {};
+    my $ns = $args->{prefixes} || $args->{namespaces} || {};
     if(ref $ns eq 'ARRAY')
     {   my @ns = @$ns;
         $ns    = {};
@@ -33,7 +33,7 @@ sub _init_encoding($)
         }
     }
 
-    $args->{namespaces} = $ns;
+    $args->{prefixes} = $ns;
     $self->{enc} = $args;
 
     $self->encAddNamespaces
@@ -46,12 +46,12 @@ sub _init_encoding($)
 
 
 sub encAddNamespaces(@)
-{   my $ns = shift->{enc}{namespaces};
+{   my $prefs = shift->{enc}{prefixes};
     while(@_)
     {   my ($prefix, $uri) = (shift, shift);
-        $ns->{$uri} = {uri => $uri, prefix => $prefix};
+        $prefs->{$uri} = {uri => $uri, prefix => $prefix};
     }
-    $ns;
+    $prefs;
 }
 
 sub encAddNamespace(@) { shift->encAddNamespaces(@_) }
@@ -62,7 +62,7 @@ sub prefixed($;$)
     my ($ns, $local) = @_==2 ? @_ : unpack_type $_[0];
     length $ns or return $local;
 
-    my $def  =  $self->{enc}{namespaces}{$ns}
+    my $def  =  $self->{enc}{prefixes}{$ns}
         or error __x"namespace prefix for your {ns} not defined", ns => $ns;
 
     $def->{prefix}.':'.$local;
@@ -75,8 +75,8 @@ sub enc($$$)
     my $type  = pack_type $self->encodingNS, $local;
 
     my $write = $self->{writer}{$type} ||= $self->schemas->compile
-      ( WRITER => $type
-      , output_namespaces  => $enc->{namespaces}
+      ( WRITER   => $type
+      , prefixes => $enc->{prefixes}
       , elements_qualified => 1
       , include_namespaces => 0
       );
@@ -134,8 +134,8 @@ sub element($$$)
 
     my $el  = $doc->createElement($name);
     my $write = $self->{writer}{$type} ||= $self->schemas->compile
-      ( WRITER => $type
-      , output_namespaces  => $enc->{namespaces}
+      ( WRITER   => $type
+      , prefixes => $enc->{prefixes}
       , include_namespaces => 0
       );
 

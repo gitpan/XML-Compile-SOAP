@@ -4,6 +4,23 @@
 TODO:
 - fix test t/30charset.t
 
+version 0.74: Fri Jul 18 22:01:24 CEST 2008
+
+	Fixes:
+
+	- Reading SOAP failed, because improved strictness of XML::Compile
+	  [Jason Tang]
+
+	Changes:
+
+	- require XML::Compile 0.87, which renames option output_namespaces
+	  into prefixes.
+
+	Improvements:
+
+	- rename encoder option namespaces into prefixes.  Old name still
+	  available.
+
 version 0.73: Tue Apr 29 18:59:42 CEST 2008
 
 	Changes:
