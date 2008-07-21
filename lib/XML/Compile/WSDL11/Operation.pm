@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11::Operation;
 use vars '$VERSION';
-$VERSION = '0.74';
+$VERSION = '0.75';
 
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';

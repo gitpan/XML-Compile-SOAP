@@ -4,6 +4,12 @@
 TODO:
 - fix test t/30charset.t
 
+version 0.75: Mon Jul 21 09:17:10 CEST 2008
+
+	Fixes:
+
+	- Requires XML::Compile 0.90. Cpantesters [Martin Kutter]
+
 version 0.74: Fri Jul 18 22:01:24 CEST 2008
 
 	Fixes:

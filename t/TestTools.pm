@@ -6,11 +6,11 @@ use warnings;
 use strict;
 
 # test environment at home: unpublished XML::Compile
-use lib '../XMLCompile/lib', '../LogReport/lib';
+use lib '../XMLCompile/lib', '../LogReport/lib', '../XMLTester/lib';
 
 package TestTools;
 use vars '$VERSION';
-$VERSION = '0.74';
+$VERSION = '0.75';
 
 use base 'Exporter';
 
