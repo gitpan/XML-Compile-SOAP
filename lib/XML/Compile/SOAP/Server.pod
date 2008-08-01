@@ -53,7 +53,7 @@ In SOAP1.1, the term is 'actor', but SOAP1.2 has renamed this into
 
 Please use the role abbreviations as provided by the protocol
 implementations when possible: they will be translated into the
-right URI on time.  See L<XML::Compile::SOAP::roleAbbreviation()|XML::Compile::SOAP/"Helpers">
+right URI on time.  See L<XML::Compile::SOAP::roleAbbreviation()|XML::Compile::SOAP/"Transcoding">
 and the constants defined in L<XML::Compile::SOAP::Util|XML::Compile::SOAP::Util>
 
 =back
@@ -177,8 +177,8 @@ Returns a CODE reference which can be used to produce faults.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.75,
-built on July 21, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.76,
+built on August 01, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

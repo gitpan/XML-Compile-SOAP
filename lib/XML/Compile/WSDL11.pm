@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '0.75';
+$VERSION = '0.76';
 
 use base 'XML::Compile';
 
@@ -21,7 +21,6 @@ use XML::Compile::SOAP::Util qw/:wsdl11/;
 use XML::Compile::WSDL11::Operation ();
 
 use List::Util  qw/first/;
-use Data::Dumper;  # needs to go away
 
 XML::Compile->addSchemaDirs(__FILE__);
 XML::Compile->knownNamespace

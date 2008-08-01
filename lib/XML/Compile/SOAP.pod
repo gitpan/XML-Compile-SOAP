@@ -267,8 +267,8 @@ By default, the end-point is the destination of each header element.
 
 The ARRAY contains a LIST of key-value pairs, specifing an entry label
 followed by an I<actor> (soap1.1) or I<role> (soap1.2) URI.  You may use
-the predefined actors/roles, like 'NEXT'.  See L<roleURI()|XML::Compile::SOAP/"Helpers"> and
-L<roleAbbreviation()|XML::Compile::SOAP/"Helpers">.
+the predefined actors/roles, like 'NEXT'.  See L<roleURI()|XML::Compile::SOAP/"Transcoding"> and
+L<roleAbbreviation()|XML::Compile::SOAP/"Transcoding">.
 
 =back
 
@@ -465,6 +465,8 @@ $obj-E<gt>B<receiver>(ARGS)
 
 =head2 Helpers
 
+=head2 Transcoding
+
 $obj-E<gt>B<replyMustUnderstandFault>(TYPE)
 
 =over 4
@@ -478,7 +480,7 @@ $obj-E<gt>B<roleAbbreviation>(URI)
 =over 4
 
 Translate a role URI into a simple string, if predefined.  See
-L<roleURI()|XML::Compile::SOAP/"Helpers">.
+L<roleURI()|XML::Compile::SOAP/"Transcoding">.
 
 =back
 
@@ -585,8 +587,8 @@ Net::Server, which may have some portability restrictions.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.75,
-built on July 21, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.76,
+built on August 01, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,
