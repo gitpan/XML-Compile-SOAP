@@ -13,6 +13,7 @@ XML::Compile::SOAP - base-class for SOAP implementations
 
 =head1 SYNOPSIS
 
+ ** SOAP-RPC style broken in this release.
  ** Only use SOAP1.1 and WSDL1.1; SOAP1.2/WSDL1.2 not working!
  ** See TODO, at the end of this page
 
@@ -587,8 +588,8 @@ Net::Server, which may have some portability restrictions.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.77,
-built on August 15, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 0.78,
+built on October 10, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '0.77';
+$VERSION = '0.78';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -212,6 +212,7 @@ sub writerHook($$@)
     , replace =>
         sub
         {   my ($doc, $data, $path, $tag) = @_;
+$data || panic "@_";
             my %data = %$data;
             my @h = @do;
             my @childs;
@@ -487,7 +488,7 @@ sub readerHook($$$@)
         my %h;
         foreach my $child ($xml->childNodes)
         {   next unless $child->isa('XML::LibXML::Element');
-            my $type = pack_type $child->namespaceURI, $child->localName;
+            my $type = type_of_node $child;
             if(my $t = $trans{$type})
             {   my $v = $t->[1]->($child);
                 $h{$t->[0]} = $v if defined $v;

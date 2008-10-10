@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11;
 use vars '$VERSION';
-$VERSION = '0.77';
+$VERSION = '0.78';
 
 use base 'XML::Compile::SOAP';
 
@@ -39,7 +39,7 @@ sub init($)
 
     $self->SUPER::init($args);
 
-    $self->schemas->importDefinitions( [$env, $enc] );
+    $self->schemas->importDefinitions( [$env,$enc] );
     $self;
 }
 
