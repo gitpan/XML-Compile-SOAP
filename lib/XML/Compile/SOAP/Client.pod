@@ -34,16 +34,14 @@ $obj-E<gt>B<compileClient>(OPTIONS)
  decode     <required>
  encode     <required>
  kind       request-response
- name       <from rpcout> or "unnamed"
- rpcin      <depends on type of rpcout>
- rpcout     undef
+ name       <undef>
  transport  <required>
 
 . decode => CODE
 
 =over 4
 
-The CODE reference is produced by L<XML::Compile::SOAP::compileMessage()|XML::Compile::SOAP/"Single messages">,
+The CODE reference is produced by L<XML::Compile::SOAP::compileMessage()|XML::Compile::SOAP/"Single message">,
 and must be a RECEIVER: translate a SOAP message into Perl data.  Even in
 one-way operation, this decode should be provided: some servers may pass
 back some XML in case of errors.
@@ -54,7 +52,7 @@ back some XML in case of errors.
 
 =over 4
 
-The CODE reference is produced by L<XML::Compile::SOAP::compileMessage()|XML::Compile::SOAP/"Single messages">,
+The CODE reference is produced by L<XML::Compile::SOAP::compileMessage()|XML::Compile::SOAP/"Single message">,
 and must be a SENDER: translates Perl data structures into the SOAP
 message in XML.
 
@@ -71,51 +69,6 @@ currently supported.
 =back
 
 . name => STRING
-
-=over 4
-
-Currently only used in some error messages, but may be used more intensively
-in the future.  When C<rpcout> is a TYPE, then the local name of that type
-is used as default.
-
-=back
-
-. rpcin => TYPE|CODE
-
-=over 4
-
-The TYPE of the RPC input message (RPC literal style) or a CODE reference
-which can be created to parse the RPC block (RPC encoded style).
-
-If this option is not specified, but there is an C<rpcout> with TYPE
-value, then the value for this options will default for that type name
-with C<Response> concatenated: a commonly used convension.
-
-If this option is not used, but there is an C<rpcout> with CODE
-reference, then a standard decode routine is called.  That routine
-does use L<XML::Compile::SOAP::Encoding::decSimplify()|XML::Compile::SOAP::Encoding/"Decoding"> to get an
-as simple as possible return structure.  This function tries hard, and
-does some validation as well, however many RPC schemas are horribly
-broken, and thereby the automatic decoding fails.
-
-As alternative, you can try C<XMLin> from XML::LibXML::Simple or
-XML::Simple (SAX based parser).
-
-    rpcin => sub { my $soap = shift; [ map { XMLin($_) } @_ ] }
-
-Each of the body parts now get decoded.  However, this does not resolve
-references and such: the output datastructure is far more verbose.
-
-=back
-
-. rpcout => TYPE|CODE
-
-=over 4
-
-The TYPE of the RPC output message (RPC literal style) or a CODE reference
-which can be created to produce the RPC block (RPC encoded style).
-
-=back
 
 . transport => CODE|OBJECT
 
@@ -171,6 +124,9 @@ which can be called multiple times.
     my $answer = $call->(%request);  # list of pairs
     my $answer = $call->(\%request); # same, but HASH
     my $answer = $call->(\%request, 'UTF-8');  # same
+
+    # or with trace details, see XML::Compile::SOAP::Trace
+    my ($answer, $trace) = $call->...
 
 But what is the structure of C<%request> and C<$answer>?  Well, there
 are various syntaxes possible: from structurally perfect, to user-friendly.
@@ -325,12 +281,10 @@ will be a little simpler, see L<XML::Compile::WSDL11::compileClient()|XML::Compi
  # Literal style RPC
  my $outtype = pack_type $MYNS, 'myFunction';
  my $intype  = pack_type $MYNS, 'myFunctionResponse';
- my $style   = 'rpc-literal';
 
  # Encoded style RPC (see next section on these functions)
  my $outtype = \&my_pack_params;
  my $intype  = \&my_unpack_params;
- my $style   = 'rpc-encoded';
 
  # For all RPC calls, you need this only once (or have a WSDL):
  my $transp  = XML::Compile::Transport::SOAPHTTP->new(...);
@@ -343,7 +297,6 @@ will be a little simpler, see L<XML::Compile::WSDL11::compileClient()|XML::Compi
  my $myproc = $soap->compileClient
    ( name   => 'MyProc'
    , encode => $send, decode => $get, transport => $http
-   , rpcout => $outtype, rpcin => $intype
    );
 
  my $answer = $myproc->(@parameters);   # as document style
@@ -351,16 +304,12 @@ will be a little simpler, see L<XML::Compile::WSDL11::compileClient()|XML::Compi
 Actually, the C<< @paramers >> are slightly less flexible as in document
 style SOAP.  If you use header blocks, then the called CODE reference
 will not be able to distinguish between parameters for the RPC block and
-parameters for the header blocks.  Therefore, in that situation, you
-MUST separate the rpc data explicitly as one argument.
+parameters for the header blocks.
 
   my $answer = $trade_price
     ->( {symbol => 'IBM'}    # the RPC package implicit
       , transaction => 5     # in the header
       );
-
-  my $answer = $trade_price  # RPC very explicit
-    ->(rpc => {symbol => 'IBM'}, transaction => 5);
 
 When the number of arguments is odd, the first is indicating the RPC
 element, and the other pairs refer to header blocks.
@@ -389,7 +338,7 @@ So, using SOAP-RPC in L<XML::Compile::SOAP|XML::Compile::SOAP> will ask a little
 effort from you: you have to state parameter types explicitly.  In
 the F<examples/namesservice/> directory, you find a detailed example.
 You have to create a CODE ref which produces the message, using
-methods defined provided by L<XML::Compile::SOAP::Encoding|XML::Compile::SOAP::Encoding>.
+methods defined provided by L<XML::Compile::SOAP11::Encoding|XML::Compile::SOAP11::Encoding>.
 
 =head3 Faults (Document and RPC style)
 
@@ -539,17 +488,20 @@ equivalent to the C<%data_in> from the client.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.78,
-built on October 10, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.00_01,
+built on December 29, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,
 L<XML::Compile::SOAP>,
+L<XML::Compile::SOAP12>,
 L<XML::Compile::SOAP::Daemon>,
 L<XML::Compile::Tester>,
 L<XML::Compile::Cache>,
+L<XML::Compile::Dumper>,
 L<XML::Rewrite>,
-L<XML::Compile::Dumper>.
+and
+L<XML::LibXML::Simple>.
 
 Please post questions or ideas to the mailinglist at
 F<http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/xml-compile>

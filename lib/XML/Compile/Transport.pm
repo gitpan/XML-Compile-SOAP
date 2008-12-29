@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport;
 use vars '$VERSION';
-$VERSION = '0.78';
+$VERSION = '2.00_01';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 
@@ -93,6 +93,17 @@ sub compileClient(@)
 }
 
 sub _prepare_call($) { panic "not implemented" }
+
+#--------------------------------------
+
+
+{   my %registered;
+    sub register($)   { my ($class, $uri) = @_; $registered{$uri} = $class }
+    sub plugin($)     { my ($class, $uri) = @_; $registered{$uri} }
+    sub registered($) { values %registered }
+}
+
+#--------------------------------------
 
 
 1;

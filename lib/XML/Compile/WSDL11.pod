@@ -5,26 +5,32 @@ XML::Compile::WSDL11 - create SOAP messages defined by WSDL 1.1
 =head1 INHERITANCE
 
  XML::Compile::WSDL11
+   is a XML::Compile::Cache
+   is a XML::Compile::Schema
    is a XML::Compile
 
 =head1 SYNOPSIS
 
- ** SOAP-RPC style broken in this release.
-
  # preparation
+ use XML::Compile::WSDL11;      # use WSDL version 1.1
+ use XML::Compile::SOAP11;      # use SOAP version 1.1
+ use XML::Compile::Transport::SOAPHTTP;
+
  my $wsdl    = XML::Compile::WSDL11->new($wsdlfile);
- $wsdl->addWSDL(...additional WSDL file...);
+ $wsdl->addWSDL(...more WSDL files...);
  $wsdl->importDefinitions(...more schemas...);
 
- my $call    = $wsdl->compileClient('GetStockPrice');
+ # during initiation, for each used call (slow)
+ my $call    = $wsdl->compileClient('GetStockPrice', ...);
 
- my $op      = $wsdl->operation('GetStockPrice');
- my $call    = $op->compileClient;
-
+ # at "run-time", call as often as you want (fast)
  my $answer  = $call->(%request);
+
+ # capture useful trace information
  my ($answer, $trace) = $call->(%request);
 
- my @op_defs = $wsdl->operations;
+ # when you like, get all operation definitions
+ my @all_ops = $wsdl->operations;
 
  # Install XML::Compile::SOAP::Daemon
  my $server  = XML::Compile::SOAP::HTTPDaemon->new;
@@ -35,21 +41,18 @@ XML::Compile::WSDL11 - create SOAP messages defined by WSDL 1.1
 
 =head1 DESCRIPTION
 
-This module currently supports WSDL 1.1 on SOAP 1.1, with HTTP-SOAP.
-B<Missing are> pure HTTP GET/POST bindings, multipart-mime transport
-protocols, WSDL2 and SOAP 1.2.
+This module implements WSDL version 1.1.
+An WSDL file defines a set of messages to be send and received over
+(SOAP) connections.
 
-An WSDL file defines a set of messages to be send and received over SOAP
-connections.  As end-user, you do not have to worry about the complex
-details of the messages and the exchange of them: it's all Perl to you.
-Also faults are handled automatically.
-
-The only complication you have to worry about, is to shape
-a nested HASH structure to the sending message structure.
-L<XML::Compile::Schema::template()|XML::Compile::Schema/"Compilers"> may help you.
+As end-user, you do not have to worry about the complex details of the
+messages and the way to exchange of them: it's all simple Perl for you.
+Also faults are handled automatically.  The only complication you have
+to worry about, is to shape a nested HASH structure to the sending
+message structure.  L<XML::Compile::Schema::template()|XML::Compile::Schema/"Compilers"> may help you.
 
 When the definitions are spread over multiple files, you will need to
-use L<addWSDL()|XML::Compile::WSDL11/"Extension"> (wsdl), or L<importDefinitions()|XML::Compile::WSDL11/"Extension"> (additional schema's)
+use L<addWSDL()|XML::Compile::WSDL11/"Extension"> (wsdl), or L<importDefinitions()|XML::Compile::Schema/"Administration"> (additional schema's)
 explicitly, because L<XML::Compile::Schema|XML::Compile::Schema> does not wish dynamic internet
 download magic to happen.
 
@@ -66,28 +69,71 @@ L<XML::Compile::dataToXML()|XML::Compile/"Compilers">.  All options are also pas
 to create an internal L<XML::Compile::Schema|XML::Compile::Schema> object.  See
 L<XML::Compile::Schema::new()|XML::Compile::Schema/"Constructors">
 
- Option        --Defined in     --Default
- schema_dirs     XML::Compile     undef
- schemas                          <created internally>
- wsdl_namespace                   undef
+ Option            --Defined in     --Default
+ allow_undeclared    XML::Compile::Cache  <false>
+ any_element         XML::Compile::Cache  'SKIP_ALL'
+ hook                XML::Compile::Schema  undef
+ hooks               XML::Compile::Schema  []
+ ignore_unused_tags  XML::Compile::Schema  <false>
+ key_rewrite         XML::Compile::Schema  []
+ opts_readers        XML::Compile::Cache  []
+ opts_rw             XML::Compile::Cache  []
+ opts_writers        XML::Compile::Cache  []
+ prefixes            XML::Compile::Cache  <smart>
+ schema_dirs         XML::Compile     undef
+ typemap             XML::Compile::Schema  {}
+
+. allow_undeclared => BOOLEAN
+
+. any_element => CODE|'TAKE_ALL'|'SKIP_ALL'|'ATTEMPT'
+
+. hook => ARRAY-WITH-HOOKDATA | HOOK
+
+. hooks => ARRAY-OF-HOOK
+
+. ignore_unused_tags => BOOLEAN|REGEXP
+
+. key_rewrite => HASH|CODE|ARRAY-of-HASH-and-CODE
+
+. opts_readers => HASH|ARRAY-of-PAIRS
+
+. opts_rw => HASH|ARRAY-of-PAIRS
+
+. opts_writers => HASH|ARRAY-of-PAIRS
+
+. prefixes => HASH|ARRAY-of-PAIRS
 
 . schema_dirs => DIRECTORY|ARRAY-OF-DIRECTORIES
 
-. schemas => XML::Compile::Schema object
-
-. wsdl_namespace => IRI
-
-=over 4
-
-Force to accept only WSDL descriptions which are in this namespace.  If
-not specified, the name-space  which is found in the first WSDL document
-is used.
-
-=back
+. typemap => HASH
 
 =back
 
 =head2 Accessors
+
+$obj-E<gt>B<addHook>(HOOKDATA|HOOK|undef)
+
+=over 4
+
+See L<XML::Compile::Schema/"Accessors">
+
+=back
+
+$obj-E<gt>B<addHooks>(HOOK, [HOOK, ...])
+
+=over 4
+
+See L<XML::Compile::Schema/"Accessors">
+
+=back
+
+$obj-E<gt>B<addKeyRewrite>(CODE|HASH, CODE|HASH, ...)
+
+=over 4
+
+See L<XML::Compile::Schema/"Accessors">
+
+=back
 
 $obj-E<gt>B<addSchemaDirs>(DIRECTORIES|FILENAME)
 
@@ -99,26 +145,87 @@ See L<XML::Compile/"Accessors">
 
 =back
 
-$obj-E<gt>B<schemas>
+$obj-E<gt>B<addSchemas>(XML, OPTIONS)
 
 =over 4
 
-Returns the L<XML::Compile::Schema|XML::Compile::Schema> object which collects all type
-information.
+See L<XML::Compile::Schema/"Accessors">
 
 =back
 
-$obj-E<gt>B<wsdlNamespace>([NAMESPACE])
+$obj-E<gt>B<addTypemap>(PAIR)
 
 =over 4
 
-Returns (optionally after setting) the namespace used by the WSDL
-specification.  This is the namespace in which the C<definition>
-document root element is defined.
+See L<XML::Compile::Schema/"Accessors">
+
+=back
+
+$obj-E<gt>B<addTypemaps>(PAIRS)
+
+=over 4
+
+See L<XML::Compile::Schema/"Accessors">
+
+=back
+
+$obj-E<gt>B<allowUndeclared>([BOOLEAN])
+
+=over 4
+
+See L<XML::Compile::Cache/"Accessors">
+
+=back
+
+$obj-E<gt>B<hooks>
+
+=over 4
+
+See L<XML::Compile::Schema/"Accessors">
+
+=back
+
+$obj-E<gt>B<prefix>(PREFIX)
+
+=over 4
+
+See L<XML::Compile::Cache/"Accessors">
+
+=back
+
+$obj-E<gt>B<prefixFor>(URI)
+
+=over 4
+
+See L<XML::Compile::Cache/"Accessors">
+
+=back
+
+$obj-E<gt>B<prefixes>([PAIRS])
+
+=over 4
+
+See L<XML::Compile::Cache/"Accessors">
 
 =back
 
 =head2 Compilers
+
+$obj-E<gt>B<compile>(('READER'|'WRITER'), TYPE, OPTIONS)
+
+=over 4
+
+See L<XML::Compile::Schema/"Compilers">
+
+=back
+
+$obj-E<gt>B<compileAll>(['READER'|'WRITER'|'RW', [NAMESPACE]])
+
+=over 4
+
+See L<XML::Compile::Cache/"Compilers">
+
+=back
 
 $obj-E<gt>B<dataToXML>(NODE|REF-XML-STRING|XML-STRING|FILENAME|FILEHANDLE|KNOWN)
 
@@ -128,13 +235,69 @@ See L<XML::Compile/"Compilers">
 
 =back
 
+$obj-E<gt>B<reader>(TYPE|NAME, OPTIONS)
+
+=over 4
+
+See L<XML::Compile::Cache/"Compilers">
+
+=back
+
+$obj-E<gt>B<template>('XML'|'PERL', TYPE, OPTIONS)
+
+=over 4
+
+See L<XML::Compile::Schema/"Compilers">
+
+=back
+
+$obj-E<gt>B<writer>(TYPE|NAME)
+
+=over 4
+
+See L<XML::Compile::Cache/"Compilers">
+
+=back
+
 =head2 Administration
+
+$obj-E<gt>B<declare>('READER'|'WRITER'|'RW', TYPE|ARRAY-of-TYPES, OPTIONS)
+
+=over 4
+
+See L<XML::Compile::Cache/"Administration">
+
+=back
+
+$obj-E<gt>B<elements>
+
+=over 4
+
+See L<XML::Compile::Schema/"Administration">
+
+=back
+
+$obj-E<gt>B<findName>(NAME)
+
+=over 4
+
+See L<XML::Compile::Cache/"Administration">
+
+=back
 
 $obj-E<gt>B<findSchemaFile>(FILENAME)
 
 =over 4
 
 See L<XML::Compile/"Administration">
+
+=back
+
+$obj-E<gt>B<importDefinitions>(XMLDATA, OPTIONS)
+
+=over 4
+
+See L<XML::Compile::Schema/"Administration">
 
 =back
 
@@ -145,6 +308,30 @@ XML::Compile::WSDL11-E<gt>B<knownNamespace>(NAMESPACE|PAIRS)
 =over 4
 
 See L<XML::Compile/"Administration">
+
+=back
+
+$obj-E<gt>B<namespaces>
+
+=over 4
+
+See L<XML::Compile::Schema/"Administration">
+
+=back
+
+$obj-E<gt>B<printIndex>([FILEHANDLE], OPTIONS)
+
+=over 4
+
+See L<XML::Compile::Cache/"Administration">
+
+=back
+
+$obj-E<gt>B<types>
+
+=over 4
+
+See L<XML::Compile::Schema/"Administration">
 
 =back
 
@@ -173,8 +360,9 @@ $obj-E<gt>B<compileClient>([NAME], OPTIONS)
 
 =over 4
 
-Creates temporarily an L<XML::Compile::WSDL11::Operation|XML::Compile::WSDL11::Operation> with L<operation()|XML::Compile::WSDL11/"Extension">,
-and then calls C<compileClient()> on that; an usual combination.
+Creates temporarily an L<XML::Compile::Operation|XML::Compile::Operation> object with
+L<operation()|XML::Compile::WSDL11/"Extension">, and then calls C<compileClient()> on that; an usual
+combination.
 
 As OPTIONS are available the combination of all possibilities for
 
@@ -186,7 +374,7 @@ L<operation()|XML::Compile::WSDL11/"Extension"> (i.e. C<service> and C<port>), a
 
 =item .
 
-L<XML::Compile::WSDL11::Operation::compileClient()|XML::Compile::WSDL11::Operation/"Handlers"> (a whole lot,
+L<XML::Compile::Operation::compileClient()|XML::Compile::Operation/"Handlers"> (a whole lot,
 for instance C<transport_hook>), plus
 
 =item .
@@ -201,17 +389,8 @@ example:
   $wsdl->compileClient
     ( operation => 'HelloWorld'
     , port      => 'PrefillSoap' # only needed when multiple ports
-    , sloppy_integers => 1
+    , sloppy_integers => 1       # X::C::compile() option
     );
-
-=back
-
-$obj-E<gt>B<importDefinitions>(XMLDATA, OPTIONS)
-
-=over 4
-
-Add schema information to the WSDL interface knowledge.  This should
-not be needed, because WSDL definitions must be self-contained.
 
 =back
 
@@ -229,11 +408,11 @@ $obj-E<gt>B<operation>([NAME], OPTIONS)
 =over 4
 
 Collect all information for a certain operation.  Returned is an
-L<XML::Compile::WSDL11::Operation|XML::Compile::WSDL11::Operation> object.
+L<XML::Compile::Operation|XML::Compile::Operation> object.
 
 An operation is defined by a service name, a port, some bindings,
-and an operation name, which can be specified explicitly or sometimes
-left-out.
+and an operation name, which can be specified explicitly and often
+left-out (in any situation where there are no alternative choices).
 
 When not specified explicitly via OPTIONS, each of the CLASSes are only
 permitted to have exactly one definition.  Otherwise, you must make a
@@ -274,17 +453,18 @@ Required when more than one service is defined.
 
 =back
 
-=head2 Inspection
+=head2 Introspection
 
 All of the following methods are usually NOT meant for end-users. End-users
 should stick to the L<operation()|XML::Compile::WSDL11/"Extension"> and L<compileClient()|XML::Compile::WSDL11/"Extension"> methods.
 
-$obj-E<gt>B<find>(CLASS, [QNAME])
+$obj-E<gt>B<findDef>(CLASS, [QNAME|NAME])
 
 =over 4
 
 With a QNAME, the HASH which contains the parsed XML information
 from the WSDL template for that CLASS-NAME combination is returned.
+Otherwise, NAME is considered to be the localName in that class.
 When the NAME is not found, an error is produced.
 
 Without QNAME in SCALAR context, there may only be one such name
@@ -309,25 +489,9 @@ $obj-E<gt>B<operations>(OPTIONS)
 
 Return a list with all operations defined in the WSDL.
 
- Option --Default
- produce  'HASHES'
-
-. produce => 'OBJECTS'|'HASHES'
-
-=over 4
-
-By default, this function will return a list of HASHes, each representing
-one defined operation.  When this option is set, those HASHes are
-immediately used to create L<XML::Compile::WSDL11::Operation|XML::Compile::WSDL11::Operation> objects
-per operation.
-
-=back
-
 =back
 
 =head1 DETAILS
-
-=head2 Comparison
 
 =head2 Initializing SOAP operations via WSDL
 
@@ -377,17 +541,20 @@ Error: don't known how to interpret XML data
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.78,
-built on October 10, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.00_01,
+built on December 29, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,
 L<XML::Compile::SOAP>,
+L<XML::Compile::SOAP12>,
 L<XML::Compile::SOAP::Daemon>,
 L<XML::Compile::Tester>,
 L<XML::Compile::Cache>,
+L<XML::Compile::Dumper>,
 L<XML::Rewrite>,
-L<XML::Compile::Dumper>.
+and
+L<XML::LibXML::Simple>.
 
 Please post questions or ideas to the mailinglist at
 F<http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/xml-compile>

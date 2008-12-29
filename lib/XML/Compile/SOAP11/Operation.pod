@@ -1,0 +1,198 @@
+=head1 NAME
+
+XML::Compile::SOAP11::Operation - defines a SOAP11 interaction
+
+=head1 INHERITANCE
+
+ XML::Compile::SOAP11::Operation
+   is a XML::Compile::Operation
+
+=head1 SYNOPSIS
+
+ # object created by XML::Compile::WSDL*
+ my $op = $wsdl->operation('GetStockPrices');
+
+=head1 DESCRIPTION
+
+Objects of this type define one possible SOAP11 interaction, either
+client side or server side.
+
+=head1 METHODS
+
+=head2 Constructors
+
+XML::Compile::SOAP11::Operation-E<gt>B<new>(OPTIONS)
+
+=over 4
+
+C<input_def>, C<output_def> and C<fault_def> are HASHes which contain
+the input and output message header, body and fault-header definitions
+in WSDL1.1 style.
+
+ Option    --Defined in     --Default
+ action      XML::Compile::Operation  undef
+ endpoints   XML::Compile::Operation  []
+ fault_def                    <undef>
+ input_def                    <undef>
+ kin         XML::Compile::Operation  <required>
+ nam         XML::Compile::Operation  <required>
+ output_def                   <undef>
+ schemas     XML::Compile::Operation  <required>
+ style                        'document'
+ transport   XML::Compile::Operation  'HTTP'
+
+. action => STRING
+
+. endpoints => ADDRESS|ARRAY
+
+. fault_def => HASH
+
+. input_def => HASH
+
+. kin => d
+
+. nam => e
+
+. output_def => HASH
+
+. schemas => XML::Compile::Cache
+
+. style => 'document'|'rpc'
+
+. transport => URI|'HTTP'
+
+=back
+
+=head2 Accessors
+
+$obj-E<gt>B<action>
+
+=over 4
+
+See L<XML::Compile::Operation/"Accessors">
+
+=back
+
+$obj-E<gt>B<endPoints>
+
+=over 4
+
+See L<XML::Compile::Operation/"Accessors">
+
+=back
+
+$obj-E<gt>B<kind>
+
+=over 4
+
+See L<XML::Compile::Operation/"Accessors">
+
+=back
+
+$obj-E<gt>B<name>
+
+=over 4
+
+See L<XML::Compile::Operation/"Accessors">
+
+=back
+
+$obj-E<gt>B<schemas>
+
+=over 4
+
+See L<XML::Compile::Operation/"Accessors">
+
+=back
+
+$obj-E<gt>B<style>
+
+=over 4
+
+=back
+
+=head2 Handlers
+
+$obj-E<gt>B<compileClient>(OPTIONS)
+
+=over 4
+
+Returns one CODE reference which handles the processing for this
+operation.  Options C<transporter>, C<transport_hook>, and
+C<endpoint> are passed to L<compileTransporter()|XML::Compile::Operation/"Handlers">.
+
+You pass that CODE reference an input message of the correct
+type, as pure Perl HASH structure.  An 'request-response' operation
+will return then answer, or C<undef> in case of failure.  An 'one-way'
+operation with return C<undef> in case of failure, and a true value
+when successfull.
+
+Besides the OPTIONS listed, you can also specify anything which is
+accepted by L<XML::Compile::Schema::compile()|XML::Compile::Schema/"Compilers">, like
+C<< sloppy_integers => 1 >> or hooks.
+
+=back
+
+$obj-E<gt>B<compileHandler>(OPTIONS)
+
+=over 4
+
+Prepare the routines which will decode the request and encode the answer,
+as will be run on the server.  The L<XML::Compile::SOAP::Server|XML::Compile::SOAP::Server> will
+connect these.
+
+ Option  --Default
+ callback  <required>
+
+. callback => CODE
+
+=back
+
+$obj-E<gt>B<compileTransporter>(OPTIONS)
+
+=over 4
+
+See L<XML::Compile::Operation/"Handlers">
+
+=back
+
+=head2 Helpers
+
+XML::Compile::SOAP11::Operation-E<gt>B<register>(URI)
+
+=over 4
+
+See L<XML::Compile::Operation/"Helpers">
+
+=back
+
+=head1 SEE ALSO
+
+This module is part of XML-Compile-SOAP distribution version 2.00_01,
+built on December 29, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+
+All modules in this suite:
+L<XML::Compile>,
+L<XML::Compile::SOAP>,
+L<XML::Compile::SOAP12>,
+L<XML::Compile::SOAP::Daemon>,
+L<XML::Compile::Tester>,
+L<XML::Compile::Cache>,
+L<XML::Compile::Dumper>,
+L<XML::Rewrite>,
+and
+L<XML::LibXML::Simple>.
+
+Please post questions or ideas to the mailinglist at
+F<http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/xml-compile>
+For life contact with other developers, visit the C<#xml-compile> channel
+on C<irc.perl.org>.
+
+=head1 LICENSE
+
+Copyrights 2007-2008 by Mark Overmeer. For other contributors see ChangeLog.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+See F<http://www.perl.com/perl/misc/Artistic.html>
+

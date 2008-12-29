@@ -43,23 +43,7 @@ See L<XML::Compile::SOAP::Server/"Instantiation">
 
 =head2 Accessors
 
-$obj-E<gt>B<encodingNS>
-
-=over 4
-
-See L<XML::Compile::SOAP/"Accessors">
-
-=back
-
-$obj-E<gt>B<envelopeNS>
-
-=over 4
-
-See L<XML::Compile::SOAP/"Accessors">
-
-=back
-
-$obj-E<gt>B<prefixPreferences>(TABLE, NEW, [USED])
+$obj-E<gt>B<name>
 
 =over 4
 
@@ -72,22 +56,6 @@ $obj-E<gt>B<role>
 =over 4
 
 See L<XML::Compile::SOAP::Server/"Accessors">
-
-=back
-
-$obj-E<gt>B<schemaInstanceNS>(() {shift->{schemains}})
-
-=over 4
-
-See L<XML::Compile::SOAP/"Accessors">
-
-=back
-
-$obj-E<gt>B<schemaNS>
-
-=over 4
-
-See L<XML::Compile::SOAP/"Accessors">
 
 =back
 
@@ -107,21 +75,13 @@ See L<XML::Compile::SOAP/"Accessors">
 
 =back
 
-=head2 Single messages
+=head2 Single message
 
 $obj-E<gt>B<compileMessage>(('SENDER'|'RECEIVER'), OPTIONS)
 
 =over 4
 
-See L<XML::Compile::SOAP11/"Single messages">
-
-=back
-
-$obj-E<gt>B<importDefinitions>(XMLDATA, OPTIONS)
-
-=over 4
-
-See L<XML::Compile::SOAP/"Single messages">
+See L<XML::Compile::SOAP11/"Single message">
 
 =back
 
@@ -131,123 +91,7 @@ XML::Compile::SOAP11::Server-E<gt>B<messageStructure>(XML)
 
 =over 4
 
-See L<XML::Compile::SOAP/"Single messages">
-
-=back
-
-=head2 Sender (internals)
-
-$obj-E<gt>B<sender>(ARGS)
-
-=over 4
-
-See L<XML::Compile::SOAP/"Sender (internals)">
-
-=back
-
-$obj-E<gt>B<writerCreateBody>(BODY-DEFS, NAMESPACE-TABLE, OPTS)
-
-=over 4
-
-See L<XML::Compile::SOAP/"Sender (internals)">
-
-=back
-
-$obj-E<gt>B<writerCreateFault>(FAULT-DEFS, NAMESPACE-TABLE, FAULTTYPE)
-
-=over 4
-
-See L<XML::Compile::SOAP/"Sender (internals)">
-
-=back
-
-$obj-E<gt>B<writerCreateHeader>(HEADER-DEFS, NS-TABLE, UNDERSTAND, DESTINATION, OPTS)
-
-=over 4
-
-See L<XML::Compile::SOAP/"Sender (internals)">
-
-=back
-
-$obj-E<gt>B<writerCreateRpcEncoded>(NAMESPACE-TABLE)
-
-=over 4
-
-See L<XML::Compile::SOAP/"Sender (internals)">
-
-=back
-
-$obj-E<gt>B<writerCreateRpcLiteral>(NAMESPACE-TABLE)
-
-=over 4
-
-See L<XML::Compile::SOAP/"Sender (internals)">
-
-=back
-
-$obj-E<gt>B<writerEncstyleHook>(NAMESPACE-TABLE)
-
-=over 4
-
-See L<XML::Compile::SOAP/"Sender (internals)">
-
-=back
-
-$obj-E<gt>B<writerHook>(NAMESPACE, LOCAL, ACTIONS)
-
-=over 4
-
-See L<XML::Compile::SOAP/"Sender (internals)">
-
-=back
-
-=head2 Receiver (internals)
-
-$obj-E<gt>B<readerEncstyleHook>
-
-=over 4
-
-See L<XML::Compile::SOAP/"Receiver (internals)">
-
-=back
-
-$obj-E<gt>B<readerHook>(NAMESPACE, LOCAL, ACTIONS)
-
-=over 4
-
-See L<XML::Compile::SOAP/"Receiver (internals)">
-
-=back
-
-$obj-E<gt>B<readerParseBody>(BODYDEF, OPTS)
-
-=over 4
-
-See L<XML::Compile::SOAP/"Receiver (internals)">
-
-=back
-
-$obj-E<gt>B<readerParseFaults>(FAULTSDEF)
-
-=over 4
-
-See L<XML::Compile::SOAP11/"Receiver (internals)">
-
-=back
-
-$obj-E<gt>B<readerParseHeader>(HEADERDEF, OPTS)
-
-=over 4
-
-See L<XML::Compile::SOAP/"Receiver (internals)">
-
-=back
-
-$obj-E<gt>B<receiver>(ARGS)
-
-=over 4
-
-See L<XML::Compile::SOAP/"Receiver (internals)">
+See L<XML::Compile::SOAP/"Single message">
 
 =back
 
@@ -309,17 +153,20 @@ See L<XML::Compile::SOAP::Server/"Actions">
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.78,
-built on October 10, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.00_01,
+built on December 29, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,
 L<XML::Compile::SOAP>,
+L<XML::Compile::SOAP12>,
 L<XML::Compile::SOAP::Daemon>,
 L<XML::Compile::Tester>,
 L<XML::Compile::Cache>,
+L<XML::Compile::Dumper>,
 L<XML::Rewrite>,
-L<XML::Compile::Dumper>.
+and
+L<XML::LibXML::Simple>.
 
 Please post questions or ideas to the mailinglist at
 F<http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/xml-compile>

@@ -1,0 +1,224 @@
+=head1 NAME
+
+XML::Compile::Operation - base-class for possible interactions
+
+=head1 INHERITANCE
+
+ XML::Compile::Operation is extended by
+   XML::Compile::SOAP11::Operation
+
+=head1 SYNOPSIS
+
+ # created by XML::Compile::WSDL11
+ my $op = $wsdl->operation('GetStockPrices');
+
+=head1 DESCRIPTION
+
+These objects are created by L<XML::Compile::WSDL11|XML::Compile::WSDL11>, grouping information
+about a certain specific message interchange between a client and
+a server.
+
+=head1 METHODS
+
+=head2 Constructors
+
+XML::Compile::Operation-E<gt>B<new>(OPTIONS)
+
+=over 4
+
+ Option   --Default
+ action     undef
+ endpoints  []
+ kin        <required>
+ nam        <required>
+ schemas    <required>
+ transport  'HTTP'
+
+. action => STRING
+
+=over 4
+
+Some string which is refering to the action which is taken.  For SOAP
+protocols, this defines the soapAction header.
+
+=back
+
+. endpoints => ADDRESS|ARRAY
+
+=over 4
+
+Where to contact the server.
+
+=back
+
+. kin => d
+
+=over 4
+
+This returns the type of operation this is.  There are four kinds, which
+are returned as strings C<one-way>, C<request-response>, C<sollicit-response>,
+and C<notification>.  The latter two are initiated by a server, the former
+two by a client.
+
+=back
+
+. nam => e
+
+. schemas => XML::Compile::Cache
+
+. transport => URI|'HTTP'
+
+=over 4
+
+C<HTTP> is short for C<http://schemas.xmlsoap.org/soap/http/>, which
+is a constant to indicate that transport should use the HyperText
+Transfer Protocol.
+
+=back
+
+=back
+
+=head2 Accessors
+
+$obj-E<gt>B<action>
+
+=over 4
+
+=back
+
+$obj-E<gt>B<endPoints>
+
+=over 4
+
+Returns the list of alternative URLs for the end-point, which should
+be defined within the service's port declaration.
+
+=back
+
+$obj-E<gt>B<kind>
+
+=over 4
+
+=back
+
+$obj-E<gt>B<name>
+
+=over 4
+
+=back
+
+$obj-E<gt>B<schemas>
+
+=over 4
+
+=back
+
+=head2 Handlers
+
+$obj-E<gt>B<compileClient>(OPTIONS)
+
+=over 4
+
+Returns one CODE reference which handles the conversion from a perl
+data-structure into a request message, the transmission of the
+request, the receipt of the answer, and the decoding of that answer
+into a Perl data-structure.
+
+=back
+
+$obj-E<gt>B<compileHandler>(OPTIONS)
+
+=over 4
+
+Returns a code reference which translates in incoming XML message
+into Perl a data-structure, then calls the callback.  The result of
+the callback is encoded from Perl into XML and returned.
+
+ Option  --Default
+ callback  <required>
+
+. callback => CODE
+
+=back
+
+$obj-E<gt>B<compileTransporter>(OPTIONS)
+
+=over 4
+
+ Option        --Default
+ endpoint        <from WSDL>
+ transport_hook  undef
+ transporter     <created>
+
+. endpoint => URI
+
+=over 4
+
+Overrule the destination address.
+
+=back
+
+. transport_hook => CODE
+
+=over 4
+
+Passed to L<XML::Compile::Transport::compileClient(hook)|XML::Compile::Transport/"Handlers">.  Can be
+used to create off-line tests and last resort work-arounds.  See the
+DETAILs chapter in the L<XML::Compile::Transport|XML::Compile::Transport> manual page.
+
+=back
+
+. transporter => CODE
+
+=over 4
+
+The routine which will be used to exchange the data with the server.
+This code is created by an L<XML::Compile::Transport::compileClient()|XML::Compile::Transport/"Handlers">
+extension. By default, a transporter compatible to the protocol
+is created.  However, in most cases you want to reuse one (HTTP1.1)
+connection to a server.
+
+=back
+
+=back
+
+=head2 Helpers
+
+XML::Compile::Operation-E<gt>B<register>(URI)
+
+=over 4
+
+Declare an operation type.
+
+=back
+
+=head1 SEE ALSO
+
+This module is part of XML-Compile-SOAP distribution version 2.00_01,
+built on December 29, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+
+All modules in this suite:
+L<XML::Compile>,
+L<XML::Compile::SOAP>,
+L<XML::Compile::SOAP12>,
+L<XML::Compile::SOAP::Daemon>,
+L<XML::Compile::Tester>,
+L<XML::Compile::Cache>,
+L<XML::Compile::Dumper>,
+L<XML::Rewrite>,
+and
+L<XML::LibXML::Simple>.
+
+Please post questions or ideas to the mailinglist at
+F<http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/xml-compile>
+For life contact with other developers, visit the C<#xml-compile> channel
+on C<irc.perl.org>.
+
+=head1 LICENSE
+
+Copyrights 2007-2008 by Mark Overmeer. For other contributors see ChangeLog.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+See F<http://www.perl.com/perl/misc/Artistic.html>
+

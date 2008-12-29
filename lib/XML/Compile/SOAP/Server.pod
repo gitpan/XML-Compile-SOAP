@@ -161,7 +161,7 @@ specified here returns a true value.
 
 The CODE reference will be called with the XML version of the message,
 and a HASH which contains the information about the XML collected with
-L<XML::Compile::SOAP::messageStructure()|XML::Compile::SOAP/"Single messages"> plus the C<soap_version> entry.
+L<XML::Compile::SOAP::messageStructure()|XML::Compile::SOAP/"Single message"> plus the C<soap_version> entry.
 
 =back
 
@@ -177,17 +177,20 @@ Returns a CODE reference which can be used to produce faults.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.78,
-built on October 10, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.00_01,
+built on December 29, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,
 L<XML::Compile::SOAP>,
+L<XML::Compile::SOAP12>,
 L<XML::Compile::SOAP::Daemon>,
 L<XML::Compile::Tester>,
 L<XML::Compile::Cache>,
+L<XML::Compile::Dumper>,
 L<XML::Rewrite>,
-L<XML::Compile::Dumper>.
+and
+L<XML::LibXML::Simple>.
 
 Please post questions or ideas to the mailinglist at
 F<http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/xml-compile>

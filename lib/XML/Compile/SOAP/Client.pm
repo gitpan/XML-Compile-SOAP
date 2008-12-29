@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::Client;
 use vars '$VERSION';
-$VERSION = '0.78';
+$VERSION = '2.00_01';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -21,25 +21,11 @@ sub new(@) { panic __PACKAGE__." only secundary in multiple inheritance" }
 sub init($) { shift }
 
 
-sub _rpcin_default($@)
-{   my ($soap, @msgs) = @_;
-    my $tree   = $soap->dec(@msgs) or return ();
-    $soap->decSimplify($tree);
-}
-
 my $rr = 'request-response';
 sub compileClient(@)
 {   my ($self, %args) = @_;
 
     my $name   = $args{name};
-    my $rpcout = $args{rpcout};
-
-    unless(defined $name)
-    {   (undef, $name) = unpack_type $rpcout
-            if $rpcout && ! ref $rpcout;
-        $name ||= 'unnamed';
-    }
-
     my $kind = $args{kind} || $rr;
     $kind eq $rr || $kind eq 'one-way'
         or error __x"operation direction `{kind}' not supported for {name}"
@@ -66,7 +52,11 @@ sub compileClient(@)
 
     my $core = sub
     {   my $start = time;
-        my ($data, $charset) = UNIVERSAL::isa($_[0], 'HASH') ? @_ : ({@_});
+        my ($data, $charset)
+          = UNIVERSAL::isa($_[0], 'HASH') ? @_
+          : @_%2==0 ? ({@_}, undef)
+          : error __x"client `{name}' called with odd length parameter list"
+              , name => $name;
         my $req   = $encode->($data, $charset);
 
         my %trace;
@@ -90,78 +80,6 @@ sub compileClient(@)
 
         ($ans, XML::Compile::SOAP::Trace->new(\%trace));
     };
-
-    # Outgoing messages
-
-    defined $rpcout
-        or return $core;
-
-    my $rpc_encoder
-      = UNIVERSAL::isa($rpcout, 'CODE') ? $rpcout
-      : $self->schemas->compile
-        ( WRITER => $rpcout
-        , include_namespaces => 1
-        , elements_qualified => 'TOP'
-        );
-
-    my $out = sub
-      {    @_ && @_ % 2  # auto-collect rpc parameters
-      ? ( rpc => [$rpc_encoder, shift], @_ ) # possible header blocks
-      : ( rpc => [$rpc_encoder, [@_] ]     ) # rpc body only
-      };
-
-    # Incoming messages
-
-    my $rpcin = $args{rpcin} ||
-      (UNIVERSAL::isa($rpcout, 'CODE') ? \&_rpcin_default : $rpcout.'Response');
-
-    # RPC intelligence wrapper
-
-    if(UNIVERSAL::isa($rpcin, 'CODE'))     # rpc-encoded
-    {   return sub
-        {   my ($dec, $trace) = $core->($out->(@_));
-            return wantarray ? ($dec, $trace) : $dec
-                if $dec->{Fault};
-
-            my @raw;
-            foreach my $k (keys %$dec)
-            {   my $node = $dec->{$k};
-                if(   ref $node eq 'ARRAY' && @$node
-                   && $node->[0]->isa('XML::LibXML::Element'))
-                {   push @raw, @$node;
-                    delete $dec->{$k};
-                }
-                elsif(ref $node && $node->isa('XML::LibXML::Element'))
-                {   push @raw, delete $dec->{$k};
-                }
-            }
-
-            if(@raw)
-            {   $self->startDecoding(simplify => 1);
-                my @parsed = $rpcin->($self, @raw);
-                if(@parsed==1) { $dec = $parsed[0] }
-                else
-                {   while(@parsed)
-                    {   my $n = shift @parsed;
-                        $dec->{$n} = shift @parsed;
-                    }
-                }
-            }
-
-            wantarray ? ($dec, $trace) : $dec;
-        };
-    }
-    else                                   # rpc-literal
-    {   my $rpc_decoder = $self->schemas->compile(READER => $rpcin);
-        (undef, my $rpcin_local) = unpack_type $rpcin;
-
-        return sub
-        {   my ($dec, $trace) = $core->($out->(@_));
-            $dec->{$rpcin_local} = $rpc_decoder->(delete $dec->{$rpcin})
-              if $dec->{$rpcin};
-            wantarray ? ($dec, $trace) : $dec;
-        };
-    }
 }
 
 #------------------------------------------------

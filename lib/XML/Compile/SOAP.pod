@@ -5,7 +5,7 @@ XML::Compile::SOAP - base-class for SOAP implementations
 =head1 INHERITANCE
 
  XML::Compile::SOAP has extra code in
-   XML::Compile::SOAP::Encoding
+   XML::Compile::SOAP11::Encoding
 
  XML::Compile::SOAP is extended by
    XML::Compile::SOAP11
@@ -13,26 +13,23 @@ XML::Compile::SOAP - base-class for SOAP implementations
 
 =head1 SYNOPSIS
 
- ** SOAP-RPC style broken in this release.
- ** Only use SOAP1.1 and WSDL1.1; SOAP1.2/WSDL1.2 not working!
- ** See TODO, at the end of this page
-
- use XML::Compile::SOAP11::Client;
- use XML::Compile::Util qw/pack_type/;
-
- my $client = XML::Compile::SOAP11::Client->new;
-
- # load extra schemas always explicitly
- $client->importDefinitions(...);
+ ** SOAP1.1 and WSDL1.1 over HTTP
 
  # !!! The next steps are only required when you do not have
  # !!! a WSDL. See XML::Compile::WSDL11 if you have a WSDL.
- 
+ # !!! Without WSDL file, you need to do a lot manually
+
+ use XML::Compile::SOAP11::Client;
+ my $client = XML::Compile::SOAP11::Client->new;
+ $client->schemas->importDefinitions(...);
+
+ use XML::Compile::Util qw/pack_type/;
  my $h1el = pack_type $myns, $some_element;
  my $b1el = "{$myns}$other_element";  # same, less clean
 
  my $encode_query = $client->compileMessage
    ( 'SENDER'
+   , style    => 'document'           # default
    , header   => [ h1 => $h1el ]
    , body     => [ b1 => $b1el ]
    , destination    => [ h1 => 'NEXT' ]
@@ -41,41 +38,40 @@ XML::Compile::SOAP - base-class for SOAP implementations
 
  my $decode_response = $client->compileMessage
    ( 'RECEIVER'
-   , header    => [ h2 => $h2el ]
-   , body      => [ b2 => $b2el ]
-   , faults    => [ ... ]
+   , header   => [ h2 => $h2el ]
+   , body     => [ b2 => $b2el ]
+   , faults   => [ ... ]
    );
 
  my $http = XML::Compile::Transport::SOAPHTTP
     ->new(address => $server);
  my $http = $transport->compileClient(action => ...);
 
- # Combine into one message exchange:
-
  my @query    = (h1 => ..., b1 => ...);
- my $request  = $encode_query->($query);
+ my $request  = $encode_query->(@query);
  my ($response, $trace) = $http->($request);
  my $answer   = $decode_response->($response);
 
  use Data::Dumper;
- warn Dumper $answer;     # see: a HASH with h2 and b2!
- if($answer->{Fault}) ... # error was reported
+ warn Dumper $answer;     # discover a HASH with h2 and b2!
 
- # Simplify your life
- # also in this case: if you have a WSDL, this is created for you.
- # This is Document-style SOAP
+ if($answer->{Fault}) ... # when an error was reported
+
+ # Simplify your life: combine above into one call
+ # Also in this case: if you have a WSDL, this is created
+ # for you.   $wsdl->compileClient('MyFirstCall');
 
  my $call   = $client->compileClient
    ( kind      => 'request-response'  # default
-   , name      => 'my first call'
+   , name      => 'MyFirstCall'
    , encode    => $encode_query
    , decode    => $decode_response
    , transport => $http
    );
 
- # With or without WSDL file the same
+ # !!! Usage, with or without WSDL file the same
 
- my $result = $call->(h1 => ..., b1 => ...);
+ my $result = $call->(@quey)           # SCALAR only the result
  print $result->{h2}->{...};
  print $result->{b2}->{...};
 
@@ -101,15 +97,18 @@ types all out-going and incoming messages.  Very easy to use.
 
 =item 2.
 
-RPC style SOAP literal.  The WSDL file is not explicit about the
-content of the messages, but all messages must be schema defined types.
+RPC style SOAP literal.  The body of the message has an extra element
+wrapper, but the content is also well defined.
 
 =item 3.
 
 RPC style SOAP encoded.  The sent data is nowhere described formally.
-The data is transported in some ad-hoc way.
+The data is constructed in some ad-hoc way.
 
 =back
+
+Don't forget to have a look at the examples in the F<examples/> directory
+included in the distribution.
 
 =head1 METHODS
 
@@ -123,31 +122,21 @@ Create a new SOAP object.  You have to instantiate either the SOAP11 or
 SOAP12 sub-class of this, because there are quite some differences (which
 can be hidden for you)
 
- Option            --Default
- encoding_ns         <required>
- envelope_ns         <required>
- media_type          application/soap+xml
- schema_instance_ns  $schema_ns . '-instance'
- schema_ns           <required>
- schemas             created internally
- version             <required>
-
-. encoding_ns => URI
-
-. envelope_ns => URI
+ Option    --Default
+ media_type  application/soap+xml
+ schemas     created internally
+ version     <required>
 
 . media_type => MIMETYPE
 
-. schema_instance_ns => URI
-
-. schema_ns => URI
-
-. schemas => C<XML::Compile::Schema> object
+. schemas => C<XML::Compile::Cache> object
 
 =over 4
 
 Use this when you have already processed some schema definitions.  Otherwise,
 you can add schemas later with C<< $soap->schemas->importDefinitions() >>
+The Cache object must have C<any_element> and C<any_attribute> set to
+C<'ATTEMPT'>
 
 =back
 
@@ -163,39 +152,7 @@ The simple string representation of the protocol.
 
 =head2 Accessors
 
-$obj-E<gt>B<encodingNS>
-
-=over 4
-
-=back
-
-$obj-E<gt>B<envelopeNS>
-
-=over 4
-
-=back
-
-$obj-E<gt>B<prefixPreferences>(TABLE, NEW, [USED])
-
-=over 4
-
-NEW is a HASH or ARRAY-of-PAIRS which define prefix-to-uri relations,
-which are added to the list defined in the TABLE (a HASH-of-HASHes).
-When USED is set, then it will show-up in the output message.  At
-compile-time, the value of USED is auto-detect.
-
-This method is called for the soap specification preferred namespaces,
-and for your L<compileMessage(prefixes)|XML::Compile::SOAP/"Single messages">.
-
-=back
-
-$obj-E<gt>B<schemaInstanceNS>(() {shift->{schemains}})
-
-=over 4
-
-=back
-
-$obj-E<gt>B<schemaNS>
+$obj-E<gt>B<name>
 
 =over 4
 
@@ -205,7 +162,7 @@ $obj-E<gt>B<schemas>
 
 =over 4
 
-Returns the L<XML::Compile::Schema|XML::Compile::Schema> object which contains the
+Returns the L<XML::Compile::Cache|XML::Compile::Cache> object which contains the
 knowledge about the types.
 
 =back
@@ -216,15 +173,16 @@ $obj-E<gt>B<version>
 
 =back
 
-=head2 Single messages
+=head2 Single message
 
 $obj-E<gt>B<compileMessage>(('SENDER'|'RECEIVER'), OPTIONS)
 
 =over 4
 
 The payload is defined explicitly, where all headers and bodies are
-specified as ARRAY containing key-value pairs (ENTRIES).  When you
-have a WSDL file, these ENTRIES are generated automatically.
+described in detail.  When you have a WSDL file, these ENTRIES are
+generated automatically, but can be modified and extended (WSDL files
+are often incomplete)
 
 To make your life easy, the ENTRIES use a label (a free to choose key,
 the I<part name> in WSDL terminology), to ease relation of your data with
@@ -243,12 +201,10 @@ and body elements (not to the SOAP wrappers)
  faults          []
  header          undef
  mustUnderstand  []
- prefixes        {}
  role            ULTIMATE
  roles           []
- style           'document'
 
-. body => ENTRIES
+. body => ENTRIES|HASH
 
 =over 4
 
@@ -259,7 +215,7 @@ refer to a body element in a simple way.
 
 =back
 
-. destination => ARRAY
+. destination => ARRAY-OF-PAIRS
 
 =over 4
 
@@ -273,7 +229,7 @@ L<roleAbbreviation()|XML::Compile::SOAP/"Transcoding">.
 
 =back
 
-. faults => ENTRIES
+. faults => ENTRIES|HASH
 
 =over 4
 
@@ -285,7 +241,7 @@ implementation.
 
 =back
 
-. header => ENTRIES
+. header => ENTRIES|HASH
 
 =over 4
 
@@ -305,15 +261,6 @@ create your own reader or writer, and then pass a compatible CODE reference.
 Writers only.  The specified header entry labels specify which elements
 must be understood by the destination.  These elements will get the
 C<mustUnderstand> attribute set to C<1> (soap1.1) or C<true> (soap1.2).
-
-=back
-
-. prefixes => HASH
-
-=over 4
-
-For the sender only: add additional prefix definitions.  All provided
-names will be used always.
 
 =back
 
@@ -344,19 +291,6 @@ Alternative for option C<role>
 
 =back
 
-. style => 'document'|'rpc-literal'|'rpc-encoded'
-
-=back
-
-$obj-E<gt>B<importDefinitions>(XMLDATA, OPTIONS)
-
-=over 4
-
-Add definitions to the schema.  Simply calls
-L<XML::Compile::Schema::importDefinitions()|XML::Compile::Schema/"Administration"> for this SOAP object's
-schema with all the parameters provided.  XMLDATA can be everything
-accepted by L<XML::Compile::dataToXML()|XML::Compile/"Compilers"> plus an ARRAY of these things.
-
 =back
 
 $obj-E<gt>B<messageStructure>(XML)
@@ -369,98 +303,6 @@ Returns a HASH with some collected information from a complete SOAP
 message (XML::LibXML::Document or XML::LibXML::Element).  Currenty,
 the HASH contains a C<header> and a C<body> key, with each an ARRAY
 of element names which where found in the header resp. body.
-
-=back
-
-=head2 Sender (internals)
-
-$obj-E<gt>B<sender>(ARGS)
-
-=over 4
-
-=back
-
-$obj-E<gt>B<writerCreateBody>(BODY-DEFS, NAMESPACE-TABLE, OPTS)
-
-=over 4
-
-=back
-
-$obj-E<gt>B<writerCreateFault>(FAULT-DEFS, NAMESPACE-TABLE, FAULTTYPE)
-
-=over 4
-
-=back
-
-$obj-E<gt>B<writerCreateHeader>(HEADER-DEFS, NS-TABLE, UNDERSTAND, DESTINATION, OPTS)
-
-=over 4
-
-=back
-
-$obj-E<gt>B<writerCreateRpcEncoded>(NAMESPACE-TABLE)
-
-=over 4
-
-Create a handler which understands RPC encoded specifications.
-
-=back
-
-$obj-E<gt>B<writerCreateRpcLiteral>(NAMESPACE-TABLE)
-
-=over 4
-
-Create a handler which understands RPC literal specifications.
-
-=back
-
-$obj-E<gt>B<writerEncstyleHook>(NAMESPACE-TABLE)
-
-=over 4
-
-=back
-
-$obj-E<gt>B<writerHook>(NAMESPACE, LOCAL, ACTIONS)
-
-=over 4
-
-=back
-
-=head2 Receiver (internals)
-
-$obj-E<gt>B<readerEncstyleHook>
-
-=over 4
-
-=back
-
-$obj-E<gt>B<readerHook>(NAMESPACE, LOCAL, ACTIONS)
-
-=over 4
-
-=back
-
-$obj-E<gt>B<readerParseBody>(BODYDEF, OPTS)
-
-=over 4
-
-=back
-
-$obj-E<gt>B<readerParseFaults>(FAULTSDEF)
-
-=over 4
-
-=back
-
-$obj-E<gt>B<readerParseHeader>(HEADERDEF, OPTS)
-
-=over 4
-
-=back
-
-$obj-E<gt>B<receiver>(ARGS)
-
-=over 4
 
 =back
 
@@ -514,31 +356,22 @@ great detail in the WSDL: the message components are all defined in
 Schema's; the worst things you can (will) encounter are C<any> schema
 elements which require additional manual processing.
 
-I would like to express my personal disgust over I<RPC style SOAP>.
-In this case, the body of the message is I<not> clearly specified in the
-WSDL... which violates the whole purpose of using interface descriptions
-in the first place!  In a client-server interface definition, you really
-wish to be very explicit in the data you communicate.  Gladly, SOAP1.2
-shares my feelings a little, and speaks against RPC although still
-supporting it.
+C<RPC Literal> behaves very much the same way as document style soap,
+but has one extra wrapper inside the Body of the message.
 
-Anyway, we have to live with this feature.  SOAP-RPC is simple
+C<Encoded SOAP-RPC>, however, is a very different ball-game.  It is simple
 to use on strongly typed languages, to exchange data when you create both
 the client software and the server software.  You can simply autogenerate
 the data encoding.  Clients written by third parties have to find the
-documentation on how to use the RPC call in some other way... in text,
-if they are lucky; the WSDL file does not contain the prototype of the
-procedures, but that doesn't mean that they are free-format.
+documentation on how to use the encoded  RPC call in some other way... in
+text, if they are lucky; the WSDL file does not contain the prototype
+of the procedures, but that doesn't mean that they are free-format.
 
-The B<encoded RPC> messsages are shaped to the procedures which are
+B<Encoded RPC> messsages are shaped to the procedures which are
 being called on the server.  The body of the sent message contains the
 ordered list of parameters to be passed as 'in' and 'in/out' values to the
 remote procedure.  The body of the returned message lists the result value
 of the procedure, followed by the ordered 'out' and 'in/out' parameters.
-
-The B<literal RPC> messages are half-breed document style message: there is
-a schema which tells you how to interpret the body, but the WSDL doesn't
-tell you what the options are.
 
 =head2 Naming types and elements
 
@@ -588,17 +421,20 @@ Net::Server, which may have some portability restrictions.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.78,
-built on October 10, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.00_01,
+built on December 29, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,
 L<XML::Compile::SOAP>,
+L<XML::Compile::SOAP12>,
 L<XML::Compile::SOAP::Daemon>,
 L<XML::Compile::Tester>,
 L<XML::Compile::Cache>,
+L<XML::Compile::Dumper>,
 L<XML::Rewrite>,
-L<XML::Compile::Dumper>.
+and
+L<XML::LibXML::Simple>.
 
 Please post questions or ideas to the mailinglist at
 F<http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/xml-compile>

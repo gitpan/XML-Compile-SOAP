@@ -13,8 +13,7 @@ This module collects functions which are useful on many places in the
 SOAP implemention, just as L<XML::Compile::Util|XML::Compile::Util> does for general XML
 implementations (often you will needs things from both).
 
-On the moment, only a long list of constant URIs are exported on
-the moment.
+On the moment, only a long list of constant URIs are exported.
 
 =head1 FUNCTIONS
 
@@ -23,12 +22,6 @@ the moment.
 The export TAG C<:soap11> groups the SOAP version 1.1 related exported
 constants C<SOAP11ENV>, C<SOAP11ENC>, actor C<SOAP11NEXT>, and http
 indicator C<SOAP11HTTP>.
-
-=pod
-
-The export TAG C<:soap12> groups the SOAP version 1.2 related exported
-constants C<SOAP12ENV>, C<SOAP12ENC>, C<SOAP12RPC>, and role abbreviations
-C<SOAP12NONE>, C<SOAP12NEXT>, C<SOAP12ULTIMATE>.
 
 =pod
 
@@ -43,17 +36,20 @@ which refers to the MicroSoft Extension Framework namespace.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 0.78,
-built on October 10, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.00_01,
+built on December 29, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,
 L<XML::Compile::SOAP>,
+L<XML::Compile::SOAP12>,
 L<XML::Compile::SOAP::Daemon>,
 L<XML::Compile::Tester>,
 L<XML::Compile::Cache>,
+L<XML::Compile::Dumper>,
 L<XML::Rewrite>,
-L<XML::Compile::Dumper>.
+and
+L<XML::LibXML::Simple>.
 
 Please post questions or ideas to the mailinglist at
 F<http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/xml-compile>
