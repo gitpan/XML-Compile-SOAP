@@ -1,13 +1,13 @@
-# Copyrights 2007-2008 by Mark Overmeer.
+# Copyrights 2007-2009 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.05.
+# Pod stripped from pm file by OODoc 1.06.
 use warnings;
 use strict;
 
 package XML::Compile::Transport::SOAPHTTP;
 use vars '$VERSION';
-$VERSION = '2.00_01';
+$VERSION = '2.01';
 
 use base 'XML::Compile::Transport';
 
@@ -54,7 +54,7 @@ sub _initWSDL11($)
 {   my ($class, $wsdl) = @_;
     trace "initialize SOAPHTTP transporter for WSDL11";
 
-    $wsdl->importDefinitions(WSDL11HTTP, elementFormDefault => 'qualified');
+    $wsdl->importDefinitions(WSDL11HTTP, element_form_default => 'qualified');
     $wsdl->prefixes(http => WSDL11HTTP);
     $class->register('HTTP');   # register alias
 }
@@ -82,19 +82,18 @@ sub userAgent(;$)
 # SUPER::compileClient() calls this method to do the real work
 sub _prepare_call($)
 {   my ($self, $args) = @_;
-    my $method   = $args->{method}       || 'POST';
-    my $soap     = $args->{soap}         || 'SOAP11';
+    my $method   = $args->{method}   || 'POST';
+    my $soap     = $args->{soap}     || 'SOAP11';
     my $version  = ref $soap ? $soap->version : $soap;
-    my $mpost_id = $args->{mpost_id}     || 42;
+    my $mpost_id = $args->{mpost_id} || 42;
+    my $action   = $args->{action}   || '';
     my $mime     = $args->{mime};
-    my $action   = $args->{action}       || '';
 
     my $charset  = $self->charset;
     my $ua       = $self->userAgent;
 
     # Prepare header
-
-    my $header   = $args->{header}       || HTTP::Headers->new;
+    my $header   = $args->{header}   || HTTP::Headers->new;
     $self->headerAddVersions($header);
 
     if($version eq 'SOAP11')

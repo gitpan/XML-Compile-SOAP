@@ -1,13 +1,13 @@
-# Copyrights 2007-2008 by Mark Overmeer.
+# Copyrights 2007-2009 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.05.
+# Pod stripped from pm file by OODoc 1.06.
 use warnings;
 use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '2.00_01';
+$VERSION = '2.01';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -30,7 +30,6 @@ sub new($@)
 sub init($)
 {   my ($self, $args) = @_;
     $self->{mimens}  = $args->{media_type} || 'application/soap+xml';
-    $self->{version} = $args->{version}    || panic "no version string";
 
     my $schemas = $self->{schemas} = $args->{schemas}
         || XML::Compile::Cache->new(allow_undeclared => 1
@@ -42,8 +41,8 @@ sub init($)
 }
 
 
-sub version() {shift->{version}}
 sub name()    {shift->{name}}
+sub version() {panic "not implemented"}
 
 
 sub schemas() {shift->{schemas}}

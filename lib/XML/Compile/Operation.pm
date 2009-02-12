@@ -1,13 +1,13 @@
-# Copyrights 2007-2008 by Mark Overmeer.
+# Copyrights 2007-2009 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.05.
+# Pod stripped from pm file by OODoc 1.06.
 use warnings;
 use strict;
 
 package XML::Compile::Operation;
 use vars '$VERSION';
-$VERSION = '2.00_01';
+$VERSION = '2.01';
 
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
@@ -17,10 +17,7 @@ use XML::Compile::Util       qw/pack_type unpack_type/;
 use XML::Compile::SOAP::Util qw/:wsdl11/;
 
 
-sub new(@)
-{   my $class = shift;
-    (bless {}, $class)->init( {@_} );
-}
+sub new(@) { my $class = shift; (bless {}, $class)->init( {@_} ) }
 
 sub init($)
 {   my ($self, $args) = @_;
@@ -45,6 +42,11 @@ sub name()      {shift->{name}}
 sub action()    {shift->{action}}
 sub style()     {shift->{style}}
 sub transport() {shift->{transport}}
+sub version()   {panic}
+
+
+sub serverClass {panic}
+sub clientClass {panic}
 
 
 sub endPoints() { @{shift->{endpoints}} }
@@ -55,7 +57,7 @@ sub endPoints() { @{shift->{endpoints}} }
 sub compileTransporter(@)
 {   my ($self, %args) = @_;
 
-    my $send      = $args{transporter};
+    my $send      = $args{transporter} || $args{transport};
     return $send if $send;
 
     my $proto     = $self->transport;
@@ -84,10 +86,15 @@ sub compileClient(@)  { panic "not implemented" }
 sub compileHandler(@) { panic "not implemented" }
 
 
-{   my %registered;
-    sub register($)   { my ($class, $uri) = @_; $registered{$uri} = $class }
-    sub plugin($)     { my ($class, $uri) = @_; $registered{$uri} }
-    sub registered($) { values %registered }
+{   my (%registered, %envelope);
+    sub register($)
+    { my ($class, $uri, $env) = @_;
+      $registered{$uri} = $class;
+      $envelope{$env}   = $class;
+    }
+    sub plugin($)       { $registered{$_[1]} }
+    sub fromEnvelope($) { $envelope{$_[1]} }
+    sub registered($)   { values %registered }
 }
 
 1;

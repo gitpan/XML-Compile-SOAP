@@ -125,7 +125,6 @@ can be hidden for you)
  Option    --Default
  media_type  application/soap+xml
  schemas     created internally
- version     <required>
 
 . media_type => MIMETYPE
 
@@ -137,14 +136,6 @@ Use this when you have already processed some schema definitions.  Otherwise,
 you can add schemas later with C<< $soap->schemas->importDefinitions() >>
 The Cache object must have C<any_element> and C<any_attribute> set to
 C<'ATTEMPT'>
-
-=back
-
-. version => STRING
-
-=over 4
-
-The simple string representation of the protocol.
 
 =back
 
@@ -421,8 +412,8 @@ Net::Server, which may have some portability restrictions.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.00_01,
-built on December 29, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.01,
+built on February 12, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,
@@ -443,7 +434,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2008 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2009 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

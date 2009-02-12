@@ -1,13 +1,13 @@
-# Copyrights 2007-2008 by Mark Overmeer.
+# Copyrights 2007-2009 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.05.
+# Pod stripped from pm file by OODoc 1.06.
 use warnings;
 use strict;
 
 package XML::Compile::SOAP11;
 use vars '$VERSION';
-$VERSION = '2.00_01';
+$VERSION = '2.01';
 
 use base 'XML::Compile::SOAP';
 
@@ -34,7 +34,6 @@ sub new($@)
 
 sub init($)
 {   my ($self, $args) = @_;
-    $args->{version} ||= 'SOAP11';
     $self->SUPER::init($args);
 
     $self->_initSOAP11($self->schemas);
@@ -47,8 +46,8 @@ sub _initSOAP11($)
 
     $schemas->importDefinitions
       ( [SOAP11ENC, SOAP11ENV]
-      , elementFormDefault   => 'qualified'
-      , attributeFormDefault => 'qualified'
+      , element_form_default   => 'qualified'
+      , attribute_form_default => 'qualified'
       );
     $schemas->importDefinitions('soap-envelope-patch.xsd');
 
@@ -59,6 +58,9 @@ sub _initSOAP11($)
 
     $self;
 }
+
+sub version    { 'SOAP11' }
+sub envelopeNS { SOAP11ENV }
 
 #-----------------------------------
 

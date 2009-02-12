@@ -86,6 +86,14 @@ $obj-E<gt>B<action>
 
 =back
 
+$obj-E<gt>B<clientClass>
+
+=over 4
+
+Returns the class name which implements the Client side for this protocol.
+
+=back
+
 $obj-E<gt>B<endPoints>
 
 =over 4
@@ -108,6 +116,20 @@ $obj-E<gt>B<name>
 =back
 
 $obj-E<gt>B<schemas>
+
+=over 4
+
+=back
+
+$obj-E<gt>B<serverClass>
+
+=over 4
+
+Returns the class name which implements the Server side for this protocol.
+
+=back
+
+$obj-E<gt>B<version>
 
 =over 4
 
@@ -184,18 +206,18 @@ connection to a server.
 
 =head2 Helpers
 
-XML::Compile::Operation-E<gt>B<register>(URI)
+XML::Compile::Operation-E<gt>B<register>(URI, ENVNS)
 
 =over 4
 
-Declare an operation type.
+Declare an operation type, but WSDL specific URI and envelope namespace.
 
 =back
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.00_01,
-built on December 29, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.01,
+built on February 12, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,
@@ -216,7 +238,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2008 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2009 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

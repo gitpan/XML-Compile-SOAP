@@ -1,13 +1,13 @@
-# Copyrights 2007-2008 by Mark Overmeer.
+# Copyrights 2007-2009 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.05.
+# Pod stripped from pm file by OODoc 1.06.
 use warnings;
 use strict;
 
 package XML::Compile::SOAP::Server;
 use vars '$VERSION';
-$VERSION = '2.00_01';
+$VERSION = '2.01';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -23,8 +23,12 @@ sub init($)
    $self;
 }
 
+#---------------------------------
+
 
 sub role() {shift->{role}}
+
+#---------------------------------
 
 
 sub compileHandler(@)
@@ -56,7 +60,7 @@ sub compileHandler(@)
         {   $data = try { $decode->($xmlin) };
             if($@)
             {   my $exception = $@->wasFatal;
-                $exception->throw(reason => 'info');
+                $exception->throw(reason => 'INFO');
                 info __x"callback {name} validation failed", name => $name;
                 $answer = $self->faultValidationFailed($invalid, $exception);
             }
@@ -83,7 +87,11 @@ sub compileHandler(@)
 
 sub compileFilter(@)
 {   my ($self, %args) = @_;
-    my $nodetype = ($args{body} || [])->[1];
+    my $nodetype;
+    if(my $first    = $args{body}{parts}[0])
+    {   $nodetype = $first->{element}
+            or panic "cannot handle type parameter in server filter";
+    }
 
     # called with (XML, INFO)
       defined $nodetype

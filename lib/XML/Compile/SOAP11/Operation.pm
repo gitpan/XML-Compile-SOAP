@@ -1,13 +1,13 @@
-# Copyrights 2007-2008 by Mark Overmeer.
+# Copyrights 2007-2009 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.05.
+# Pod stripped from pm file by OODoc 1.06.
 use warnings;
 use strict;
 
 package XML::Compile::SOAP11::Operation;
 use vars '$VERSION';
-$VERSION = '2.00_01';
+$VERSION = '2.01';
 
 use base 'XML::Compile::Operation';
 
@@ -20,8 +20,10 @@ use XML::Compile::SOAP11::Client;
 use XML::Compile::SOAP11::Server;
 
 XML::Compile->knownNamespace(&WSDL11SOAP => 'wsdl-soap.xsd');
-__PACKAGE__->register(WSDL11SOAP);
+__PACKAGE__->register(WSDL11SOAP, SOAP11ENV);
 
+# client/server object per schema class, because initiation options
+# can be different.  Class reference is key.
 my (%soap11_client, %soap11_server);
 
 
@@ -42,7 +44,7 @@ sub _initWSDL11($)
 
     trace "initialize SOAP11 operations for WSDL11";
 
-    $wsdl->importDefinitions(WSDL11SOAP, elementFormDefault => 'qualified');
+    $wsdl->importDefinitions(WSDL11SOAP, element_form_default => 'qualified');
     $wsdl->prefixes
       ( soap => WSDL11SOAP
       );
@@ -78,6 +80,9 @@ sub _fromWSDL11(@)
 
     $args{fault_def}
       = $class->_fault_parts($wsdl, $p_op->{wsdl_fault}, $b_op->{wsdl_fault});
+
+#use Data::Dumper;
+#warn Dumper $args{input_def}, $args{output_def}, $p_op, $b_op;
 
     $class->SUPER::new(%args);
 }
@@ -177,7 +182,10 @@ sub _fault_parts($$$)
 #-------------------------------------------
 
 
-sub style()    {shift->{style}}
+sub style()     {shift->{style}}
+sub version()   { 'SOAP11' }
+sub serverClass { 'XML::Compile::SOAP11::Server' }
+sub clientClass { 'XML::Compile::SOAP11::Client' }
 
 #-------------------------------------------
 

@@ -245,7 +245,7 @@ a packed TYPE) into a prefixed notation.
 The complication is that the NAMESPACE may not naturally have a prefixed
 assigned to it: the produced SOAP message is the result of compilation,
 and only the namespaces which are registered to be used during compile-time
-are added to the list on the top-level.  See XML::Compile::SOAP subroutine compileMessage option prefixes.
+are added to the list on the top-level.
 
 =back
 
@@ -316,7 +316,7 @@ When VALUE already is an XML::LibXML::Element, then no processing
 nor value checking will be performed.  The NAME will be ignored.
 
 If the TYPE is not qualified, then it is interpreted as basic type, as
-defined by the selected schema (see XML::Compile::SOAP subroutine new option schema_ns).  If you explicitly
+defined by the selected schema.  If you explicitly
 need a non-namespace typed item, then use an empty namespace.  In any
 case, the type must be defined and the value is validated.
 
@@ -398,8 +398,8 @@ an easily accessible output tree.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.00_01,
-built on December 29, 2008. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.01,
+built on February 12, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,
@@ -420,7 +420,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2008 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2009 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
