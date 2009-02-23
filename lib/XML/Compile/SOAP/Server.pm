@@ -7,12 +7,13 @@ use strict;
 
 package XML::Compile::SOAP::Server;
 use vars '$VERSION';
-$VERSION = '2.01';
+$VERSION = '2.02';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 
 use XML::Compile::SOAP::Util qw/:soap11/;
+use HTTP::Status qw/RC_OK RC_NOT_ACCEPTABLE RC_INTERNAL_SERVER_ERROR/;
 
 
 sub new(@) { panic __PACKAGE__." only secundary in multiple inheritance" }
@@ -43,12 +44,6 @@ sub compileHandler(@)
     # even without callback, we will validate
     my $callback = $args{callback};
 
-    my $invalid = __x"{version} operation {name} called with invalid data"
-      , version => $self->version, name => $name;
-
-    my $empty   = __x"{version} operation {name} did not produce an answer"
-      , version => $self->version, name => $name;
-
     sub
     {   my ($name, $xmlin, $info) = @_;
         $selector->($xmlin, $info) or return;
@@ -58,29 +53,29 @@ sub compileHandler(@)
 
         if($decode)
         {   $data = try { $decode->($xmlin) };
-            if($@)
-            {   my $exception = $@->wasFatal;
-                $exception->throw(reason => 'INFO');
-                info __x"callback {name} validation failed", name => $name;
-                $answer = $self->faultValidationFailed($invalid, $exception);
-            }
+            return ( RC_NOT_ACCEPTABLE, 'input validation failed'
+                   , $self->faultValidationFailed($name, $@->wasFatal))
+                if $@;
         }
         else
         {   $data = $xmlin;
         }
 
-        $answer = $callback->($self, $data)
-            if $data && !$answer;
+        $answer = $callback->($self, $data);
 
-        return $answer
-            if UNIVERSAL::isa($answer, 'XML::LibXML::Document');
+        defined $answer
+            or return ( RC_INTERNAL_SERVER_ERROR, 'no answer produced'
+                      , $self->faultNoAnswerProduced($name));
 
-        unless($answer)
-        {   info __x"callback {name} did not return an answer", name => $name;
-            $answer = $self->faultNoAnswerProduced($empty);
-        }
+        !ref $answer || ref $answer eq 'HASH'
+            or return $answer;   # something ready or half ready
 
-        $encode->($answer);
+        my $xmlout = try { $encode->($answer) };
+        $@ or return (RC_OK, 'Answer included', $xmlout);
+
+        ( RC_INTERNAL_SERVER_ERROR, 'created response not valid'
+        , $self->faultResponseInvalid($name, $@->wasFatal)
+        );
     };
 }
 
@@ -103,7 +98,7 @@ sub compileFilter(@)
 sub faultWriter()
 {   my $thing = shift;
     my $self  = ref $thing ? $thing : $thing->new;
-    $self->compileMessage('SENDER');
+    $self->{fault_writer} ||= $self->compileMessage('SENDER');
 }
 
 1;

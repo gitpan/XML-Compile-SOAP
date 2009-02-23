@@ -7,12 +7,13 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '2.01';
+$VERSION = '2.02';
 
 use base 'XML::Compile::Cache';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 
+use XML::Compile             ();      
 use XML::Compile::Util       qw/pack_type unpack_type/;
 use XML::Compile::SOAP::Util qw/:wsdl11 SOAP11ENV/;
 
