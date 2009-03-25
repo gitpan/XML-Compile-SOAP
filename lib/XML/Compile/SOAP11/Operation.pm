@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11::Operation;
 use vars '$VERSION';
-$VERSION = '2.02';
+$VERSION = '2.03';
 
 use base 'XML::Compile::Operation';
 
@@ -101,20 +101,20 @@ sub _msg_parts($$$)
         my ($ns, $local) = unpack_type $msgname;
         my $procedure = @parts==1 && $parts[0]{type} ? $msgname : $local;
 
-        $parts{body}  = {procedure => $procedure, parts => \@parts
-          , %$port_op, use => 'literal', %$body};
+        $parts{body}  = {procedure => $procedure, %$port_op, use => 'literal',
+           %$body, parts => \@parts};
     }
 
     my $bsh = $bind_op->{soap_header} || [];
     foreach my $header (ref $bsh eq 'ARRAY' ? @$bsh : $bsh)
     {   my $msgname  = $header->{message};
         my @parts    = $class->_select_parts($wsdl, $msgname, $header->{part});
-         push @{$parts{header}}, { parts => \@parts, %$header };
+         push @{$parts{header}}, { %$header, parts => \@parts };
 
         foreach my $fault ( @{$header->{headerfault} || []} )
         {   $msgname = $fault->{message};
             my @hf   = $class->_select_parts($wsdl, $msgname, $fault->{part});
-            push @{$parts{headerfault}}, { parts => \@hf, %$fault };
+            push @{$parts{headerfault}}, { %$fault,  parts => \@hf };
         }
     }
     \%parts;

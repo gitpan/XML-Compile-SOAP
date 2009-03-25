@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Operation;
 use vars '$VERSION';
-$VERSION = '2.02';
+$VERSION = '2.03';
 
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
@@ -61,7 +61,14 @@ sub compileTransporter(@)
     return $send if $send;
 
     my $proto     = $self->transport;
-    my @endpoints = $args{endpoint} || $self->endPoints;
+    my @endpoints = $args{endpoint} ? $args{endpoint} : ();
+    unless(@endpoints)
+    {   @endpoints = $self->endPoints;
+        if(my $s = $args{server})
+        {   s#^(\w+)://([^/]+)#$1://$s# for @endpoints;
+        }
+    }
+
     my $id        = join ';', sort @endpoints;
     $send         = $self->{transp_cache}{$proto}{$id};
     return $send if $send;

@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '2.02';
+$VERSION = '2.03';
 
 use base 'XML::Compile::Cache';
 
@@ -128,6 +128,32 @@ sub addWSDL($)
         }
     }
 
+    # no service block when only one port
+    unless($index->{service})
+    {   # only from this WSDL, cannot use collective $index
+        my @portTypes = map { $_->{wsdl_portType} || () } @$toplevels;
+        @portTypes==1
+            or error __x"no service definition so needs 1 portType, found {nr}"
+                 , nr => scalar @portTypes;
+
+        my @bindings = map { $_->{wsdl_binding} || () } @$toplevels;
+        @bindings==1
+            or error __x"no service definition so needs 1 binding, found {nr}"
+                 , nr => scalar @bindings;
+
+        my $binding  = pack_type $tns, $bindings[0]->{name};
+        my $portname = $portTypes[0]->{name};
+        my $servname = $portname;
+        $servname =~ s/Service$|(?:Service)?Port(?:Type)?$/Service/i
+             or $servname .= 'Service';
+
+        my %port = (name => $portname, binding => $binding
+           , soap_address => {location => 'http://localhost'} );
+
+        $index->{service}{pack_type $tns, $servname}
+            = { name => $servname, wsdl_port => [ \%port ] };
+        $index->{port}{pack_type $tns, $portname} = \%port;
+    }
 #warn "INDEX: ",Dumper $index;
     $self;
 }

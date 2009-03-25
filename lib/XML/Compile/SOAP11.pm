@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11;
 use vars '$VERSION';
-$VERSION = '2.02';
+$VERSION = '2.03';
 
 use base 'XML::Compile::SOAP';
 
@@ -35,7 +35,6 @@ sub new($@)
 sub init($)
 {   my ($self, $args) = @_;
     $self->SUPER::init($args);
-
     $self->_initSOAP11($self->schemas);
 }
 

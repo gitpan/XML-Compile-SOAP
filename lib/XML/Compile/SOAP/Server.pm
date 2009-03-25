@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::Server;
 use vars '$VERSION';
-$VERSION = '2.02';
+$VERSION = '2.03';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -85,7 +85,8 @@ sub compileFilter(@)
     my $nodetype;
     if(my $first    = $args{body}{parts}[0])
     {   $nodetype = $first->{element}
-            or panic "cannot handle type parameter in server filter";
+#           or panic "cannot handle type parameter in server filter";
+            || $args{body}{procedure};  # rpc-literal "type"
     }
 
     # called with (XML, INFO)

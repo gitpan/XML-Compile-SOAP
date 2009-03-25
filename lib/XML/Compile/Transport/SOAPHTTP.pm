@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport::SOAPHTTP;
 use vars '$VERSION';
-$VERSION = '2.02';
+$VERSION = '2.03';
 
 use base 'XML::Compile::Transport';
 
@@ -171,16 +171,19 @@ sub _prepare_call($)
             or return undef;
 
         $trace->{http_response} = $response;
-        if($response->is_error)
-        {   error   $response->message
-                if $response->header('Client-Warning');
-            warning $response->message;
-            return undef;
+
+        if($response->content_type =~ m![/+]xml$!i)
+        {   info "fault ".$response->status_line;
+            return $response->decoded_content;
         }
 
-          $response->content_type =~ m![/+]xml$!i
-        ? $response->decoded_content
-        : undef;
+        if($response->is_error)
+        {   error $response->message
+                if $response->header('Client-Warning');
+            warning $response->message;
+        }
+
+        undef;
       };
 }
 

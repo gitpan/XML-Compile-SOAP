@@ -169,6 +169,7 @@ $obj-E<gt>B<compileTransporter>(OPTIONS)
 
  Option        --Default
  endpoint        <from WSDL>
+ server          undef
  transport_hook  undef
  transporter     <created>
 
@@ -177,6 +178,16 @@ $obj-E<gt>B<compileTransporter>(OPTIONS)
 =over 4
 
 Overrule the destination address.
+
+=back
+
+. server => URI-HOST
+
+=over 4
+
+Overrule only the server part in the endpoint, not the whole endpoint.
+This could be a string like C<username:password@myhost:4711>.  Only
+used when no explicit C<endpoint> is provided.
 
 =back
 
@@ -216,8 +227,8 @@ Declare an operation type, but WSDL specific URI and envelope namespace.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.02,
-built on February 15, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.03,
+built on March 25, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,
