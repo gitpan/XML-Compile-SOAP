@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '2.03';
+$VERSION = '2.04';
 
 use base 'XML::Compile::Cache';
 
@@ -219,15 +219,15 @@ sub operation(@)
     ## Binding
     #
 
-    my $bindname  = $port->{binding}
+    my $bindtype  = $port->{binding}
         or error __x"no binding defined in port '{name}'"
                , name => $port->{name};
 
-    my $binding   = $self->findDef(binding => $bindname);
+    my $binding   = $self->findDef(binding => $bindtype);
 
-    my $type      = $binding->{type}
+    my $type      = $binding->{type}  # get portTypeType
         or error __x"no type defined with binding `{name}'"
-               , name => $bindname;
+               , name => $bindtype;
 
     my $portType  = $self->findDef(portType => $type);
     my $types     = $portType->{wsdl_operation}
@@ -245,7 +245,8 @@ sub operation(@)
             unless $port_op;
     }
     elsif(@port_ops==1)
-    {   $port_op = shift @port_ops;
+    {   $port_op = shift @$types;
+        $name    = $port_op->{name};
     }
     else
     {   error __x"multiple operations in portType `{pt}', pick from {ops}"
@@ -291,7 +292,7 @@ sub operation(@)
 
      , wsdl      => $self
      );
-
+ 
     $operation;
 }
 
@@ -352,22 +353,28 @@ sub operations(@)
 
     foreach my $service ($self->findDef('service'))
     {
+        next if $args{service} && $args{service} ne $service->{name};
+
         foreach my $port (@{$service->{wsdl_port} || []})
         {
-            my $bindname = $port->{binding}
+            next if $args{port} && $args{port} ne $port->{name};
+
+            my $bindtype = $port->{binding}
                 or error __x"no binding defined in port '{name}'"
                       , name => $port->{name};
-            my $binding  = $self->findDef(binding => $bindname);
+            my $binding  = $self->findDef(binding => $bindtype);
+
+            next if $args{binding} && $args{binding} ne $binding->{name};
 
             my $type     = $binding->{type}
                 or error __x"no type defined with binding `{name}'"
-                    , name => $bindname;
+                    , name => $bindtype;
 
             foreach my $operation ( @{$binding->{wsdl_operation}||[]} )
             {   push @ops, $self->operation
                   ( service   => $service->{name}
                   , port      => $port->{name}
-                  , binding   => $bindname
+                  , binding   => $bindtype
                   , operation => $operation->{name}
                   , portType  => $type
                   );
@@ -376,6 +383,29 @@ sub operations(@)
     }
 
     @ops;
+}
+
+
+sub printIndex(@)
+{   my $self = shift;
+    my $fh   = @_ % 2 ? shift : select;
+    my @args = @_;
+
+    my %tree;
+    $tree{'service '.$_->serviceName}
+         {'port '.$_->portName . ' (binding '.$_->bindingName.')'}
+         {$_->name} = $_
+         for $self->operations(@args);
+
+    foreach my $service (sort keys %tree)
+    {   $fh->print("$service\n");
+        foreach my $port (sort keys %{$tree{$service}})
+        {   $fh->print("    $port\n");
+            foreach my $op (sort keys %{$tree{$service}{$port}})
+            {   $fh->print("        $op\n");
+            }
+        }
+    }
 }
 
 #--------------------------------

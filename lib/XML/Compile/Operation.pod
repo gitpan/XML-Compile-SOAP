@@ -86,6 +86,12 @@ $obj-E<gt>B<action>
 
 =back
 
+$obj-E<gt>B<bindingName>
+
+=over 4
+
+=back
+
 $obj-E<gt>B<clientClass>
 
 =over 4
@@ -115,6 +121,12 @@ $obj-E<gt>B<name>
 
 =back
 
+$obj-E<gt>B<portName>
+
+=over 4
+
+=back
+
 $obj-E<gt>B<schemas>
 
 =over 4
@@ -126,6 +138,12 @@ $obj-E<gt>B<serverClass>
 =over 4
 
 Returns the class name which implements the Server side for this protocol.
+
+=back
+
+$obj-E<gt>B<serviceName>
+
+=over 4
 
 =back
 
@@ -227,8 +245,8 @@ Declare an operation type, but WSDL specific URI and envelope namespace.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.03,
-built on March 25, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.04,
+built on April 13, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

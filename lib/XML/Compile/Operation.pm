@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Operation;
 use vars '$VERSION';
-$VERSION = '2.03';
+$VERSION = '2.04';
 
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
@@ -32,6 +32,12 @@ sub init($)
     my @ep = ref $ep eq 'ARRAY' ? @$ep : $ep;
     $self->{endpoints} = \@ep;
 
+    # undocumented, because not for end-user
+    if(my $binding = $args->{binding})  { $self->{bindname} = $binding->{name} }
+    if(my $service = $args->{service})  { $self->{servname} = $service->{name} }
+    if(my $port    = $args->{serv_port}){ $self->{portname} = $port->{name} }
+    if(my $port_type= $args->{portType}){ $self->{porttypename} = $port_type->{name} }
+
     $self;
 }
 
@@ -43,6 +49,11 @@ sub action()    {shift->{action}}
 sub style()     {shift->{style}}
 sub transport() {shift->{transport}}
 sub version()   {panic}
+
+sub bindingName() {shift->{bindname}}
+sub serviceName() {shift->{servname}}
+sub portName()    {shift->{portname}}
+sub portTypeName(){shift->{porttypename}}
 
 
 sub serverClass {panic}

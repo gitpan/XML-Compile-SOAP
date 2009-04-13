@@ -329,14 +329,6 @@ See L<XML::Compile::Schema/"Administration">
 
 =back
 
-$obj-E<gt>B<printIndex>([FILEHANDLE], OPTIONS)
-
-=over 4
-
-See L<XML::Compile::Cache/"Administration">
-
-=back
-
 $obj-E<gt>B<types>
 
 =over 4
@@ -499,6 +491,52 @@ $obj-E<gt>B<operations>(OPTIONS)
 
 Return a list with all operations defined in the WSDL.
 
+ Option --Default
+ binding  <undef>
+ port     <undef>
+ service  <undef>
+
+. binding => NAME
+
+=over 4
+
+Only return operations which use the binding with the specified NAME.
+By default, all bindings are accepted.
+
+=back
+
+. port => NAME
+
+=over 4
+
+Return only operations related to the specified port NAME.
+By default operations from all ports.
+
+=back
+
+. service => NAME
+
+=over 4
+
+Only return operations related to the NAMEd service, by default all services.
+
+=back
+
+=back
+
+$obj-E<gt>B<printIndex>([FILEHANDLE], OPTIONS)
+
+=over 4
+
+For available OPTIONS, see L<operations()|XML::Compile::WSDL11/"Introspection">.  This method is useful to
+understand the structure of your WSDL: it shows a nested list of
+services, bindings, ports and portTypes.
+
+ Option       --Defined in         --Default
+ show_declared  XML::Compile::Cache  <true>
+
+. show_declared => BOOLEAN
+
 =back
 
 =head1 DETAILS
@@ -551,8 +589,8 @@ Error: don't known how to interpret XML data
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.03,
-built on March 25, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.04,
+built on April 13, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

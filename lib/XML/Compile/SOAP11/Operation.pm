@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11::Operation;
 use vars '$VERSION';
-$VERSION = '2.03';
+$VERSION = '2.04';
 
 use base 'XML::Compile::Operation';
 
@@ -69,26 +69,22 @@ sub _fromWSDL11(@)
     $args{action}    = $sop->{soapAction} || '';
 
     my $sb = $args{binding}{soap_binding} || {};
-    $args{style}     = $sb->{style}       || 'document';
     $args{transport} = $sb->{transport}   || 'HTTP';
+    $args{style}     = $sb->{style}       || 'document';
 
-    $args{input_def}
-      = $class->_msg_parts($wsdl, $p_op->{wsdl_input}, $b_op->{wsdl_input});
+    $args{input_def} = $class->_msg_parts($wsdl, $args{name}, $args{style}
+       , $p_op->{wsdl_input}, $b_op->{wsdl_input});
 
-    $args{output_def}
-      = $class->_msg_parts($wsdl, $p_op->{wsdl_output}, $b_op->{wsdl_output});
+    $args{output_def} = $class->_msg_parts($wsdl, $args{name}, $args{style}
+      , $p_op->{wsdl_output}, $b_op->{wsdl_output});
 
-    $args{fault_def}
-      = $class->_fault_parts($wsdl, $p_op->{wsdl_fault}, $b_op->{wsdl_fault});
-
-#use Data::Dumper;
-#warn Dumper $args{input_def}, $args{output_def}, $p_op, $b_op;
+    $args{fault_def} = $class->_fault_parts($wsdl,$p_op->{wsdl_fault},$b_op->{wsdl_fault});
 
     $class->SUPER::new(%args);
 }
 
-sub _msg_parts($$$)
-{   my ($class, $wsdl, $port_op, $bind_op) = @_;
+sub _msg_parts($$$$$)
+{   my ($class, $wsdl, $opname, $style, $port_op, $bind_op) = @_;
     my %parts;
 
     defined $port_op          # communication not in two directions
@@ -99,7 +95,10 @@ sub _msg_parts($$$)
         my @parts     = $class->_select_parts($wsdl, $msgname, $body->{parts});
 
         my ($ns, $local) = unpack_type $msgname;
-        my $procedure = @parts==1 && $parts[0]{type} ? $msgname : $local;
+        my $procedure
+          = $style eq 'rpc'              ? $opname
+          : @parts==1 && $parts[0]{type} ? $msgname
+          :                                $local;
 
         $parts{body}  = {procedure => $procedure, %$port_op, use => 'literal',
            %$body, parts => \@parts};

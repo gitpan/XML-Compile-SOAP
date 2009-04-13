@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                XML-Compile-SOAP
-version:             2.03
+version:             2.04
 abstract:            SOAP and WSDL, client side
 license:             perl
 author:              
@@ -9,7 +9,7 @@ generated_by:        ExtUtils::MakeMaker version 6.42
 distribution_type:   module
 requires:     
     Log::Report:                   0.17
-    LWP:                           5.803
+    LWP:                           5.825
     Test::Deep:                    0.095
     Test::More:                    0.54
     Test::Pod:                     1.00
