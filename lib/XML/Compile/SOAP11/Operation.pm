@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11::Operation;
 use vars '$VERSION';
-$VERSION = '2.04';
+$VERSION = '2.05';
 
 use base 'XML::Compile::Operation';
 
@@ -95,10 +95,14 @@ sub _msg_parts($$$$$)
         my @parts     = $class->_select_parts($wsdl, $msgname, $body->{parts});
 
         my ($ns, $local) = unpack_type $msgname;
-        my $procedure
-          = $style eq 'rpc'              ? $opname
-          : @parts==1 && $parts[0]{type} ? $msgname
-          :                                $local;
+        my $procedure;
+        if($style eq 'rpc')
+        {   my $ns = $body->{namespace} || '';
+            $procedure = pack_type $ns, $opname;
+        }
+        else
+        {   $procedure = @parts==1 && $parts[0]{type} ? $msgname : $local; 
+        }
 
         $parts{body}  = {procedure => $procedure, %$port_op, use => 'literal',
            %$body, parts => \@parts};

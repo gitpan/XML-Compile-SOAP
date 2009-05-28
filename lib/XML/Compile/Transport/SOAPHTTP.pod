@@ -140,7 +140,7 @@ contains trace information.
  action                      ''
  header                      <created>
  hook       XML::Compile::Transport  <undef>
- kind       XML::Compile::Transport  'request-response'
+ kind                        'request-response'
  method                      'POST'
  mime_type                   <depends on soap version>
  mpost_id                    42
@@ -159,7 +159,17 @@ added to simplify bug reports.
 
 . hook => CODE
 
-. kind => STRING
+. kind => DIRECTION
+
+=over 4
+
+What kind of interactie, based on the four types defined by WSDL(1):
+C<notification-operation> (server initiated, no answer required),
+C<one-way> (client initiated, no answer required), C<request-response>
+(client initiated, the usual in both directions), C<solicit-response> (server
+initiated "challenge").
+
+=back
 
 . method => 'POST'|'M-POST'
 
@@ -219,8 +229,8 @@ is being created.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.04,
-built on April 13, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.05,
+built on May 28, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

@@ -1,6 +1,6 @@
 =head1 NAME
 
-XML::Compile::SOAP11 - base class for SOAP1.1 implementation
+XML::Compile::SOAP11 - base for SOAP1.1 implementation
 
 =head1 INHERITANCE
 
@@ -14,7 +14,6 @@ XML::Compile::SOAP11 - base class for SOAP1.1 implementation
 =head1 SYNOPSIS
 
  # use either XML::Compile::SOAP11::Client or ::Server
-
  # See XML::Compile::SOAP for global usage examples.
 
 =head1 DESCRIPTION
@@ -287,8 +286,8 @@ a header problem, so the C<header> key is used.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.04,
-built on April 13, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.05,
+built on May 28, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

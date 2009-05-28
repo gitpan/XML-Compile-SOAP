@@ -99,7 +99,7 @@ an external SOAP server.  Use this for debugging and regression test
 scripts.
 
 Usually, you should set your own FAKE server, but simply instantiate
-a L<XML::Compile::SOAP::Tester|XML::Compile::SOAP::Tester> object.
+a XML::Compile::SOAP::Tester object.
 
 BE WARNED: this FAKE server must be instantiated B<before> the
 SOAP client handlers are compiled.
@@ -488,8 +488,8 @@ equivalent to the C<%data_in> from the client.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.04,
-built on April 13, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.05,
+built on May 28, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

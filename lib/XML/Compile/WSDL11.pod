@@ -72,6 +72,7 @@ L<XML::Compile::Schema::new()|XML::Compile::Schema/"Constructors">
  Option            --Defined in     --Default
  allow_undeclared    XML::Compile::Cache  <false>
  any_element         XML::Compile::Cache  'SKIP_ALL'
+ block_namespace     XML::Compile::Schema  []
  hook                XML::Compile::Schema  undef
  hooks               XML::Compile::Schema  []
  ignore_unused_tags  XML::Compile::Schema  <false>
@@ -86,6 +87,8 @@ L<XML::Compile::Schema::new()|XML::Compile::Schema/"Constructors">
 . allow_undeclared => BOOLEAN
 
 . any_element => CODE|'TAKE_ALL'|'SKIP_ALL'|'ATTEMPT'
+
+. block_namespace => NAMESPACE|TYPE|HASH|CODE|ARRAY
 
 . hook => ARRAY-WITH-HOOKDATA | HOOK
 
@@ -177,6 +180,14 @@ See L<XML::Compile::Cache/"Accessors">
 
 =back
 
+$obj-E<gt>B<blockNamespace>(NAMESPACE|TYPE|HASH|CODE|ARRAY)
+
+=over 4
+
+See L<XML::Compile::Schema/"Accessors">
+
+=back
+
 $obj-E<gt>B<hooks>
 
 =over 4
@@ -194,6 +205,14 @@ See L<XML::Compile::Cache/"Accessors">
 =back
 
 $obj-E<gt>B<prefixFor>(URI)
+
+=over 4
+
+See L<XML::Compile::Cache/"Accessors">
+
+=back
+
+$obj-E<gt>B<prefixed>(TYPE)
 
 =over 4
 
@@ -589,8 +608,8 @@ Error: don't known how to interpret XML data
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.04,
-built on April 13, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.05,
+built on May 28, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

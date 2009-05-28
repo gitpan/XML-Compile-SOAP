@@ -1,0 +1,174 @@
+=head1 NAME
+
+XML::Compile::XOP::Include - Represents one XOP node.
+
+=head1 INHERITANCE
+
+=head1 SYNOPSIS
+
+  # See also SYNOPSIS of XML::Compile::XOP
+  my $xop       = XML::Compile::XOP->new;
+  my $xop_image = $xop->bytes($binary_image);
+  my $answer    = $call->(image => $xop_image);
+
+=head1 DESCRIPTION
+
+Represents one data-set which will be represented as seperate (binary)
+object during transport.  This can only be used on data fields which
+are base64Binary.
+
+YOU SHOULD NOT instantiate this kind of objects directly, but use the
+L<XML::Compile::XOP|XML::Compile::XOP> method to create them.
+
+The object is overloaded to produce the contained data when a scalar is
+required, for instance when you call functions like "length".  This means
+that, hopefully, the end-user does not see much of a difference between
+data which is transported inline or packaged seperately.
+
+=head1 METHODS
+
+=head2 Constructors
+
+XML::Compile::XOP::Include-E<gt>B<fromMime>(OBJECT)
+
+=over 4
+
+Collect the data from a HTTP::Message object.
+
+=back
+
+XML::Compile::XOP::Include-E<gt>B<new>(OPTIONS)
+
+=over 4
+
+You have to specify either a C<file> or C<byte> source.  Otherwise, the
+constructor will return C<undef>.
+
+ Option--Default
+ bytes   undef
+ cid     <required>
+ file    undef
+ type    <required>
+ xmime   <required>
+ xop     <required>
+
+. bytes => STRING|SCALAR
+
+=over 4
+
+Take the data from a STRING of reference.
+
+=back
+
+. cid => STRING
+
+=over 4
+
+The Content-ID of the binary attachment.
+
+=back
+
+. file => FILENAME|FILEHANDLE
+
+=over 4
+
+Take the data from the specified file.
+
+=back
+
+. type => MIMETYPE
+
+=over 4
+
+The MIME-Type of the data.
+
+=back
+
+. xmime => VERSION
+
+. xop => VERSION
+
+=back
+
+=head2 Accessors
+
+$obj-E<gt>B<cid>
+
+=over 4
+
+Returns the Content-ID.
+
+=back
+
+$obj-E<gt>B<content>([BYREF])
+
+=over 4
+
+Returns the content, when BYREF (boolean) is true, then the value is
+returned by reference.
+
+=back
+
+=head2 Processing
+
+$obj-E<gt>B<mimePart>([HEADERS])
+
+=over 4
+
+Produce the message part which contains a normal mime representation
+of a binary file.  You may provide an initial HEADERS (HTTP::Headers)
+object, or an ARRAY of headers to instantiate such an object.
+
+=back
+
+$obj-E<gt>B<write>(FILENAME|FILEHANDLE)
+
+=over 4
+
+Write the content to the specified FILE.
+
+=back
+
+$obj-E<gt>B<xmlNode>(DOCUMENT, PATH, TAG)
+
+=over 4
+
+The DOCUMENT will be used to construct the node from.  The PATH
+is an indicator for the location of the node within the data
+structure (used in error messages).  The TAG is the prefixed name
+for the node to be created.
+
+Returned is an XML node to be included in the output tree.
+
+=back
+
+=head1 SEE ALSO
+
+This module is part of XML-Compile-SOAP distribution version 2.05,
+built on May 28, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
+
+All modules in this suite:
+L<XML::Compile>,
+L<XML::Compile::SOAP>,
+L<XML::Compile::SOAP12>,
+L<XML::Compile::SOAP::Daemon>,
+L<XML::Compile::Tester>,
+L<XML::Compile::Cache>,
+L<XML::Compile::Dumper>,
+L<XML::Rewrite>,
+and
+L<XML::LibXML::Simple>.
+
+Please post questions or ideas to the mailinglist at
+F<http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/xml-compile>
+For life contact with other developers, visit the C<#xml-compile> channel
+on C<irc.perl.org>.
+
+=head1 LICENSE
+
+Copyrights 2007-2009 by Mark Overmeer. For other contributors see ChangeLog.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+See F<http://www.perl.com/perl/misc/Artistic.html>
+

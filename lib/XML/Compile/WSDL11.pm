@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '2.04';
+$VERSION = '2.05';
 
 use base 'XML::Compile::Cache';
 
@@ -20,7 +20,7 @@ use XML::Compile::SOAP::Util qw/:wsdl11 SOAP11ENV/;
 use XML::Compile::Operation  ();
 use XML::Compile::Transport  ();
 
-use List::Util  qw/first/;
+use List::Util               qw/first/;
 
 XML::Compile->addSchemaDirs(__FILE__);
 XML::Compile->knownNamespace
