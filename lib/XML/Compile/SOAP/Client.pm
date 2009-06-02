@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::Client;
 use vars '$VERSION';
-$VERSION = '2.05';
+$VERSION = '2.06';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -80,23 +80,6 @@ sub compileClient(@)
 
         ($ans, XML::Compile::SOAP::Trace->new(\%trace));
     };
-}
-
-#------------------------------------------------
-
-
-my $fake_server;
-sub fakeServer()
-{   return $fake_server if @_==1;
-
-    my $server = $_[1];
-    defined $server
-        or return $fake_server = undef;
-
-    ref $server && $server->isa('XML::Compile::SOAP::Tester')
-        or error __x"fake server isn't a XML::Compile::SOAP::Tester";
-
-    $fake_server = $server;
 }
 
 #------------------------------------------------

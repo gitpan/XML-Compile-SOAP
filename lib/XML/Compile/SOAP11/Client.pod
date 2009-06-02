@@ -113,24 +113,12 @@ See L<XML::Compile::SOAP::Client/"Handlers">
 
 =back
 
-=head2 Debugging
-
-$obj-E<gt>B<fakeServer>([FAKE|undef])
-
-XML::Compile::SOAP11::Client-E<gt>B<fakeServer>([FAKE|undef])
-
-=over 4
-
-See L<XML::Compile::SOAP::Client/"Debugging">
-
-=back
-
 =head1 DETAILS
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.05,
-built on May 28, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.06,
+built on June 02, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

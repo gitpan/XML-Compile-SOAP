@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport;
 use vars '$VERSION';
-$VERSION = '2.05';
+$VERSION = '2.06';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 
@@ -79,7 +79,7 @@ sub compileClient(@)
             if($code==202) { $answer = $xmlin || {} }
             else { $trace->{error} = "call failed with code $code" }
         }
-        elsif($xmlin) { $answer  = $xmlin }
+        elsif($xmlin) { $answer = $xmlin }
         else { $trace->{error} = 'no xml as answer' }
 
         my $end = $trace->{transport_end} = time;

@@ -167,10 +167,11 @@ __EXPECTED_CONTENT
 __ANSWER
  }
  
-Then, the fake server is initiated in one of the following ways:
+Then, the fake server is initiated in one of the follow ways:
 
   my $transport = XML::Compile::Transport::SOAPHTTP->new(...);
-  my $http = $transport->createClient(hook => \&fake_server, ...);
+  my $http = $transport->compileClient(hook => \&fake_server, ...);
+  $wsdl->compileClient('GetLastTracePrice', transporter => $http);
 
 or
 
@@ -186,8 +187,8 @@ or
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.05,
-built on May 28, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.06,
+built on June 02, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,
