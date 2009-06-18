@@ -2,8 +2,6 @@
 
 XML::Compile::SOAP::Trace - help displaying trace details.
 
-=head1 INHERITANCE
-
 =head1 SYNOPSIS
 
  my ($answer, $trace) = $call->(%params);
@@ -71,6 +69,14 @@ example:
 
 =back
 
+$obj-E<gt>B<error>
+
+=over 4
+
+Often contains an error message, when something went wrong.
+
+=back
+
 $obj-E<gt>B<request>
 
 =over 4
@@ -125,8 +131,8 @@ Print an overview on various timings to the selected filehandle.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.07,
-built on June 02, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.08,
+built on June 18, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

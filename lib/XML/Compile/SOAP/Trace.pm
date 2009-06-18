@@ -7,10 +7,10 @@ use strict;
 
 package XML::Compile::SOAP::Trace;
 use vars '$VERSION';
-$VERSION = '2.07';
+$VERSION = '2.08';
 
 
-use Log::Report 'xml-compile-soap', syntax => 'SHORT';
+use Log::Report 'xml-compile-soap';  # no syntax SHORT, because we have own error()
 
 
 sub new($)
@@ -23,6 +23,9 @@ sub start() {shift->{start}}
 
 
 sub date() {scalar localtime shift->start}
+
+
+sub error() {shift->{error}}
 
 
 sub elapse($)
