@@ -1,4 +1,4 @@
-# Copyrights 2007-2009 by Mark Overmeer.
+# Copyrights 2007-2010 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 1.06.
@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '2.08';
+$VERSION = '2.09';
 
 use base 'XML::Compile::Cache';
 
@@ -212,6 +212,12 @@ sub operation(@)
     my ($prefix)  = $address =~ m/(\w+)_address$/;
     my $opns      = $self->findName("$prefix:");
     my $opclass   = XML::Compile::Operation->plugin($opns);
+    unless($opclass)
+    {   my $pkg = $opns eq WSDL11SOAP   ? 'SOAP11'
+                : $opns eq WSDL11SOAP12 ? 'SOAP12' : '???';
+        error __x"add 'use XML::Compile::{pkg}' to your script", pkg => $pkg;
+    }
+
     $opclass->can('_fromWSDL11')
         or error __x"WSDL11 not supported by {class}", class => $opclass;
 

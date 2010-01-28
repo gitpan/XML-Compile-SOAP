@@ -86,7 +86,7 @@ L<XML::Compile::Schema::new()|XML::Compile::Schema/"Constructors">
 
 . allow_undeclared => BOOLEAN
 
-. any_element => CODE|'TAKE_ALL'|'SKIP_ALL'|'ATTEMPT'
+. any_element => CODE|'TAKE_ALL'|'SKIP_ALL'|'ATTEMPT'|'SLOPPY'
 
 . block_namespace => NAMESPACE|TYPE|HASH|CODE|ARRAY
 
@@ -588,28 +588,10 @@ a choice, then you are required to select one explicitly.
  # see XML::Compile::SOAP chapter DETAILS about call params
  my $answer = $call->(%request);
 
-=head1 DIAGNOSTICS
-
-Error: cannot find pre-installed name-space files
-
-=over 4
-
-Use C<$ENV{SCHEMA_LOCATION}> or L<new(schema_dirs)|XML::Compile/"Constructors"> to express location
-of installed name-space files, which came with the L<XML::Compile|XML::Compile>
-distribution package.
-
-=back
-
-Error: don't known how to interpret XML data
-
-=over 4
-
-=back
-
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.08,
-built on June 18, 2009. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.09,
+built on January 28, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,
@@ -619,8 +601,10 @@ L<XML::Compile::SOAP::Daemon>,
 L<XML::Compile::Tester>,
 L<XML::Compile::Cache>,
 L<XML::Compile::Dumper>,
-L<XML::Rewrite>,
+L<XML::Compile::RPC>,
 and
+L<XML::Rewrite>,
+L<XML::ExistDB>,
 L<XML::LibXML::Simple>.
 
 Please post questions or ideas to the mailinglist at
@@ -630,7 +614,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2009 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

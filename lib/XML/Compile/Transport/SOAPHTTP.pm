@@ -1,4 +1,4 @@
-# Copyrights 2007-2009 by Mark Overmeer.
+# Copyrights 2007-2010 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 1.06.
@@ -7,12 +7,13 @@ use strict;
 
 package XML::Compile::Transport::SOAPHTTP;
 use vars '$VERSION';
-$VERSION = '2.08';
+$VERSION = '2.09';
 
 use base 'XML::Compile::Transport';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 use XML::Compile::SOAP::Util qw/:http/;
+use XML::Compile   ();
 
 use LWP            ();
 use LWP::UserAgent ();
@@ -298,7 +299,7 @@ sub _prepare_for_no_answer($)
         info "received ".$response->status_line;
 
         my $content = '';
-        if($ct =~ m![/+]xml$!i)
+        if($ct =~ m,[/+]xml$,i)
         {   # HTTP::Message::decoded_content() does not work for old Perls
             $content = $] >= 5.008 ? $response->decoded_content(ref => 1)
               : $response->content(ref => 1);
