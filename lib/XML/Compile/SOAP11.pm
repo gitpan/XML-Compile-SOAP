@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11;
 use vars '$VERSION';
-$VERSION = '2.09';
+$VERSION = '2.10';
 
 use base 'XML::Compile::SOAP';
 
@@ -246,9 +246,10 @@ sub _reader_faults($$)
         my $faults  = $data->{Fault}    or return;
         my $details = $faults->{detail} or return;
         my $dettype = delete $details->{_ELEMENT_ORDER};
-        $dettype && @$dettype           or return $data;
+        $dettype && @$dettype or return $data;
 
-        my $name    = $names{$dettype->[0]} or return $data;
+        my $name    = $names{$dettype->[0]}
+            or return $data;
 
         my ($code_ns, $code_err) = unpack_type $faults->{faultcode};
         my ($err, @sub_err) = split /\./, $code_err;

@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport;
 use vars '$VERSION';
-$VERSION = '2.09';
+$VERSION = '2.10';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 
@@ -28,7 +28,6 @@ sub init($)
     my @addrs = ref $addr eq 'ARRAY' ? @$addr : $addr;
 
     $self->{addrs} = \@addrs;
-
     $self;
 }
 

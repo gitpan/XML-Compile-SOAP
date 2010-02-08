@@ -185,17 +185,19 @@ $obj-E<gt>B<compileTransporter>(OPTIONS)
 
 =over 4
 
+Create the transporter code for a certain specific target.
+
  Option        --Default
  endpoint        <from WSDL>
  server          undef
  transport_hook  undef
  transporter     <created>
 
-. endpoint => URI
+. endpoint => URI|ARRAY-of-URI
 
 =over 4
 
-Overrule the destination address.
+Overrule the destination address(es).
 
 =back
 
@@ -245,8 +247,8 @@ Declare an operation type, but WSDL specific URI and envelope namespace.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.09,
-built on January 28, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.10,
+built on February 08, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11::Operation;
 use vars '$VERSION';
-$VERSION = '2.09';
+$VERSION = '2.10';
 
 use base 'XML::Compile::Operation';
 
@@ -66,7 +66,7 @@ sub _fromWSDL11(@)
     $args{endpoints} = $args{serv_port}{soap_address}{location};
 
     my $sop = $b_op->{soap_operation}     || {};
-    $args{action}    = $sop->{soapAction} || '';
+    $args{action}  ||= $sop->{soapAction} || '';
 
     my $sb = $args{binding}{soap_binding} || {};
     $args{transport} = $sb->{transport}   || 'HTTP';
@@ -78,7 +78,8 @@ sub _fromWSDL11(@)
     $args{output_def} = $class->_msg_parts($wsdl, $args{name}, $args{style}
       , $p_op->{wsdl_output}, $b_op->{wsdl_output});
 
-    $args{fault_def} = $class->_fault_parts($wsdl,$p_op->{wsdl_fault},$b_op->{wsdl_fault});
+    $args{fault_def}
+      = $class->_fault_parts($wsdl, $p_op->{wsdl_fault}, $b_op->{wsdl_fault});
 
     $class->SUPER::new(%args);
 }

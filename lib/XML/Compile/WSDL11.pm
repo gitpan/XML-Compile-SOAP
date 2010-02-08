@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '2.09';
+$VERSION = '2.10';
 
 use base 'XML::Compile::Cache';
 
@@ -297,6 +297,7 @@ sub operation(@)
      , port_op   => $port_op
 
      , wsdl      => $self
+     , action    => $args{action}
      );
  
     $operation;

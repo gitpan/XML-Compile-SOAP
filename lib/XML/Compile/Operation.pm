@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Operation;
 use vars '$VERSION';
-$VERSION = '2.09';
+$VERSION = '2.10';
 
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
@@ -68,11 +68,12 @@ sub endPoints() { @{shift->{endpoints}} }
 sub compileTransporter(@)
 {   my ($self, %args) = @_;
 
-    my $send      = $args{transporter} || $args{transport};
+    my $send      = delete $args{transporter} || delete $args{transport};
     return $send if $send;
 
     my $proto     = $self->transport;
-    my @endpoints = $args{endpoint} ? $args{endpoint} : ();
+    my $endpoints = $args{endpoint} || [];
+    my @endpoints = ref $endpoints eq 'ARRAY' ? @$endpoints : ();
     unless(@endpoints)
     {   @endpoints = $self->endPoints;
         if(my $s = $args{server})
@@ -96,6 +97,7 @@ sub compileTransporter(@)
       , kind     => $self->kind
       , action   => $self->action
       , hook     => $args{transport_hook}
+      , %args
       );
 }
 

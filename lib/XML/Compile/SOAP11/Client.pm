@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11::Client;
 use vars '$VERSION';
-$VERSION = '2.09';
+$VERSION = '2.10';
 
 use base 'XML::Compile::SOAP11','XML::Compile::SOAP::Client';
 

@@ -186,7 +186,7 @@ $obj-E<gt>B<compileHandler>(OPTIONS)
 =over 4
 
 Prepare the routines which will decode the request and encode the answer,
-as will be run on the server.  The L<XML::Compile::SOAP::Server|XML::Compile::SOAP::Server> will
+as will be run on the server. The L<XML::Compile::SOAP::Server|XML::Compile::SOAP::Server> will
 connect these.
 
  Option  --Default
@@ -216,8 +216,8 @@ See L<XML::Compile::Operation/"Helpers">
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.09,
-built on January 28, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.10,
+built on February 08, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,
