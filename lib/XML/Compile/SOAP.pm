@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '2.10';
+$VERSION = '2.11';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -34,8 +34,9 @@ sub init($)
     $self->{mimens}  = $args->{media_type} || 'application/soap+xml';
 
     my $schemas = $self->{schemas} = $args->{schemas}
-        || XML::Compile::Cache->new(allow_undeclared => 1
-            , any_element => 'ATTEMPT', any_attribute => 'ATTEMPT');
+     || XML::Compile::Cache->new(allow_undeclared => 1
+        , any_element => 'ATTEMPT', any_attribute => 'ATTEMPT');
+
     UNIVERSAL::isa($schemas, 'XML::Compile::Cache')
         or panic "schemas must be a Cache object";
 
@@ -105,9 +106,6 @@ sub _sender(@)
 
     my $style = $args{style} || 'none';
     if($style eq 'document')
-    {   push @$hooks, $self->_writer_hook('SOAP-ENV:Body', @$body, @$faults);
-    }
-    elsif($style eq 'rpc' && @{$args{body}{parts}} && $args{body}{parts}[0]{type})
     {   push @$hooks, $self->_writer_hook('SOAP-ENV:Body', @$body, @$faults);
     }
     elsif($style eq 'rpc')
@@ -313,7 +311,7 @@ sub _writer_body_type($$)
     $part->{writer} =
         $self->schemas->compileType
           ( WRITER => $part->{type}, %$args
-          , element => $args->{body}{procedure}
+          , element => $part->{name}
           , include_namespaces => sub {$_[0] ne $soapenv}
           );
 }

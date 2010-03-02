@@ -229,8 +229,8 @@ is being created.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.10,
-built on February 08, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.11,
+built on March 02, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

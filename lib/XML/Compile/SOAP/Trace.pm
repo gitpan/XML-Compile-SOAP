@@ -7,10 +7,11 @@ use strict;
 
 package XML::Compile::SOAP::Trace;
 use vars '$VERSION';
-$VERSION = '2.10';
+$VERSION = '2.11';
 
 
-use Log::Report 'xml-compile-soap';  # no syntax SHORT, because we have own error()
+use Log::Report 'xml-compile-soap', syntax => 'REPORT';
+  # no syntax SHORT, because we have own error()
 
 
 sub new($)

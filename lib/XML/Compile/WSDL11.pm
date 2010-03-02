@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '2.10';
+$VERSION = '2.11';
 
 use base 'XML::Compile::Cache';
 
