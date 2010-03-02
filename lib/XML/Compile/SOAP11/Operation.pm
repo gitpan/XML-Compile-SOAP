@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11::Operation;
 use vars '$VERSION';
-$VERSION = '2.11';
+$VERSION = '2.12';
 
 use base 'XML::Compile::Operation';
 
@@ -73,10 +73,10 @@ sub _fromWSDL11(@)
     $args{style}     = $sb->{style}       || 'document';
 
     $args{input_def} = $class->_msg_parts($wsdl, $args{name}, $args{style}
-       , $p_op->{wsdl_input}, $b_op->{wsdl_input});
+      , $p_op->{wsdl_input}, $b_op->{wsdl_input});
 
-    $args{output_def} = $class->_msg_parts($wsdl, $args{name}, $args{style}
-      , $p_op->{wsdl_output}, $b_op->{wsdl_output});
+    $args{output_def} = $class->_msg_parts($wsdl, $args{name}.'Response'
+      , $args{style}, $p_op->{wsdl_output}, $b_op->{wsdl_output});
 
     $args{fault_def}
       = $class->_fault_parts($wsdl, $p_op->{wsdl_fault}, $b_op->{wsdl_fault});
