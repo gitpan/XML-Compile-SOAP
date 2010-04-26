@@ -191,8 +191,17 @@ connect these.
 
  Option  --Default
  callback  <required>
+ selector  <from input def>
 
 . callback => CODE
+
+. selector => CODE
+
+=over 4
+
+Determines whether the handler belongs to a received message.
+
+=back
 
 =back
 
@@ -201,6 +210,38 @@ $obj-E<gt>B<compileTransporter>(OPTIONS)
 =over 4
 
 See L<XML::Compile::Operation/"Handlers">
+
+=back
+
+$obj-E<gt>B<explain>(WSDL, FORMAT, DIRECTION, OPTIONS)
+
+=over 4
+
+[since 2.13]
+Dump an annotated structure showing how the operation works, helping
+developers to understand the schema. FORMAT is always C<PERL>: C<XML>
+is not yet supported.
+
+The DIRECTION is C<INPUT>, it will return the message which the client
+sends to the server (input for the server). The C<OUTPUT> message is
+sent as response by the server.
+
+All OPTIONS besides those described here are passed to
+L<XML::Compile::Schema::template()|XML::Compile::Schema/"Compilers">, when C<recurse> is enabled.
+
+ Option     --Default
+ recurse      <false>
+ skip_header  <false>
+
+. recurse => BOOLEAN
+
+=over 4
+
+Append the templates of all the part structures.
+
+=back
+
+. skip_header => BOOLEAN
 
 =back
 
@@ -216,8 +257,8 @@ See L<XML::Compile::Operation/"Helpers">
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.12,
-built on March 02, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.13,
+built on April 26, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

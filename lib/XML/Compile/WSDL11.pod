@@ -29,12 +29,19 @@ XML::Compile::WSDL11 - create SOAP messages defined by WSDL 1.1
  # capture useful trace information
  my ($answer, $trace) = $call->(%request);
 
+ # investigate the %request structure (server input)
+ print $wsdl->explain('GetStockPrice', PERL => 'INPUT');
+
+ # investigate the $answer structure (server output)
+ print $wsdl->explain('GetStockPrice', PERL => 'OUTPUT');
+
  # when you like, get all operation definitions
  my @all_ops = $wsdl->operations;
 
  # Install XML::Compile::SOAP::Daemon
  my $server  = XML::Compile::SOAP::HTTPDaemon->new;
  $server->actionsFromWSDL($wsdl);
+ undef $wsdl;    # not needed any further
  
  # For debug info, start your script with:
  use Log::Report mode => 'DEBUG';
@@ -270,7 +277,7 @@ See L<XML::Compile::Cache/"Compilers">
 
 =back
 
-$obj-E<gt>B<template>('XML'|'PERL', TYPE, OPTIONS)
+$obj-E<gt>B<template>('XML'|'PERL', ELEMENT, OPTIONS)
 
 =over 4
 
@@ -363,6 +370,8 @@ $obj-E<gt>B<walkTree>(NODE, CODE)
 See L<XML::Compile/"Administration">
 
 =back
+
+=head2 Administration
 
 =head2 Extension
 
@@ -488,6 +497,29 @@ Required when more than one service is defined.
 All of the following methods are usually NOT meant for end-users. End-users
 should stick to the L<operation()|XML::Compile::WSDL11/"Extension"> and L<compileClient()|XML::Compile::WSDL11/"Extension"> methods.
 
+$obj-E<gt>B<explain>(OPERATION, FORMAT, DIRECTION, OPTIONS)
+
+=over 4
+
+[2.13]
+Produce templates (see L<XML::Compile::Schema::template()|XML::Compile::Schema/"Compilers"> which detail
+the use of the OPERATION. Currently, only the C<PERL> template FORMAT
+is available.
+
+The DIRECTION of operation is either C<INPUT> (input for the server,
+hence to be produced by the client), or C<OUTPUT> (from the server,
+received by the client).
+
+The actual work is done by L<XML::Compile::Operation::explain()|XML::Compile::Operation/"Helpers">. The
+OPTIONS are passed to that method, as there are C<recurse> and
+C<skip_header>.
+
+example: 
+
+  print $wsdl->explain('CheckStatus', PERL => 'INPUT');
+
+=back
+
 $obj-E<gt>B<findDef>(CLASS, [QNAME|NAME])
 
 =over 4
@@ -599,8 +631,8 @@ a choice, then you are required to select one explicitly.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.12,
-built on March 02, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.13,
+built on April 26, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

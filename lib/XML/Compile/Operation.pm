@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Operation;
 use vars '$VERSION';
-$VERSION = '2.12';
+$VERSION = '2.13';
 
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
@@ -115,6 +115,12 @@ sub compileHandler(@) { panic "not implemented" }
     sub plugin($)       { $registered{$_[1]} }
     sub fromEnvelope($) { $envelope{$_[1]} }
     sub registered($)   { values %registered }
+}
+
+
+sub explain($$$@)
+{   my ($self, $wsdl, $format, $dir, %args) = @_;
+    panic "not implemented for ".ref $self;
 }
 
 1;

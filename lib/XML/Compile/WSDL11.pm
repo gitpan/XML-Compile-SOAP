@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '2.12';
+$VERSION = '2.13';
 
 use base 'XML::Compile::Cache';
 
@@ -15,7 +15,7 @@ use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 
 use XML::Compile             ();      
 use XML::Compile::Util       qw/pack_type unpack_type/;
-use XML::Compile::SOAP::Util qw/:wsdl11 SOAP11ENV/;
+use XML::Compile::SOAP::Util qw/:wsdl11/;
 
 use XML::Compile::Operation  ();
 use XML::Compile::Transport  ();
@@ -196,8 +196,7 @@ sub operation(@)
     }
 
     # get plugin for operation # {
-
-    my $address   = first { $_ =~ m/[_}]address$/ } keys %$port
+    my $address   = first { $_ =~ m/address$/ } keys %$port
         or error __x"no address provided in service port";
 
     if($address =~ m/^{/)      # }
@@ -210,6 +209,9 @@ sub operation(@)
     }
 
     my ($prefix)  = $address =~ m/(\w+)_address$/;
+    $prefix
+        or error __x"port address not prefixed; probably need to add a plugin";
+
     my $opns      = $self->findName("$prefix:");
     my $opclass   = XML::Compile::Operation->plugin($opns);
     unless($opclass)
@@ -415,8 +417,15 @@ sub printIndex(@)
     }
 }
 
-#--------------------------------
 
+sub explain($$$@)
+{   my ($self, $opname, $format, $direction, @opts) = @_;
+    my $op = $self->operation($opname)
+        or error __x"explain operation {name} not found", name => $opname;
+    $op->explain($self, $format, $direction, @opts);
+}
+
+#--------------------------------
 
 
 1;

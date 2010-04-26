@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::Server;
 use vars '$VERSION';
-$VERSION = '2.12';
+$VERSION = '2.13';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -21,7 +21,7 @@ sub new(@) { panic __PACKAGE__." only secundary in multiple inheritance" }
 
 sub init($)
 {  my ($self, $args) = @_;
-   $self->{role} = $self->roleAbbreviation($args->{role} || 'NEXT');
+   $self->{role} = $self->roleURI($args->{role} || 'NEXT') || $args->{role};
    $self;
 }
 

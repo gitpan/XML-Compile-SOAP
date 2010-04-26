@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11;
 use vars '$VERSION';
-$VERSION = '2.12';
+$VERSION = '2.13';
 
 use base 'XML::Compile::SOAP';
 
@@ -279,10 +279,10 @@ sub _reader_faults($$)
 sub replyMustUnderstandFault($)
 {   my ($self, $type) = @_;
 
-    { Fault =>
-        { faultcode   => pack_type(SOAP11ENV, 'MustUnderstand')
-        , faultstring => "SOAP mustUnderstand $type"
-        }
+   +{ Fault =>
+      { faultcode   => pack_type(SOAP11ENV, 'MustUnderstand')
+      , faultstring => "SOAP mustUnderstand $type"
+      }
     };
 }
 

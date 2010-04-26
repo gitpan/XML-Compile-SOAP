@@ -6,6 +6,7 @@ XML::Compile::Operation - base-class for possible interactions
 
  XML::Compile::Operation is extended by
    XML::Compile::SOAP11::Operation
+   XML::Compile::SOAP12::Operation
 
 =head1 SYNOPSIS
 
@@ -237,6 +238,19 @@ connection to a server.
 
 =head2 Helpers
 
+$obj-E<gt>B<explain>(WSDL, FORMAT, DIRECTION, OPTIONS)
+
+=over 4
+
+Dump an annotated structure showing how the operation works, helping
+developers to understand the schema. FORMAT is C<PERL> or C<XML>.
+
+The DIRECTION is C<INPUT>, it will return the message which the client
+sends to the server (input for the server). The C<OUTPUT> message is
+sent as response by the server.
+
+=back
+
 XML::Compile::Operation-E<gt>B<register>(URI, ENVNS)
 
 =over 4
@@ -247,8 +261,8 @@ Declare an operation type, but WSDL specific URI and envelope namespace.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.12,
-built on March 02, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.13,
+built on April 26, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,
