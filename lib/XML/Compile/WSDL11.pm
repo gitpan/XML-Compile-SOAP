@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '2.13';
+$VERSION = '2.14';
 
 use base 'XML::Compile::Cache';
 
@@ -420,7 +420,7 @@ sub printIndex(@)
 
 sub explain($$$@)
 {   my ($self, $opname, $format, $direction, @opts) = @_;
-    my $op = $self->operation($opname)
+    my $op = $self->operation($opname, @opts)
         or error __x"explain operation {name} not found", name => $opname;
     $op->explain($self, $format, $direction, @opts);
 }

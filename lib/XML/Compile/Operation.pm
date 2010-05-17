@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Operation;
 use vars '$VERSION';
-$VERSION = '2.13';
+$VERSION = '2.14';
 
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
