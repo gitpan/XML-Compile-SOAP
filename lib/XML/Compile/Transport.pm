@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport;
 use vars '$VERSION';
-$VERSION = '2.14';
+$VERSION = '2.15';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 
@@ -58,6 +58,7 @@ sub compileClient(@)
     {   my ($xmlout, $trace, $mtom) = @_;
         my $start     = time;
         my $textout   = ref $xmlout ? $xmlout->toString : $xmlout;
+#warn $xmlout->toString(1);   # show message sent
 
         my $stringify = time;
         $trace->{transport_start}  = $start;

@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::Trace;
 use vars '$VERSION';
-$VERSION = '2.14';
+$VERSION = '2.15';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'REPORT';

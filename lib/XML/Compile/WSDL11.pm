@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '2.14';
+$VERSION = '2.15';
 
 use base 'XML::Compile::Cache';
 
@@ -16,6 +16,7 @@ use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 use XML::Compile             ();      
 use XML::Compile::Util       qw/pack_type unpack_type/;
 use XML::Compile::SOAP::Util qw/:wsdl11/;
+use XML::Compile::SOAP::Extension;
 
 use XML::Compile::Operation  ();
 use XML::Compile::Transport  ();
@@ -56,6 +57,8 @@ sub init($)
       );
 
     $self->addWSDL($wsdl);
+
+    XML::Compile::SOAP::Extension->wsdl11Init($self, $args);
     $self;
 }
 
@@ -197,7 +200,8 @@ sub operation(@)
 
     # get plugin for operation # {
     my $address   = first { $_ =~ m/address$/ } keys %$port
-        or error __x"no address provided in service port";
+        or error __x"no address provided in service port {port}"
+           , port => $port->{name};
 
     if($address =~ m/^{/)      # }
     {   my ($ns)  = unpack_type $address;

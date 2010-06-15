@@ -230,17 +230,17 @@ various types before you call L<compileMessage()|XML::Compile::SOAP11/"Single me
 
 =head2 Receiving faults in SOAP1.1
 
-When faults are received, they will be returned with the C<Faults> key
+When faults are received, they will be returned with the C<Fault> key
 in the data structure.  So:
 
   my $answer = $call->($question);
-  if($answer->{Faults}) { ... }
+  if($answer->{Fault}) { ... }
 
 As extra service, for each of the fault types, as defined with
 L<compileMessage(faults)|XML::Compile::SOAP/"Single message">, a decoded structure is included.  The name
 of that structure can be found like this:
 
-  if(my $faults = $answer->{Faults})
+  if(my $faults = $answer->{Fault})
   {   my $name    = $faults->{_NAME};
       my $decoded = $answer->{$name};
       ...
@@ -289,14 +289,15 @@ a header problem, so the C<header> key is used.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.14,
-built on May 17, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.15,
+built on June 15, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,
 L<XML::Compile::SOAP>,
 L<XML::Compile::SOAP12>,
 L<XML::Compile::SOAP::Daemon>,
+L<XML::Compile::SOAP::WSA>,
 L<XML::Compile::Tester>,
 L<XML::Compile::Cache>,
 L<XML::Compile::Dumper>,

@@ -159,6 +159,17 @@ See L<XML::Compile::Operation/"Accessors">
 
 =back
 
+=head2 Modify
+
+Operations are often modified by SOAP extensions. See XML::Compile::WSA,
+for instance.
+
+$obj-E<gt>B<addHeader>(('INPUT'|'OUTPUT'|'FAULT'), LABEL, ELEM)
+
+=over 4
+
+=back
+
 =head2 Handlers
 
 $obj-E<gt>B<compileClient>(OPTIONS)
@@ -166,7 +177,7 @@ $obj-E<gt>B<compileClient>(OPTIONS)
 =over 4
 
 Returns one CODE reference which handles the processing for this
-operation.  Options C<transporter>, C<transport_hook>, and
+operation. Options C<transporter>, C<transport_hook>, and
 C<endpoint> are passed to L<compileTransporter()|XML::Compile::Operation/"Handlers">.
 
 You pass that CODE reference an input message of the correct
@@ -175,9 +186,10 @@ will return then answer, or C<undef> in case of failure.  An 'one-way'
 operation with return C<undef> in case of failure, and a true value
 when successfull.
 
-Besides the OPTIONS listed, you can also specify anything which is
-accepted by L<XML::Compile::Schema::compile()|XML::Compile::Schema/"Compilers">, like
-C<< sloppy_integers => 1 >> or hooks.
+You B<cannot> pass options for L<XML::Compile::Schema::compile()|XML::Compile::Schema/"Compilers">, like
+C<<sloppy_integers => 0>>, hooks or typemaps this way. Provide these to
+the C<::WSDL> or other C<::Cache> object which defines the types, via
+C<new> option C<opts_rw> and friends.
 
 =back
 
@@ -257,14 +269,15 @@ See L<XML::Compile::Operation/"Helpers">
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.14,
-built on May 17, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.15,
+built on June 15, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,
 L<XML::Compile::SOAP>,
 L<XML::Compile::SOAP12>,
 L<XML::Compile::SOAP::Daemon>,
+L<XML::Compile::SOAP::WSA>,
 L<XML::Compile::Tester>,
 L<XML::Compile::Cache>,
 L<XML::Compile::Dumper>,
