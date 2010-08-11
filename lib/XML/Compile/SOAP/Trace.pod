@@ -14,6 +14,7 @@ XML::Compile::SOAP::Trace - help displaying trace details.
  my $dura  = $trace->elapse;
 
  $trace->printTimings;
+ $trace->printTimings(\*STDERR);
  $trace->printRequest;
  $trace->printResponse;
 
@@ -109,19 +110,19 @@ that the call was initiated.  See Time::HiRes method C<time>.
 
 =head2 Printing
 
-$obj-E<gt>B<printRequest>
+$obj-E<gt>B<printRequest>([FILEHANDLE])
 
 =over 4
 
 =back
 
-$obj-E<gt>B<printResponse>
+$obj-E<gt>B<printResponse>([FILEHANDLE])
 
 =over 4
 
 =back
 
-$obj-E<gt>B<printTimings>
+$obj-E<gt>B<printTimings>([FILEHANDLE])
 
 =over 4
 
@@ -131,8 +132,8 @@ Print an overview on various timings to the selected filehandle.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.15,
-built on June 15, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.16,
+built on August 11, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

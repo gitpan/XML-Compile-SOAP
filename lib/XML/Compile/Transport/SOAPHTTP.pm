@@ -7,12 +7,12 @@ use strict;
 
 package XML::Compile::Transport::SOAPHTTP;
 use vars '$VERSION';
-$VERSION = '2.15';
+$VERSION = '2.16';
 
 use base 'XML::Compile::Transport';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
-use XML::Compile::SOAP::Util qw/:http/;
+use XML::Compile::SOAP::Util qw/SOAP11ENV SOAP11HTTP/;
 use XML::Compile   ();
 
 use LWP            ();
@@ -35,7 +35,6 @@ my $parser = XML::LibXML->new;
 # (Microsofts HTTP Extension Framework)
 my $http_ext_id = SOAP11ENV;
 
-XML::Compile->knownNamespace(&WSDL11HTTP => 'wsdl-http.xsd');
 __PACKAGE__->register(SOAP11HTTP);
 
 
@@ -54,10 +53,6 @@ sub init($)
 sub _initWSDL11($)
 {   my ($class, $wsdl) = @_;
     trace "initialize SOAPHTTP transporter for WSDL11";
-
-    $wsdl->importDefinitions(WSDL11HTTP, element_form_default => 'qualified');
-    $wsdl->prefixes(http => WSDL11HTTP);
-    $class->register('HTTP');   # register alias
 }
 
 #-------------------------------------------
@@ -107,6 +102,7 @@ sub _prepare_call($)
     {   $mime  ||= 'application/soap+xml';
         my $sa   = defined $action ? qq{; action="$action"} : '';
         $content_type = qq{$mime; charset="$charset"$action};
+        $header->header(Accept => $mime);  # not the HTML answer
     }
     else
     {   error "SOAP version {version} not implemented", version => $version;
@@ -312,7 +308,8 @@ sub _prepare_for_no_answer($)
 
 sub headerAddVersions($)
 {   my ($thing, $h) = @_;
-    foreach my $pkg (qw/XML::Compile XML::Compile::SOAP XML::LibXML LWP/)
+    foreach my $pkg (qw/XML::Compile XML::Compile::Cache
+       XML::Compile::SOAP XML::LibXML LWP/)
     {   no strict 'refs';
         my $version = ${"${pkg}::VERSION"} || 'undef';
         (my $field = "X-$pkg-Version") =~ s/\:\:/-/g;

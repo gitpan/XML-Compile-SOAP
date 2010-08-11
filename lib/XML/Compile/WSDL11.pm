@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '2.15';
+$VERSION = '2.16';
 
 use base 'XML::Compile::Cache';
 
@@ -24,10 +24,7 @@ use XML::Compile::Transport  ();
 use List::Util               qw/first/;
 
 XML::Compile->addSchemaDirs(__FILE__);
-XML::Compile->knownNamespace
-  ( &WSDL11       => 'wsdl.xsd'
-  , &WSDL11HTTP   => 'wsdl-http.xsd'
-  );
+XML::Compile->knownNamespace(&WSDL11 => 'wsdl.xsd');
 
 
 sub init($)
@@ -220,8 +217,17 @@ sub operation(@)
     my $opclass   = XML::Compile::Operation->plugin($opns);
     unless($opclass)
     {   my $pkg = $opns eq WSDL11SOAP   ? 'SOAP11'
-                : $opns eq WSDL11SOAP12 ? 'SOAP12' : '???';
-        error __x"add 'use XML::Compile::{pkg}' to your script", pkg => $pkg;
+                : $opns eq WSDL11SOAP12 ? 'SOAP12'
+                : $opns eq WSDL11HTTP   ? 'SOAP10'
+                :                         undef;
+
+        if($pkg)
+        {   error __x"add 'use XML::Compile::{pkg}' to your script", pkg=>$pkg;
+        }
+        else
+        {   notice __x"ignoring unsupported namespace {ns}", ns => $opns;
+            return;
+        }
     }
 
     $opclass->can('_fromWSDL11')
@@ -406,7 +412,7 @@ sub printIndex(@)
 
     my %tree;
     $tree{'service '.$_->serviceName}
-         {'port '.$_->portName . ' (binding '.$_->bindingName.')'}
+         {$_->version.' port '.$_->portName . ' (binding '.$_->bindingName.')'}
          {$_->name} = $_
          for $self->operations(@args);
 

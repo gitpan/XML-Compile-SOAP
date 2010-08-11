@@ -7,11 +7,13 @@ use strict;
 
 package XML::Compile::SOAP::Trace;
 use vars '$VERSION';
-$VERSION = '2.15';
+$VERSION = '2.16';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'REPORT';
   # no syntax SHORT, because we have own error()
+
+use IO::Handle;
 
 
 sub new($)
@@ -41,8 +43,9 @@ sub request() {shift->{http_request}}
 sub response() {shift->{http_response}}
 
 
-sub printTimings()
-{   my $self = shift;
+sub printTimings(;$)
+{   my ($self, $fh) = @_;
+    my $oldfh = $fh ? (select $fh) : undef;
     print  "Call initiated at: ",$self->date, "\n";
     print  "SOAP call timing:\n";
     printf "      encoding: %7.2f ms\n", $self->elapse('encode')    *1000;
@@ -56,25 +59,25 @@ sub printTimings()
 
     printf "    total time: %7.2f ms ",  $self->elapse              *1000;
     printf "= %.3f seconds\n\n", $self->elapse;
+    select $oldfh if $oldfh;
 }
 
 
-sub printRequest(@)
-{   my $self = shift;
+sub printRequest(;$)
+{   my ($self, $fh) = @_;
     my $request = $self->request or return;
-    my $req  = $request->as_string;
+    my $req     = $request->as_string;
     $req =~ s/^/  /gm;
-    print "Request:\n$req\n";
+    ($fh || *STDOUT)->print("Request:\n$req\n");
 }
 
 
-sub printResponse(@)
-{   my $self = shift;
+sub printResponse(;$)
+{   my ($self, $fh) = @_;
     my $response = $self->response or return;
-
-    my $resp = $response->as_string;
+    my $resp     = $response->as_string;
     $resp =~ s/^/  /gm;
-    print "Response:\n$resp\n";
+    ($fh || *STDOUT)->print("Response:\n$resp\n");
 }
 
 1;

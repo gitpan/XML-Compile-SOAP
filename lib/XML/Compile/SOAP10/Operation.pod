@@ -1,45 +1,43 @@
 =head1 NAME
 
-XML::Compile::SOAP::Extension - plugins for standards
+XML::Compile::SOAP11::Operation - defines a SOAP11 interaction
+
+=head1 SYNOPSIS
+
+ # object created by XML::Compile::WSDL*
+ my $op = $wsdl->operation('GetStockPrices');
 
 =head1 DESCRIPTION
 
-This module defines hooks which are used to implement the SOAP and WSDL
-extensions.  Where SOAP does lack a lot of useful features, many
-working-groups have added components on various spots in the XML
-messages.
+Objects of this type define one possible SOAP11 interaction, either
+client side or server side.
 
 =head1 METHODS
 
 =head2 Constructors
 
-XML::Compile::SOAP::Extension-E<gt>B<new>(OPTIONS)
+XML::Compile::SOAP10::Operation-E<gt>B<new>(OPTIONS)
 
 =over 4
 
 =back
 
-=head2 WSDL11
+=head2 Accessors
 
-$obj-E<gt>B<wsdl11Init>(WSDL, ARGS)
-
-=over 4
-
-=back
-
-=head2 SOAP11
-
-$obj-E<gt>B<soap11ClientWrapper>(OPERATION, CALL, OPTIONS)
+$obj-E<gt>B<http_method>
 
 =over 4
 
 =back
 
-$obj-E<gt>B<soap11OperationInit>(OPERATION, OPTIONS)
+=head2 Helpers
 
-XML::Compile::SOAP::Extension-E<gt>B<soap11OperationInit>(OPERATION, OPTIONS)
+$obj-E<gt>B<explain>(WSDL, FORMAT, DIRECTION, OPTIONS)
 
 =over 4
+
+[since 2.16]
+Not yet supported
 
 =back
 

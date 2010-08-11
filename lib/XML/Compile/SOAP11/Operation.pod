@@ -225,11 +225,14 @@ See L<XML::Compile::Operation/"Handlers">
 
 =back
 
+=head2 Helpers
+
 $obj-E<gt>B<explain>(WSDL, FORMAT, DIRECTION, OPTIONS)
 
 =over 4
 
 [since 2.13]
+
 Dump an annotated structure showing how the operation works, helping
 developers to understand the schema. FORMAT is always C<PERL>: C<XML>
 is not yet supported.
@@ -257,8 +260,6 @@ Append the templates of all the part structures.
 
 =back
 
-=head2 Helpers
-
 XML::Compile::SOAP11::Operation-E<gt>B<register>(URI, ENVNS)
 
 =over 4
@@ -269,8 +270,8 @@ See L<XML::Compile::Operation/"Helpers">
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.15,
-built on June 15, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.16,
+built on August 11, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

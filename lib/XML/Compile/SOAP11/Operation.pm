@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11::Operation;
 use vars '$VERSION';
-$VERSION = '2.15';
+$VERSION = '2.16';
 
 use base 'XML::Compile::Operation';
 
@@ -267,6 +267,8 @@ sub compileClient(@)
 
     XML::Compile::SOAP::Extension->soap11ClientWrapper($self, $call);
 }
+
+#--------------------------
 
 
 sub explain($$$@)

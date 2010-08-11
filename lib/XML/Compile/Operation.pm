@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Operation;
 use vars '$VERSION';
-$VERSION = '2.15';
+$VERSION = '2.16';
 
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
@@ -110,7 +110,7 @@ sub compileHandler(@) { panic "not implemented" }
     sub register($)
     { my ($class, $uri, $env) = @_;
       $registered{$uri} = $class;
-      $envelope{$env}   = $class;
+      $envelope{$env}   = $class if $env;
     }
     sub plugin($)       { $registered{$_[1]} }
     sub fromEnvelope($) { $envelope{$_[1]} }

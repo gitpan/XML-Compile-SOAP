@@ -72,9 +72,7 @@ XML::Compile::WSDL11-E<gt>B<new>(XML, OPTIONS)
 =over 4
 
 The XML is the WSDL file, which is anything accepted by
-L<XML::Compile::dataToXML()|XML::Compile/"Compilers">.  All options are also passed
-to create an internal L<XML::Compile::Schema|XML::Compile::Schema> object.  See
-L<XML::Compile::Schema::new()|XML::Compile::Schema/"Constructors">
+L<XML::Compile::dataToXML()|XML::Compile/"Compilers">.
 
  Option            --Defined in     --Default
  allow_undeclared    XML::Compile::Cache  <false>
@@ -629,8 +627,8 @@ a choice, then you are required to select one explicitly.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.15,
-built on June 15, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.16,
+built on August 11, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

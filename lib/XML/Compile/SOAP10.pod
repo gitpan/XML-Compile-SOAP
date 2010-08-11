@@ -1,23 +1,22 @@
 =head1 NAME
 
-XML::Compile::SOAP11::Server - SOAP1.1 server needs
+XML::Compile::SOAP10 - SOAP11 HTTP-GET/POST
 
 =head1 INHERITANCE
 
- XML::Compile::SOAP11::Server
-   is a XML::Compile::SOAP11
+ XML::Compile::SOAP10
    is a XML::Compile::SOAP
-
- XML::Compile::SOAP11::Server
-   is a XML::Compile::SOAP::Server
 
 =head1 SYNOPSIS
 
+ # See XML::Compile::SOAP for global usage examples.
+
 =head1 DESCRIPTION
 
-This module does not implement an actual soap server, but the
-needs to create the server side.  The server daemon is implemented
-by L<XML::Compile::SOAP::Daemon|XML::Compile::SOAP::Daemon>
+WSDL 1.1 defines HTTP-GET and HTTP-POST bindings, which are nowhere
+described (as far as I know). So, it is unclear where they came from.
+Probably from the time before SOAP 1.1.  For simplicity, I name this
+SOAP 1.0.  There is B<no SOAP 1.0> standard.
 
 =head1 METHODS
 
@@ -27,17 +26,13 @@ $obj-E<gt>B<new>(OPTIONS)
 
 =over 4
 
-See L<XML::Compile::SOAP11/"Constructors">
+ Option    --Defined in     --Default
+ media_type  XML::Compile::SOAP  application/soap+xml
+ schemas     XML::Compile::SOAP  created internally
 
-=back
+. media_type => MIMETYPE
 
-=head2 Instantiation
-
-XML::Compile::SOAP11::Server-E<gt>B<new>(OPTIONS)
-
-=over 4
-
-See L<XML::Compile::SOAP::Server/"Instantiation">
+. schemas => C<XML::Compile::Cache> object
 
 =back
 
@@ -48,14 +43,6 @@ $obj-E<gt>B<name>
 =over 4
 
 See L<XML::Compile::SOAP/"Accessors">
-
-=back
-
-$obj-E<gt>B<role>
-
-=over 4
-
-See L<XML::Compile::SOAP::Server/"Accessors">
 
 =back
 
@@ -81,13 +68,13 @@ $obj-E<gt>B<compileMessage>(('SENDER'|'RECEIVER'), OPTIONS)
 
 =over 4
 
-See L<XML::Compile::SOAP11/"Single message">
+See L<XML::Compile::SOAP/"Single message">
 
 =back
 
 $obj-E<gt>B<messageStructure>(XML)
 
-XML::Compile::SOAP11::Server-E<gt>B<messageStructure>(XML)
+XML::Compile::SOAP10-E<gt>B<messageStructure>(XML)
 
 =over 4
 
@@ -120,32 +107,6 @@ $obj-E<gt>B<roleURI>(URI|STRING)
 =over 4
 
 See L<XML::Compile::SOAP/"Transcoding">
-
-=back
-
-=head2 Actions
-
-$obj-E<gt>B<compileFilter>(OPTIONS)
-
-=over 4
-
-See L<XML::Compile::SOAP::Server/"Actions">
-
-=back
-
-$obj-E<gt>B<compileHandler>(OPTIONS)
-
-=over 4
-
-See L<XML::Compile::SOAP::Server/"Actions">
-
-=back
-
-XML::Compile::SOAP11::Server-E<gt>B<faultWriter>
-
-=over 4
-
-See L<XML::Compile::SOAP::Server/"Actions">
 
 =back
 

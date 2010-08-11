@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '2.15';
+$VERSION = '2.16';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -218,11 +218,9 @@ sub _writer_rpc_hook($$$$$)
             if keys %data;
 
         my $node = $doc->createElement($tag);
-        if(@pchilds)
-        {    my $proc = $doc->createElement($proc);
-             $proc->appendChild($_) for @pchilds;
-             $node->appendChild($proc);
-        }
+        my $proc = $doc->createElement($proc);
+        $proc->appendChild($_) for @pchilds;
+        $node->appendChild($proc);
         $node->appendChild($_) for @fchilds;
         $node;
      };
