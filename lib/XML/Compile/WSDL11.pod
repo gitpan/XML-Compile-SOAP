@@ -516,14 +516,15 @@ example:
 
 =back
 
-$obj-E<gt>B<findDef>(CLASS, [QNAME|NAME])
+$obj-E<gt>B<findDef>(CLASS, [QNAME|PREFIXED|NAME])
 
 =over 4
 
 With a QNAME, the HASH which contains the parsed XML information
 from the WSDL template for that CLASS-NAME combination is returned.
-Otherwise, NAME is considered to be the localName in that class.
-When the NAME is not found, an error is produced.
+You may also have a PREFIXED name, using one of the predefined namespace
+abbreviations.  Otherwise, NAME is considered to be the localName in
+that class.  When the NAME is not found, an error is produced.
 
 Without QNAME in SCALAR context, there may only be one such name
 defined otherwise an error is produced.  In LIST context, all definitions
@@ -627,8 +628,8 @@ a choice, then you are required to select one explicitly.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.16,
-built on August 11, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.17,
+built on September 30, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,
@@ -642,7 +643,7 @@ L<XML::Compile::Dumper>,
 L<XML::Compile::RPC>,
 and
 L<XML::Rewrite>,
-L<XML::ExistDB>,
+L<XML::eXistDB>,
 L<XML::LibXML::Simple>.
 
 Please post questions or ideas to the mailinglist at

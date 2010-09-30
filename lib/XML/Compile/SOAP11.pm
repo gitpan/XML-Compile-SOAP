@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11;
 use vars '$VERSION';
-$VERSION = '2.16';
+$VERSION = '2.17';
 
 use base 'XML::Compile::SOAP';
 
@@ -234,7 +234,6 @@ sub _reader_fault_reader()
 
 sub _reader_faults($$)
 {   my ($self, $args, $faults) = @_;
-    $faults && %$faults or return sub {};
 
     my %names;
     while(my ($name, $def) = each %$faults)
@@ -248,9 +247,6 @@ sub _reader_faults($$)
         my $dettype = delete $details->{_ELEMENT_ORDER};
         $dettype && @$dettype or return $data;
 
-        my $name    = $names{$dettype->[0]}
-            or return $data;
-
         my ($code_ns, $code_err) = unpack_type $faults->{faultcode};
         my ($err, @sub_err) = split /\./, $code_err;
         $err = 'Receiver' if $err eq 'Server';
@@ -262,12 +258,29 @@ sub _reader_faults($$)
           , reason => $faults->{faultstring}
           );
 
-        $nice{role}      = $self->roleAbbreviation($faults->{faultactor})
+        $nice{role} = $self->roleAbbreviation($faults->{faultactor})
             if $faults->{faultactor};
 
-        if(keys %$details==1)
-        {   my (undef, $v) = %$details;
-            @nice{keys %$v} = values %$v;
+        my $name;
+        if($name = $names{$dettype->[0]})
+        {   # fault named in WSDL
+            if(keys %$details==1)
+            {   my (undef, $v) = %$details;
+                @nice{keys %$v} = values %$v;
+            }
+        }
+        elsif(keys %$details==1)
+        {   # simple generic fault, not in WSDL. Maybe internal server error
+            ($name) = keys %$details;
+            my $v = $details->{$name};
+            my @v = ref $v eq 'ARRAY' ? @$v : $v;
+            my @r = map { UNIVERSAL::isa($_, 'XML::LibXML::Node')
+                          ? $_->textContent : $_} @v;
+            $nice{$name} = @r==1 ? $r[0] : \@r;
+        }
+        else
+        {   # unknown complex generic error
+            $name = 'generic';
         }
 
         $data->{$name}   = \%nice;

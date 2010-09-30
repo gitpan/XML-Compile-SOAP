@@ -282,15 +282,47 @@ The C<class> is an unpacked version of the code.  SOAP1.2 is using the
 C<role> is constructed by decoding the C<faultactor> using
 L<roleAbbreviation()|XML::Compile::SOAP/"Transcoding">.  The names are closer to the SOAP1.2 specification.
 
-If the received fault is of an unpredicted type, then key C<body>
-is used, and the C<detail> will list the unparsed XMLNODEs.  When there
-are no details, (according to the specs) the error must be caused by
-a header problem, so the C<header> key is used.
+If the received fault is of an unpredicted type, then the client tries
+to DWIM. in the worst case, C<detail> will list the unparsed XMLNODEs.
+When the L<XML::Compile::SOAP::Daemon|XML::Compile::SOAP::Daemon> server has produced the error,
+the content of the reply will typically be
+
+ { Fault =>        # SOAP version specific
+    { _NAME => 'error'
+    , #...more...
+    }
+ , error =>        # less SOAP version specific, readable
+    { role    => 'NEXT'
+    , reason  => 'procedure xyz for SOAP11 produced an invalid response'
+    , error   => 'some explanation'
+    , code    =>
+        '{http://schemas.xmlsoap.org/soap/envelope/}Server.invalidResponse'
+    , class   => [ SOAP11ENV, 'Receiver', 'invalidResponse' ],
+    }
+  }
+
+Hence, a typical client routine could contain
+
+  my ($answer, $trace) = $call->(message => $message);
+  if(my $f = $answer->{Fault})
+  {   if($f->{_NAME} eq 'error')
+      {   # server implementation error
+          die "SERVER ERROR:\n$answer->{error}{error}\n";
+      }
+      else
+      {   # the fault is described in the WSDL, handle it!
+          warn "FAULT:\n",Dumper $answer->{$f->{_NAME}};
+      }
+  }
+  else
+  {   # correct answer
+      print Dumper $answer;
+  }
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.16,
-built on August 11, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.17,
+built on September 30, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,
@@ -304,7 +336,7 @@ L<XML::Compile::Dumper>,
 L<XML::Compile::RPC>,
 and
 L<XML::Rewrite>,
-L<XML::ExistDB>,
+L<XML::eXistDB>,
 L<XML::LibXML::Simple>.
 
 Please post questions or ideas to the mailinglist at

@@ -45,8 +45,8 @@ XML::Compile::SOAP::Extension-E<gt>B<soap11OperationInit>(OPERATION, OPTIONS)
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.16,
-built on August 11, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.17,
+built on September 30, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,
@@ -60,7 +60,7 @@ L<XML::Compile::Dumper>,
 L<XML::Compile::RPC>,
 and
 L<XML::Rewrite>,
-L<XML::ExistDB>,
+L<XML::eXistDB>,
 L<XML::LibXML::Simple>.
 
 Please post questions or ideas to the mailinglist at

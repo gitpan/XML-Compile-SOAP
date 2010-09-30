@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '2.16';
+$VERSION = '2.17';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -416,7 +416,8 @@ sub _reader_hook($$)
                 next;
             }
             else
-            {   trace __x"node {type} ignored, expect from {has}",
+            {   $h{$type} = $child;
+                trace __x"node {type} not understood, expect from {has}",
                     type => $type, has => [sort keys %trans];
             }
 
