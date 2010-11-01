@@ -18,13 +18,15 @@ examples/rpc-literal/type.wsdl
 examples/wssecurity/README
 examples/wssecurity/security.pm
 lib/XML/Compile/Operation.pm
-lib/XML/Compile/Operation.pod
 lib/XML/Compile/SOAP.pm
 lib/XML/Compile/SOAP.pod
 lib/XML/Compile/SOAP/Client.pm
 lib/XML/Compile/SOAP/Client.pod
 lib/XML/Compile/SOAP/Extension.pm
 lib/XML/Compile/SOAP/Extension.pod
+lib/XML/Compile/SOAP/FAQ.pod
+lib/XML/Compile/SOAP/Operation.pm
+lib/XML/Compile/SOAP/Operation.pod
 lib/XML/Compile/SOAP/Server.pm
 lib/XML/Compile/SOAP/Server.pod
 lib/XML/Compile/SOAP/Trace.pm
@@ -78,4 +80,5 @@ t/55wsdlrpcone.t
 t/60xop.t
 t/99pod.t
 t/TestTools.pm
+xt/99pod.t
 META.yml                                 Module meta-data (added by MakeMaker)

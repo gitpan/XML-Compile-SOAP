@@ -7,7 +7,9 @@ use strict;
 
 package XML::Compile::Transport;
 use vars '$VERSION';
-$VERSION = '2.17';
+$VERSION = '2.18';
+
+use base 'XML::Compile::SOAP::Extension';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 
@@ -15,13 +17,9 @@ use XML::LibXML ();
 use Time::HiRes qw/time/;
 
 
-sub new(@)
-{   my $class = shift;
-    (bless {}, $class)->init( {@_} );
-}
-
 sub init($)
 {   my ($self, $args) = @_;
+    $self->SUPER::init($args);
     $self->{charset} = $args->{charset} || 'utf-8';
 
     my $addr  = $args->{address} || 'http://localhost';
@@ -49,6 +47,7 @@ sub address()
 
 
 my $parser = XML::LibXML->new;
+
 sub compileClient(@)
 {   my ($self, %args) = @_;
     my $call  = $self->_prepare_call(\%args);

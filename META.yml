@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               XML-Compile-SOAP
-version:            2.17
+version:            2.18
 abstract:           SOAP and WSDL, client side
 author:
     - Mark Overmeer
@@ -16,7 +16,6 @@ requires:
     LWP:                  5.816
     Test::Deep:           0.095
     Test::More:           0.54
-    Test::Pod:            1.00
     Time::HiRes:          0
     XML::Compile:         1.17
     XML::Compile::Cache:  0.97

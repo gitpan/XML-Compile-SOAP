@@ -1,11 +1,12 @@
 =head1 NAME
 
-XML::Compile::Transport::SOAPHTTP - exchange XML via HTTP
+XML::Compile::Transport::SOAPHTTP - exchange XML-SOAP via HTTP
 
 =head1 INHERITANCE
 
  XML::Compile::Transport::SOAPHTTP
    is a XML::Compile::Transport
+   is a XML::Compile::SOAP::Extension
 
 =head1 SYNOPSIS
 
@@ -15,9 +16,9 @@ XML::Compile::Transport::SOAPHTTP - exchange XML via HTTP
  my $send = $http->compileClient(@options2);
 
  my $call = $wsdl->compileClient
-  ( operation => 'some-port-name'
-  , transport => $send
-  );
+   ( operation => 'some-port-name'
+   , transport => $send
+   );
 
  my ($xmlout, $trace) = $call->($xmlin);
 
@@ -82,6 +83,46 @@ your own user agents -or at least have a look at the configuration-
 seems like a good idea.
 
 =back
+
+=back
+
+=head2 WSDL11
+
+$obj-E<gt>B<wsdl11Init>(WSDL, ARGS)
+
+XML::Compile::Transport::SOAPHTTP-E<gt>B<wsdl11Init>(WSDL, ARGS)
+
+=over 4
+
+See L<XML::Compile::SOAP::Extension/"WSDL11">
+
+=back
+
+=head2 SOAP11
+
+$obj-E<gt>B<soap11ClientWrapper>(OPERATION, CALL, ARGS)
+
+=over 4
+
+See L<XML::Compile::SOAP::Extension/"SOAP11">
+
+=back
+
+$obj-E<gt>B<soap11HandlerWrapper>(OPERATION, CALLBACK, ARGS)
+
+=over 4
+
+See L<XML::Compile::SOAP::Extension/"SOAP11">
+
+=back
+
+$obj-E<gt>B<soap11OperationInit>(OPERATION, ARGS)
+
+XML::Compile::Transport::SOAPHTTP-E<gt>B<soap11OperationInit>(OPERATION, ARGS)
+
+=over 4
+
+See L<XML::Compile::SOAP::Extension/"SOAP11">
 
 =back
 
@@ -229,8 +270,8 @@ is being created.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.17,
-built on September 30, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.18,
+built on November 01, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

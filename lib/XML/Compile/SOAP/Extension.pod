@@ -2,6 +2,12 @@
 
 XML::Compile::SOAP::Extension - plugins for standards
 
+=head1 INHERITANCE
+
+ XML::Compile::SOAP::Extension is extended by
+   XML::Compile::SOAP::WSA
+   XML::Compile::Transport
+
 =head1 DESCRIPTION
 
 This module defines hooks which are used to implement the SOAP and WSDL
@@ -23,30 +29,43 @@ XML::Compile::SOAP::Extension-E<gt>B<new>(OPTIONS)
 
 $obj-E<gt>B<wsdl11Init>(WSDL, ARGS)
 
+XML::Compile::SOAP::Extension-E<gt>B<wsdl11Init>(WSDL, ARGS)
+
 =over 4
 
 =back
 
 =head2 SOAP11
 
-$obj-E<gt>B<soap11ClientWrapper>(OPERATION, CALL, OPTIONS)
+$obj-E<gt>B<soap11ClientWrapper>(OPERATION, CALL, ARGS)
 
 =over 4
 
 =back
 
-$obj-E<gt>B<soap11OperationInit>(OPERATION, OPTIONS)
-
-XML::Compile::SOAP::Extension-E<gt>B<soap11OperationInit>(OPERATION, OPTIONS)
+$obj-E<gt>B<soap11HandlerWrapper>(OPERATION, CALLBACK, ARGS)
 
 =over 4
+
+Called before the handler is created, to influence the encoder and
+decoder. Returned is a wrapped callback, or the same.
+
+=back
+
+$obj-E<gt>B<soap11OperationInit>(OPERATION, ARGS)
+
+XML::Compile::SOAP::Extension-E<gt>B<soap11OperationInit>(OPERATION, ARGS)
+
+=over 4
+
+ARGS is a reference.
 
 =back
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.17,
-built on September 30, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.18,
+built on November 01, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

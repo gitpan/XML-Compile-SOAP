@@ -4,6 +4,9 @@ XML::Compile::Transport - base class for XML transporters
 
 =head1 INHERITANCE
 
+ XML::Compile::Transport
+   is a XML::Compile::SOAP::Extension
+
  XML::Compile::Transport is extended by
    XML::Compile::Transport::SOAPHTTP
 
@@ -22,8 +25,24 @@ This module defines the exchange of (XML) messages. The module does not
 known how to parse or compose XML, but only worries about the transport
 aspects.
 
-On the moment, there is only one transporter implementation: the
-L<XML::Compile::Transport::SOAPHTTP|XML::Compile::Transport::SOAPHTTP>.
+On the moment, there are two transporter implementations:
+
+=over 4
+
+=item L<XML::Compile::Transport::SOAPHTTP|XML::Compile::Transport::SOAPHTTP>
+
+implements an synchronous message exchange; the library waits for an
+answer before it returns to the user application. The information is
+exchanged using HTTP with SOAP encapsulation (SOAP also defines a
+transport protocol over HTTP without encapsulation)
+
+=item L<XML::Compile::Transport::SOAPHTTP_AnyEvent|XML::Compile::Transport::SOAPHTTP_AnyEvent>
+
+This requires the installation of an additional module. The user
+provides a callback to handle responses. Many queries can be spawned
+in parallel.
+
+=back
 
 =head1 METHODS
 
@@ -46,6 +65,46 @@ One or more URI which represents the servers.
 =back
 
 . charset => STRING
+
+=back
+
+=head2 WSDL11
+
+$obj-E<gt>B<wsdl11Init>(WSDL, ARGS)
+
+XML::Compile::Transport-E<gt>B<wsdl11Init>(WSDL, ARGS)
+
+=over 4
+
+See L<XML::Compile::SOAP::Extension/"WSDL11">
+
+=back
+
+=head2 SOAP11
+
+$obj-E<gt>B<soap11ClientWrapper>(OPERATION, CALL, ARGS)
+
+=over 4
+
+See L<XML::Compile::SOAP::Extension/"SOAP11">
+
+=back
+
+$obj-E<gt>B<soap11HandlerWrapper>(OPERATION, CALLBACK, ARGS)
+
+=over 4
+
+See L<XML::Compile::SOAP::Extension/"SOAP11">
+
+=back
+
+$obj-E<gt>B<soap11OperationInit>(OPERATION, ARGS)
+
+XML::Compile::Transport-E<gt>B<soap11OperationInit>(OPERATION, ARGS)
+
+=over 4
+
+See L<XML::Compile::SOAP::Extension/"SOAP11">
 
 =back
 
@@ -187,8 +246,8 @@ or
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.17,
-built on September 30, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.18,
+built on November 01, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

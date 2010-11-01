@@ -40,7 +40,7 @@ XML::Compile::WSDL11 - create SOAP messages defined by WSDL 1.1
 
  # Install XML::Compile::SOAP::Daemon
  my $server  = XML::Compile::SOAP::HTTPDaemon->new;
- $server->actionsFromWSDL($wsdl);
+ $server->operationsFromWSDL($wsdl);
  undef $wsdl;    # not needed any further
  
  # For debug info, start your script with:
@@ -301,6 +301,14 @@ See L<XML::Compile::Cache/"Administration">
 
 =back
 
+$obj-E<gt>B<doesExtend>(EXTTYPE, BASETYPE)
+
+=over 4
+
+See L<XML::Compile::Schema/"Administration">
+
+=back
+
 $obj-E<gt>B<elements>
 
 =over 4
@@ -388,7 +396,7 @@ $obj-E<gt>B<compileClient>([NAME], OPTIONS)
 
 =over 4
 
-Creates temporarily an L<XML::Compile::Operation|XML::Compile::Operation> object with
+Creates temporarily an L<XML::Compile::SOAP::Operation|XML::Compile::SOAP::Operation> object with
 L<operation()|XML::Compile::WSDL11/"Extension">, and then calls C<compileClient()> on that; an usual
 combination.
 
@@ -402,7 +410,7 @@ L<operation()|XML::Compile::WSDL11/"Extension"> (i.e. C<service> and C<port>), a
 
 =item .
 
-L<XML::Compile::Operation::compileClient()|XML::Compile::Operation/"Handlers"> (a whole lot,
+L<XML::Compile::SOAP::Operation::compileClient()|XML::Compile::SOAP::Operation/"Handlers"> (a whole lot,
 for instance C<transport_hook> and C<server>), plus
 
 =back
@@ -434,7 +442,7 @@ $obj-E<gt>B<operation>([NAME], OPTIONS)
 =over 4
 
 Collect all information for a certain operation.  Returned is an
-L<XML::Compile::Operation|XML::Compile::Operation> object.
+L<XML::Compile::SOAP::Operation|XML::Compile::SOAP::Operation> object.
 
 An operation is defined by a service name, a port, some bindings,
 and an operation name, which can be specified explicitly and often
@@ -506,7 +514,7 @@ The DIRECTION of operation is either C<INPUT> (input for the server,
 hence to be produced by the client), or C<OUTPUT> (from the server,
 received by the client).
 
-The actual work is done by L<XML::Compile::Operation::explain()|XML::Compile::Operation/"Helpers">. The
+The actual work is done by L<XML::Compile::SOAP::Operation::explain()|XML::Compile::SOAP::Operation/"Helpers">. The
 OPTIONS are passed to that method, as there are C<recurse> and
 C<skip_header>.
 
@@ -628,8 +636,8 @@ a choice, then you are required to select one explicitly.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.17,
-built on September 30, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.18,
+built on November 01, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

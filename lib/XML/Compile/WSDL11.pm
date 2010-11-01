@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '2.17';
+$VERSION = '2.18';
 
 use base 'XML::Compile::Cache';
 
@@ -18,7 +18,7 @@ use XML::Compile::Util       qw/pack_type unpack_type/;
 use XML::Compile::SOAP::Util qw/:wsdl11/;
 use XML::Compile::SOAP::Extension;
 
-use XML::Compile::Operation  ();
+use XML::Compile::SOAP::Operation  ();
 use XML::Compile::Transport  ();
 
 use List::Util               qw/first/;
@@ -33,7 +33,7 @@ sub init($)
     my $wsdl = delete $args->{top};
 
     local $args->{any_element}      = 'ATTEMPT';
-    local $args->{any_attribute}    = 'ATTEMPT';
+    local $args->{any_attribute}    = 'ATTEMPT'; # not implemented
     local $args->{allow_undeclared} = 1;
 
     $self->SUPER::init($args);
@@ -41,11 +41,12 @@ sub init($)
     $self->{index}   = {};
 
     $self->prefixes(wsdl => WSDL11, soap => WSDL11SOAP, http => WSDL11HTTP);
-    $self->importDefinitions(WSDL11);
 
+    # next module should change into an extension as well...
     $_->can('_initWSDL11') && $_->_initWSDL11($self)
-        for XML::Compile::Operation->registered
-          , XML::Compile::Transport->registered;
+        for XML::Compile::SOAP::Operation->registered;
+
+    XML::Compile::SOAP::Extension->wsdl11Init($self, $args);
 
     $self->declare
       ( READER      => 'wsdl:definitions'
@@ -53,9 +54,8 @@ sub init($)
       , hook        => {type => 'wsdl:tOperation', after => 'ELEMENT_ORDER'}
       );
 
+    $self->importDefinitions(WSDL11);
     $self->addWSDL($wsdl);
-
-    XML::Compile::SOAP::Extension->wsdl11Init($self, $args);
     $self;
 }
 
@@ -214,7 +214,7 @@ sub operation(@)
         or error __x"port address not prefixed; probably need to add a plugin";
 
     my $opns      = $self->findName("$prefix:");
-    my $opclass   = XML::Compile::Operation->plugin($opns);
+    my $opclass   = XML::Compile::SOAP::Operation->plugin($opns);
     unless($opclass)
     {   my $pkg = $opns eq WSDL11SOAP   ? 'SOAP11'
                 : $opns eq WSDL11SOAP12 ? 'SOAP12'
@@ -273,6 +273,8 @@ sub operation(@)
 
     my @bindops   = @{$binding->{wsdl_operation} || []};
     my $bind_op   = first {$_->{name} eq $name} @bindops;
+    $bind_op
+        or error __x"cannot find bind operation for {name}", name => $name;
 
     # This should be detected while parsing the WSDL because the order of
     # input and output is significant (and lost), but WSDL 1.1 simplifies

@@ -7,9 +7,9 @@ use strict;
 
 package XML::Compile::SOAP10::Operation;
 use vars '$VERSION';
-$VERSION = '2.17';
+$VERSION = '2.18';
 
-use base 'XML::Compile::Operation';
+use base 'XML::Compile::SOAP::Operation';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 use List::Util  'first';

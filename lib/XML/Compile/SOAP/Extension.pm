@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::Extension;
 use vars '$VERSION';
-$VERSION = '2.17';
+$VERSION = '2.18';
 
 use Log::Report 'xml-compile-soap';
 
@@ -24,23 +24,37 @@ sub init($)
 }
 
 
+### Everywhere: when called on an object, it is the stub for the
+### extension. Only when called as class method, it will walk all
+### extension objects.
+
 sub wsdl11Init($$)
 {   ref shift and return;
     $_->wsdl11Init(@_) for @ext;
 }
 
 
-sub soap11OperationInit($@)
+sub soap11OperationInit($$)
 {   ref shift and return;
     $_->soap11OperationInit(@_) for @ext;
 }
 
 
-sub soap11ClientWrapper($$@)
+sub soap11ClientWrapper($$$)
 {   ref shift and return $_[1];
-    my ($op, $call) = (shift, shift);
-    $call = $_->soap11ClientWrapper($op, $call, @_) for @ext;
+    my ($op, $call, $args) = @_;
+    $call = $_->soap11ClientWrapper($op, $call, $args) for @ext;
     $call;
 }
+
+
+sub soap11HandlerWrapper($$$)
+{   my ($thing, $op, $cb, $args) = @_;
+    ref $thing and return $cb;
+    $cb = $_->soap11HandlerWrapper($op, $cb, $args) for @ext;
+    $cb;
+}
+
+1;
 
 1;

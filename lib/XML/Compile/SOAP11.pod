@@ -166,6 +166,8 @@ See L<XML::Compile::SOAP/"Transcoding">
 
 =head2 Client, Proxy and Server implementations
 
+=head2 Use of wildcards (any/anyAttribute)
+
 =head2 Header and Body entries
 
 You only call L<compileMessage()|XML::Compile::SOAP11/"Single message"> explicit if you do not have a WSDL
@@ -321,8 +323,8 @@ Hence, a typical client routine could contain
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.17,
-built on September 30, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.18,
+built on November 01, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport::SOAPHTTP;
 use vars '$VERSION';
-$VERSION = '2.17';
+$VERSION = '2.18';
 
 use base 'XML::Compile::Transport';
 
@@ -20,8 +20,6 @@ use LWP::UserAgent ();
 use HTTP::Request  ();
 use HTTP::Headers  ();
 
-use XML::LibXML   ();
-
 if($] >= 5.008003)
 {   use Encode;
     Encode->import;
@@ -29,8 +27,6 @@ if($] >= 5.008003)
 else
 {   *encode = sub { $_[1] };
 }
-
-my $parser = XML::LibXML->new;
 
 # (Microsofts HTTP Extension Framework)
 my $http_ext_id = SOAP11ENV;
@@ -43,14 +39,14 @@ sub init($)
     $self->SUPER::init($args);
 
     $self->userAgent
-     ( $args->{user_agent}
-     , keep_alive => (exists $args->{keep_alive} ? $args->{keep_alive} : 1)
-     , timeout    => ($args->{timeout} || 180)
-     );
+      ( $args->{user_agent}
+      , keep_alive => (exists $args->{keep_alive} ? $args->{keep_alive} : 1)
+      , timeout    => ($args->{timeout} || 180)
+      );
     $self;
 }
 
-sub _initWSDL11($)
+sub initWSDL11($)
 {   my ($class, $wsdl) = @_;
     trace "initialize SOAPHTTP transporter for WSDL11";
 }
@@ -305,7 +301,6 @@ sub _prepare_for_no_answer($)
         ($content, {});
       };
 }
-
 
 
 sub headerAddVersions($)

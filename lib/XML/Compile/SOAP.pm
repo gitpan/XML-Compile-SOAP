@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '2.17';
+$VERSION = '2.18';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -18,6 +18,9 @@ use XML::Compile::SOAP::Util qw/:xop10/;
 
 use Time::HiRes          qw/time/;
 use MIME::Base64         qw/decode_base64/;
+
+# XML::Compile::SOAP::WSA::Util often not installed
+use constant WSA10 => 'http://www.w3.org/2005/08/addressing';
 
 
 sub new($@)
@@ -68,10 +71,15 @@ sub messageStructure($)
 {   my ($thing, $xml) = @_;
     my $env = $xml->isa('XML::LibXML::Document') ? $xml->documentElement :$xml;
 
-    my (@header, @body);
+    my (@header, @body, $wsa_action);
     if(my ($header) = $env->getChildrenByLocalName('Header'))
     {   @header = map { $_->isa('XML::LibXML::Element') ? type_of_node($_) : ()}
            $header->childNodes;
+
+        if(my $wsa = ($header->getChildrenByTagNameNS(WSA10, 'Action'))[0])
+        {   $wsa_action = $wsa->textContent;
+            for($wsa_action) { s/^\s+//; s/\s+$//; s/\s{2,}/ /g }
+        }
     }
 
     if(my ($body) = $env->getChildrenByLocalName('Body'))
@@ -79,8 +87,9 @@ sub messageStructure($)
            $body->childNodes;
     }
 
-    +{ header => \@header
-     , body   => \@body
+    +{ header     => \@header
+     , body       => \@body
+     , wsa_action => $wsa_action
      };
 }
 
@@ -126,10 +135,11 @@ sub _sender(@)
 
     sub
     {   my ($values, $charset) = ref $_[0] eq 'HASH' ? @_ : ( {@_}, undef);
-        my $doc   = XML::LibXML::Document->new('1.0', $charset || 'UTF-8');
         my %copy  = %$values;  # do not destroy the calling hash
-        my %data;
+        my $doc   = delete $copy{_doc}
+                 || XML::LibXML::Document->new('1.0', $charset || 'UTF-8');
 
+        my %data;
         $data{$_}   = delete $copy{$_} for qw/Header Body/;
         $data{Body} ||= {};
 

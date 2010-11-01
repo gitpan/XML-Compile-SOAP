@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11::Server;
 use vars '$VERSION';
-$VERSION = '2.17';
+$VERSION = '2.18';
 
 use base 'XML::Compile::SOAP11', 'XML::Compile::SOAP::Server';
 
@@ -95,18 +95,18 @@ sub faultNoAnswerProduced($)
       );
 }
 
-sub faultMessageNotRecognized($$)
-{   my ($self, $name, $handlers) = @_;
+sub faultMessageNotRecognized($$$)
+{   my ($self, $name, $action, $handlers) = @_;
 
     my $message;
     if($handlers && @$handlers)
-    {   $message =
-       __x "{version} body element {name} not recognized, available are {def}"
-         , version => 'SOAP11', name => $name, def => $handlers;
+    {   my $sa = $action ? " (soapAction $action)" : '';
+        $message = __x"{version} body element {name}{sa} not recognized, available are {def}"
+         , version => 'SOAP11', name => $name, sa => $sa, def => $handlers;
     }
     else
     {   $message =
-          __x"{version} there are no handlers available, so also not {name}"
+          __x"{version} there are no handlers available, so also not for {name}"
             , version => 'SOAP11', name => $name;
     }
 

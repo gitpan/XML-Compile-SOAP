@@ -6,7 +6,6 @@ XML::Compile::SOAP::Client - SOAP message initiators
 
  XML::Compile::SOAP::Client is extended by
    XML::Compile::SOAP11::Client
-   XML::Compile::SOAP12::Client
 
 =head1 SYNOPSIS
 
@@ -31,11 +30,23 @@ $obj-E<gt>B<compileClient>(OPTIONS)
 =over 4
 
  Option   --Default
+ async      <false>
  decode     <required>
  encode     <required>
  kind       request-response
  name       <undef>
  transport  <required>
+
+. async => BOOLEAN
+
+=over 4
+
+If true, a whole different code-reference is returned. Each time it
+is called, the call will be made but the function returns immediately.
+As additional parameter to the call, you must provide a C<_callback>
+parameter which is a code-reference which will handle the result.
+
+=back
 
 . decode => CODE
 
@@ -83,6 +94,23 @@ compileClient will be called for you.  This is possible in case you do
 not have any configuration options to pass with the compileClient().
 
 =back
+
+example: 
+
+Normal call:
+
+   my $call = $wsdl->compileClient('myOp');
+   my ($answer, $trace) = $call->(@params);
+   #do something with $answer
+
+Async call:
+
+   my $call = $wsdl->compileClient('myOp', async => 1);
+   sub cb
+   {  my ($answer, $trace) = @_;
+      #do something with $answer
+   };
+   $call->(@params, _callback => \&cb);
 
 =back
 
@@ -468,8 +496,8 @@ equivalent to the C<%data_in> from the client.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.17,
-built on September 30, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.18,
+built on November 01, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

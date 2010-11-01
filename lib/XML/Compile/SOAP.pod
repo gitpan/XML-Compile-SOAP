@@ -408,10 +408,36 @@ by <XML::Compile::SOAP::Server>, which is available from the
 XML-Compile-SOAP-Daemon distribution.  The server is based on
 Net::Server, which may have some portability restrictions.
 
+=head2 Use of wildcards (any/anyAttribute)
+
+Start reading about wildcards in L<XML::Compile|XML::Compile>. When you receive a
+message which contains "ANY" elements, an attempt will be made to decode
+it automatically. Only sending messages which contain "ANY" fields is
+harder... you may try hooks or something more along these lines:
+
+   my $doc = XML::LibXML::Document->new('1.0', 'UTF-8');
+   my $type    = pack_type $ns, $local;
+   my $node    = $wsdl->writer($type)->($doc, $value);
+   my $message = { ..., $type => $node };
+
+   my $call = $wsdl->compileClient('myOpToCall');
+   my ($answer, $trace) =  $call->(_doc => $doc, message => $message);
+
+Here, C<$type> is the type of the element which needs to be filled in
+on a spot where the schema defines an "ANY" element. You need to include
+the full typename as key in the HASH (on the right spot) and a fully
+prepared C<$node>, an XML::LibXML::Element, as key.
+
+You see that the C<$doc> which is created to produce the special node
+in the message is also passed to the C<$call>. The call produces the
+message which is sent and needs to use the same document object as the
+node inside it. The chances are that when you forget to pass the C<$doc>
+it still works... but you may get into characterset problems and such.
+
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.17,
-built on September 30, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.18,
+built on November 01, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

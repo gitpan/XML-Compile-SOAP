@@ -1,12 +1,11 @@
 =head1 NAME
 
-XML::Compile::Operation - base-class for possible interactions
+XML::Compile::SOAP::Operation - base-class for possible interactions
 
 =head1 INHERITANCE
 
- XML::Compile::Operation is extended by
+ XML::Compile::SOAP::Operation is extended by
    XML::Compile::SOAP11::Operation
-   XML::Compile::SOAP12::Operation
 
 =head1 SYNOPSIS
 
@@ -23,7 +22,7 @@ a server.
 
 =head2 Constructors
 
-XML::Compile::Operation-E<gt>B<new>(OPTIONS)
+XML::Compile::SOAP::Operation-E<gt>B<new>(OPTIONS)
 
 =over 4
 
@@ -80,12 +79,6 @@ Transfer Protocol.
 =back
 
 =head2 Accessors
-
-$obj-E<gt>B<action>
-
-=over 4
-
-=back
 
 $obj-E<gt>B<bindingName>
 
@@ -148,9 +141,29 @@ $obj-E<gt>B<serviceName>
 
 =back
 
+$obj-E<gt>B<soapAction>
+
+=over 4
+
+Used for the C<soapAction> header in HTTP transport, for routing
+messages through firewalls.
+
+=back
+
 $obj-E<gt>B<version>
 
 =over 4
+
+=back
+
+$obj-E<gt>B<wsaAction>('INPUT'|'OUTPUT')
+
+=over 4
+
+Only available when C<XML::Compile::SOAP::WSA> is loaded. It specifies
+the name of the operation in the WSA header.  With C<INPUT>, it is the
+Action to be used with a message sent to the server (input to the
+server). The C<OUTPUT> is used by the server in its message back.
 
 =back
 
@@ -251,7 +264,7 @@ sent as response by the server.
 
 =back
 
-XML::Compile::Operation-E<gt>B<register>(URI, ENVNS)
+XML::Compile::SOAP::Operation-E<gt>B<register>(URI, ENVNS)
 
 =over 4
 
@@ -261,8 +274,8 @@ Declare an operation type, but WSDL specific URI and envelope namespace.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.17,
-built on September 30, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.18,
+built on November 01, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,

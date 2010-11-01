@@ -5,7 +5,7 @@ XML::Compile::SOAP11::Operation - defines a SOAP11 interaction
 =head1 INHERITANCE
 
  XML::Compile::SOAP11::Operation
-   is a XML::Compile::Operation
+   is a XML::Compile::SOAP::Operation
 
 =head1 SYNOPSIS
 
@@ -30,16 +30,16 @@ the input and output message header, body and fault-header definitions
 in WSDL1.1 style.
 
  Option    --Defined in     --Default
- action      XML::Compile::Operation  undef
- endpoints   XML::Compile::Operation  []
+ action      XML::Compile::SOAP::Operation  undef
+ endpoints   XML::Compile::SOAP::Operation  []
  fault_def                    <undef>
  input_def                    <undef>
- kin         XML::Compile::Operation  <required>
- nam         XML::Compile::Operation  <required>
+ kin         XML::Compile::SOAP::Operation  <required>
+ nam         XML::Compile::SOAP::Operation  <required>
  output_def                   <undef>
- schemas     XML::Compile::Operation  <required>
+ schemas     XML::Compile::SOAP::Operation  <required>
  style                        'document'
- transport   XML::Compile::Operation  'HTTP'
+ transport   XML::Compile::SOAP::Operation  'HTTP'
 
 . action => STRING
 
@@ -65,19 +65,11 @@ in WSDL1.1 style.
 
 =head2 Accessors
 
-$obj-E<gt>B<action>
-
-=over 4
-
-See L<XML::Compile::Operation/"Accessors">
-
-=back
-
 $obj-E<gt>B<bindingName>
 
 =over 4
 
-See L<XML::Compile::Operation/"Accessors">
+See L<XML::Compile::SOAP::Operation/"Accessors">
 
 =back
 
@@ -85,7 +77,7 @@ $obj-E<gt>B<clientClass>
 
 =over 4
 
-See L<XML::Compile::Operation/"Accessors">
+See L<XML::Compile::SOAP::Operation/"Accessors">
 
 =back
 
@@ -93,7 +85,7 @@ $obj-E<gt>B<endPoints>
 
 =over 4
 
-See L<XML::Compile::Operation/"Accessors">
+See L<XML::Compile::SOAP::Operation/"Accessors">
 
 =back
 
@@ -101,7 +93,7 @@ $obj-E<gt>B<kind>
 
 =over 4
 
-See L<XML::Compile::Operation/"Accessors">
+See L<XML::Compile::SOAP::Operation/"Accessors">
 
 =back
 
@@ -109,7 +101,7 @@ $obj-E<gt>B<name>
 
 =over 4
 
-See L<XML::Compile::Operation/"Accessors">
+See L<XML::Compile::SOAP::Operation/"Accessors">
 
 =back
 
@@ -117,7 +109,7 @@ $obj-E<gt>B<portName>
 
 =over 4
 
-See L<XML::Compile::Operation/"Accessors">
+See L<XML::Compile::SOAP::Operation/"Accessors">
 
 =back
 
@@ -125,7 +117,7 @@ $obj-E<gt>B<schemas>
 
 =over 4
 
-See L<XML::Compile::Operation/"Accessors">
+See L<XML::Compile::SOAP::Operation/"Accessors">
 
 =back
 
@@ -133,7 +125,7 @@ $obj-E<gt>B<serverClass>
 
 =over 4
 
-See L<XML::Compile::Operation/"Accessors">
+See L<XML::Compile::SOAP::Operation/"Accessors">
 
 =back
 
@@ -141,7 +133,15 @@ $obj-E<gt>B<serviceName>
 
 =over 4
 
-See L<XML::Compile::Operation/"Accessors">
+See L<XML::Compile::SOAP::Operation/"Accessors">
+
+=back
+
+$obj-E<gt>B<soapAction>
+
+=over 4
+
+See L<XML::Compile::SOAP::Operation/"Accessors">
 
 =back
 
@@ -155,14 +155,23 @@ $obj-E<gt>B<version>
 
 =over 4
 
-See L<XML::Compile::Operation/"Accessors">
+See L<XML::Compile::SOAP::Operation/"Accessors">
+
+=back
+
+$obj-E<gt>B<wsaAction>('INPUT'|'OUTPUT')
+
+=over 4
+
+See L<XML::Compile::SOAP::Operation/"Accessors">
 
 =back
 
 =head2 Modify
 
-Operations are often modified by SOAP extensions. See XML::Compile::WSA,
-for instance.
+Operations are often modified by SOAP extensions.
+See L<XML::Compile::SOAP::WSA|XML::Compile::SOAP::WSA>, for instance. Also demonstrated in
+the FAQ, XML::Compile::SOAP::FAQ.
 
 $obj-E<gt>B<addHeader>(('INPUT'|'OUTPUT'|'FAULT'), LABEL, ELEM)
 
@@ -178,7 +187,7 @@ $obj-E<gt>B<compileClient>(OPTIONS)
 
 Returns one CODE reference which handles the processing for this
 operation. Options C<transporter>, C<transport_hook>, and
-C<endpoint> are passed to L<compileTransporter()|XML::Compile::Operation/"Handlers">.
+C<endpoint> are passed to L<compileTransporter()|XML::Compile::SOAP::Operation/"Handlers">.
 
 You pass that CODE reference an input message of the correct
 type, as pure Perl HASH structure.  An 'request-response' operation
@@ -199,7 +208,8 @@ $obj-E<gt>B<compileHandler>(OPTIONS)
 
 Prepare the routines which will decode the request and encode the answer,
 as will be run on the server. The L<XML::Compile::SOAP::Server|XML::Compile::SOAP::Server> will
-connect these.
+connect these. All OPTIONS will get passed to
+L<XML::Compile::SOAP11::Server::compileHandler()|XML::Compile::SOAP::Server/"Actions">
 
  Option  --Default
  callback  <required>
@@ -221,7 +231,7 @@ $obj-E<gt>B<compileTransporter>(OPTIONS)
 
 =over 4
 
-See L<XML::Compile::Operation/"Handlers">
+See L<XML::Compile::SOAP::Operation/"Handlers">
 
 =back
 
@@ -264,14 +274,14 @@ XML::Compile::SOAP11::Operation-E<gt>B<register>(URI, ENVNS)
 
 =over 4
 
-See L<XML::Compile::Operation/"Helpers">
+See L<XML::Compile::SOAP::Operation/"Helpers">
 
 =back
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.17,
-built on September 30, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.18,
+built on November 01, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 All modules in this suite:
 L<XML::Compile>,
