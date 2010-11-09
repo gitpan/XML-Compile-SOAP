@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '2.18';
+$VERSION = '2.19';
 
 use base 'XML::Compile::Cache';
 
@@ -56,6 +56,7 @@ sub init($)
 
     $self->importDefinitions(WSDL11);
     $self->addWSDL($wsdl);
+
     $self;
 }
 

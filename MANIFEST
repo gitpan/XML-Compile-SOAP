@@ -78,7 +78,6 @@ t/53wsdlrpclit.t
 t/54wsdlrpclit.t
 t/55wsdlrpcone.t
 t/60xop.t
-t/99pod.t
 t/TestTools.pm
 xt/99pod.t
 META.yml                                 Module meta-data (added by MakeMaker)

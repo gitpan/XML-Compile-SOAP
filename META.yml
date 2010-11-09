@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               XML-Compile-SOAP
-version:            2.18
+version:            2.19
 abstract:           SOAP and WSDL, client side
 author:
     - Mark Overmeer

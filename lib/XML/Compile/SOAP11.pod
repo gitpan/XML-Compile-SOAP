@@ -164,19 +164,19 @@ See L<XML::Compile::SOAP/"Transcoding">
 
 =head2 Naming types and elements
 
-=head2 Client, Proxy and Server implementations
+=head2 Client and Server implementations
 
 =head2 Use of wildcards (any/anyAttribute)
 
 =head2 Header and Body entries
 
-You only call L<compileMessage()|XML::Compile::SOAP11/"Single message"> explicit if you do not have a WSDL
-file which contains this information.  So, in the unlucky situation,
-you have to dig in the defined types by hand.
+You only call L<compileMessage()|XML::Compile::SOAP11/"Single message"> explicitly if you do not have a WSDL
+file which contains this information. In the unlucky situation, you
+have to dig out the defined types by hand.
 
 But even with a WSDL, there are still a few problems you may encounter.
 For instance, the WSDL will not contain C<mustUnderstand> and C<actor>
-header routing information.  You can add these to the compile call
+header routing information.  You can add these to the compileClient call
 
   my $call = $wsdl->compileClient
     ( 'MyCall'
@@ -323,10 +323,10 @@ Hence, a typical client routine could contain
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.18,
-built on November 01, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.19,
+built on November 09, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
-All modules in this suite:
+Other distributions in this suite:
 L<XML::Compile>,
 L<XML::Compile::SOAP>,
 L<XML::Compile::SOAP12>,
@@ -336,14 +336,14 @@ L<XML::Compile::Tester>,
 L<XML::Compile::Cache>,
 L<XML::Compile::Dumper>,
 L<XML::Compile::RPC>,
-and
 L<XML::Rewrite>,
 L<XML::eXistDB>,
+and
 L<XML::LibXML::Simple>.
 
 Please post questions or ideas to the mailinglist at
 F<http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/xml-compile>
-For life contact with other developers, visit the C<#xml-compile> channel
+For live contact with other developers, visit the C<#xml-compile> channel
 on C<irc.perl.org>.
 
 =head1 LICENSE

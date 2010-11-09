@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11::Operation;
 use vars '$VERSION';
-$VERSION = '2.18';
+$VERSION = '2.19';
 
 use base 'XML::Compile::SOAP::Operation';
 
@@ -253,6 +253,7 @@ sub compileClient(@)
       , encode       => $soap->_sender(@so, %args)
       , decode       => $soap->_receiver(@ro, %args)
       , transport    => $self->compileTransporter(%args)
+      , async        => $args{async}
       );
 
     XML::Compile::SOAP::Extension->soap11ClientWrapper($self, $call, \%args);

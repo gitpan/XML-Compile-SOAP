@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport::SOAPHTTP;
 use vars '$VERSION';
-$VERSION = '2.18';
+$VERSION = '2.19';
 
 use base 'XML::Compile::Transport';
 
