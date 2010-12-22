@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '2.19';
+$VERSION = '2.20';
 
 use base 'XML::Compile::Cache';
 
@@ -42,7 +42,7 @@ sub init($)
 
     $self->prefixes(wsdl => WSDL11, soap => WSDL11SOAP, http => WSDL11HTTP);
 
-    # next module should change into an extension as well...
+    # next modules should change into an extension as well...
     $_->can('_initWSDL11') && $_->_initWSDL11($self)
         for XML::Compile::SOAP::Operation->registered;
 
@@ -54,13 +54,65 @@ sub init($)
       , hook        => {type => 'wsdl:tOperation', after => 'ELEMENT_ORDER'}
       );
 
+    $self->{XCW_dcopts} = {};
+
     $self->importDefinitions(WSDL11);
     $self->addWSDL($wsdl);
-
     $self;
 }
 
 sub schemas(@) { panic "schemas() removed in v2.00, not needed anymore" }
+
+#--------------------------
+
+
+sub compileAll(;$$)
+{   my ($self, $need, $usens) = @_;
+    $self->SUPER::compileAll($need, $usens)
+        if !$need || $need ne 'CALLS';
+
+    $self->compileCalls
+        if !$need || $need eq 'CALLS';
+    $self;
+} 
+
+
+sub compileCalls(@)
+{   my ($self, %args) = @_;
+
+    my @ops = $self->operations
+      ( service => delete $args{service}
+      , port    => delete $args{port}
+      , binding => delete $args{binding}
+      );
+
+    $self->{XCW_ccode} ||= {};
+    foreach my $op (@ops)
+    {   my $name  = $op->name;
+        my @opts  = %args;
+        my $dopts = $self->{XCW_dcopts} || {};
+        push @opts, ref $dopts eq 'ARRAY' ? @$dopts : %$dopts;
+
+        $self->{XCW_ccode}{$name} ||= $op->compileClient(@opts);
+    }
+
+    $self->{XCW_ccode};
+}
+
+#--------------------------
+
+
+sub call($@)
+{   my ($self, $name) = (shift, shift);
+
+    my $codes = $self->{XCW_ccode}
+        or error __x"you can only use call() after compileCalls()";
+
+    my $call  = $codes->{$name}
+        or error __x"operation {name} is not known", name => $name;
+    
+    $call->(@_);
+}
 
 #--------------------------
 
@@ -198,8 +250,8 @@ sub operation(@)
 
     # get plugin for operation # {
     my $address   = first { $_ =~ m/address$/ } keys %$port
-        or error __x"no address provided in service port {port}"
-           , port => $port->{name};
+        or error __x"no address provided in service {service} port {port}"
+             , service => $service->{name}, port => $port->{name};
 
     if($address =~ m/^{/)      # }
     {   my ($ns)  = unpack_type $address;
@@ -329,6 +381,26 @@ sub compileClient(@)
 #---------------------
 
 
+sub declare($$@)
+{   my ($self, $need, $names, @opts) = @_;
+    my $opts = @opts==1 ? shift @opts : \@opts;
+    $opts = [ %$opts ] if ref $opts eq 'HASH';
+
+    $need eq 'OPERATION'
+        or $self->SUPER::declare($need, $names, @opts);
+
+    foreach my $name (ref $names eq 'ARRAY' ? @$names : $names)
+    {   # checking existence of opname is expensive here
+        # and may be problematic with multiple bindings.
+        $self->{XCW_dcopts}{$name} = $opts;
+    }
+
+    $self;
+}
+
+#--------------------------
+
+
 sub index(;$$)
 {   my $index = shift->{index};
     @_ or return $index;
@@ -411,6 +483,35 @@ sub operations(@)
     }
 
     @ops;
+}
+
+
+sub endPoint(@)
+{   my ($self, %args) = @_;
+    my $service   = $self->findDef(service => delete $args{service});
+
+    my $port;
+    my @ports     = @{$service->{wsdl_port} || []};
+    my @portnames = map {$_->{name}} @ports;
+    if(my $portname = delete $args{port})
+    {   $port = first {$_->{name} eq $portname} @ports;
+        error __x"cannot find port `{portname}', pick from {ports}"
+            , portname => $portname, ports => join("\n    ", '', @portnames)
+           unless $port;
+    }
+    elsif(@ports==1)
+    {   $port = shift @ports;
+    }
+    else
+    {   error __x"specify port explicitly, pick from {portnames}"
+            , portnames => join("\n    ", '', @portnames);
+    }
+
+    foreach my $k (keys %$port)
+    {   return $port->{$k}{location} if $k =~ m/address$/;
+    }
+
+    ();
 }
 
 

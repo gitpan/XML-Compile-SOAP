@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11;
 use vars '$VERSION';
-$VERSION = '2.19';
+$VERSION = '2.20';
 
 use base 'XML::Compile::SOAP';
 
@@ -41,7 +41,7 @@ sub init($)
 sub _initSOAP11($)
 {   my ($self, $schemas) = @_;
     return $self
-        if exists $schemas->prefixes->{'SOAP-ENV'};
+        if $schemas->{did_init_SOAP11}++;   # ugly
 
     $schemas->importDefinitions
       ( [SOAP11ENC, SOAP11ENV]
@@ -137,7 +137,7 @@ sub _sender(@)
     # faults are always possible
     my @bparts  = @{$args{body}{parts} || []};
     my $w = $self->schemas->writer('SOAP-ENV:Fault'
-      , include_namespaces => sub {$_[0] ne SOAP11ENV}
+      , include_namespaces => sub {$_[0] ne SOAP11ENV && $_[2]}
       );
     push @bparts,
       { name    => 'Fault'
@@ -196,6 +196,10 @@ sub _writer_faults($)
     my $faults = $args->{faults} ||= {};
 
     my (@rules, @flabels);
+
+    # Include all namespaces in Fault, because we have no idea which namespace
+    # is used for the error code. It automatically defines everything
+    # which may be used in the detail block.
     my $wrfault = $self->_writer('SOAP-ENV:Fault'
       , include_namespaces => sub {$_[0] ne SOAP11ENV});
 
@@ -203,7 +207,7 @@ sub _writer_faults($)
     {   my $part    = $fault->{part};
         my ($label, $type) = ($part->{name}, $part->{element});
         my $details = $self->_writer($type, elements_qualified => 'TOP'
-           , include_namespaces => sub {$_[0] ne SOAP11ENV});
+         , include_namespaces => sub {$_[0] ne SOAP11ENV && $_[2]});
 
         my $code = sub
           { my ($doc, $data)  = (shift, shift);
@@ -215,8 +219,8 @@ sub _writer_faults($)
             $wrfault->($doc, \%copy);
           };
 
-        push @rules, $label => $code;
-        push @flabels, $label;
+        push @rules, $name => $code;
+        push @flabels, $name;
     }
 
     (\@rules, \@flabels);

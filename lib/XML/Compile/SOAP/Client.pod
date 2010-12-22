@@ -373,8 +373,8 @@ In either protocol case, the following will get you at a compatible
 structure in two steps:
 
   if(my $fault = $got->{Fault})
-  {   my $decoded = $got->{$fault->{_NAME}};
-      print $decoded->{code};
+  {   my $decoded = fault->{_NAME}};
+      print $got->{$decoded}->{code};
       ...
   }
 
@@ -497,8 +497,8 @@ equivalent to the C<%data_in> from the client.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.19,
-built on November 09, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.20,
+built on December 22, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

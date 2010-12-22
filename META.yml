@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               XML-Compile-SOAP
-version:            2.19
+version:            2.20
 abstract:           SOAP and WSDL, client side
 author:
     - Mark Overmeer
@@ -12,13 +12,13 @@ build_requires:
     ExtUtils::MakeMaker:  0
 requires:
     File::Slurp:          0
-    Log::Report:          0.26
+    Log::Report:          0.9
     LWP:                  5.816
     Test::Deep:           0.095
     Test::More:           0.54
     Time::HiRes:          0
-    XML::Compile:         1.17
-    XML::Compile::Cache:  0.97
+    XML::Compile:         1.2
+    XML::Compile::Cache:  0.98
     XML::Compile::Tester:  0.05
 no_index:
     directory:
