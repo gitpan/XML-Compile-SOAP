@@ -52,13 +52,11 @@ code again.  Of course, you can also C<use> this package explicitly.
 
 =head2 Transcoding
 
-SOAP defines encodings, especially for SOAP-RPC.
-
 =head3 Encoding
 
-$obj-E<gt>B<array>((NAME|undef), ITEM_TYPE, ARRAY-of-ELEMENTS, OPTIONS)
-
 =over 4
+
+=item $obj-E<gt>B<array>((NAME|undef), ITEM_TYPE, ARRAY-of-ELEMENTS, OPTIONS)
 
 Arrays can be a mess: a mixture of anything and nothing.  Therefore,
 you have to help the generation more than you may wish for.  This
@@ -81,34 +79,26 @@ this class, like L<enc()|XML::Compile::SOAP11::Encoding/"Encoding"> or L<typed()
 Returned is the XML::LibXML::Element which represents the
 array.
 
- Option      --Default
- array_type    <generated>
- id            <undef>
- nested_array  ''
- offset        0
- slice         <all remaining>
+ -Option      --Default
+  array_type    <generated>
+  id            <undef>
+  nested_array  ''
+  offset        0
+  slice         <all remaining>
 
-. array_type => STRING
+=over 2
 
-=over 4
+=item array_type => STRING
 
 The arrayType attribute content.  When explicitly set to undef, the
 attribute is not created.
 
-=back
-
-. id => STRING
-
-=over 4
+=item id => STRING
 
 Assign an id to the array.  If not defined, than no id attribute is
 added.
 
-=back
-
-. nested_array => STRING
-
-=over 4
+=item nested_array => STRING
 
 The ARRAY type should reflect nested array structures if they are
 homogeneous.  This is a really silly part of the specs, because there
@@ -117,20 +107,12 @@ is no need for it on any other comparible place in the specs... but ala.
 For instance: C<< nested_array => '[,]' >>, means that this array
 contains two-dimensional arrays.
 
-=back
-
-. offset => INTEGER
-
-=over 4
+=item offset => INTEGER
 
 When a partial array is to be transmitted, the number of the base
 element.
 
-=back
-
-. slice => INTEGER
-
-=over 4
+=item slice => INTEGER
 
 When a partial array is to be transmitted, this is the length of
 the slice to be sent (the number of elements starting with the C<offset>
@@ -138,11 +120,7 @@ element)
 
 =back
 
-=back
-
-$obj-E<gt>B<element>(TYPE, NAME, VALUE)
-
-=over 4
+=item $obj-E<gt>B<element>(TYPE, NAME, VALUE)
 
 Create an element.  The NAME is for node, where a namespace component
 is translated into a prefix.  When you wish for a C<type> attribute,
@@ -152,11 +130,7 @@ When the TYPE does not contain a namespace indication, it is taken
 in the selected schema namespace.  If the VALUE already is a
 XML::LibXML::Element, then that one is used (and the NAME ignored).
 
-=back
-
-$obj-E<gt>B<enc>(LOCAL, VALUE, [ID])
-
-=over 4
+=item $obj-E<gt>B<enc>(LOCAL, VALUE, [ID])
 
 In the SOAP specification, encoding types are defined: elements
 which do not have a distinguishable name but use the type of the
@@ -174,39 +148,23 @@ example:
   print $xml->toString;
     # <SOAP-ENC:int id="me">42</SOAP-ENC:int>
 
-=back
-
-$obj-E<gt>B<encAddNamespace>(PAIRS)
-
-=over 4
+=item $obj-E<gt>B<encAddNamespace>(PAIRS)
 
 Convenience alternative for L<encAddNamespaces()|XML::Compile::SOAP11::Encoding/"Encoding">.
 
-=back
-
-$obj-E<gt>B<encAddNamespaces>(PAIRS)
-
-=over 4
+=item $obj-E<gt>B<encAddNamespaces>(PAIRS)
 
 Add prefix definitions for this one encoding cyclus.  Each time
 L<startEncoding()|XML::Compile::SOAP11::Encoding/"Encoding"> is called, the table is reset.  The namespace
 table is returned.
 
-=back
-
-$obj-E<gt>B<href>(NAME, ELEMENT, [ID])
-
-=over 4
+=item $obj-E<gt>B<href>(NAME, ELEMENT, [ID])
 
 Create a reference element with NAME to the existing ELEMENT.  When the
 ELEMENT does not have an "id" attribute yet, then ID will be used.  In
 case not ID was specified, then one is generated.
 
-=back
-
-$obj-E<gt>B<multidim>((NAME|undef), ITEM_TYPE, ARRAY-of-ELEMENTS, OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<multidim>((NAME|undef), ITEM_TYPE, ARRAY-of-ELEMENTS, OPTIONS)
 
 A multi-dimensional array, less flexible than a single dimensional
 array, which can be created with L<array()|XML::Compile::SOAP11::Encoding/"Encoding">.
@@ -216,16 +174,16 @@ each row must be the same.  On the other hand, it may be sparse
 (contain undefs).  The size of each dimension is determined by the
 length of its first element.
 
- Option--Default
- id      undef
+ -Option--Default
+  id      undef
 
-. id => STRING
+=over 2
+
+=item id => STRING
 
 =back
 
-$obj-E<gt>B<nil>([TYPE], NAME)
-
-=over 4
+=item $obj-E<gt>B<nil>([TYPE], NAME)
 
 Create an element with NAME which explicitly has the C<xsi:nil> attribute.
 If the NAME is full (has a namespace to it), it will be translated into
@@ -233,11 +191,7 @@ a QNAME, otherwise, it is considered not namespace qualified.
 
 If a TYPE is given, then an explicit type parameter is added.
 
-=back
-
-$obj-E<gt>B<prefixed>(TYPE|(NAMESPACE,LOCAL))
-
-=over 4
+=item $obj-E<gt>B<prefixed>(TYPE|(NAMESPACE,LOCAL))
 
 Translate a NAMESPACE-LOCAL combination (which may be represented as
 a packed TYPE) into a prefixed notation.
@@ -247,11 +201,7 @@ assigned to it: the produced SOAP message is the result of compilation,
 and only the namespaces which are registered to be used during compile-time
 are added to the list on the top-level.
 
-=back
-
-$obj-E<gt>B<startEncoding>(OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<startEncoding>(OPTIONS)
 
 This needs to be called before any encoding routine, because it
 initializes the internals.  Each call will reset all compiled
@@ -260,24 +210,20 @@ cached translator routines.
 When you use the standard RPC-encoded interface, this will be
 called for you.
 
- Option    --Default
- doc         <required>
- namespaces  {}
- prefixes    {}
+ -Option    --Default
+  doc         <required>
+  namespaces  {}
+  prefixes    {}
 
-. doc => XML::LibXML::Document
+=over 2
 
-. namespaces => HASH|ARRAY
+=item doc => XML::LibXML::Document
 
-=over 4
+=item namespaces => HASH|ARRAY
 
 Pre release 0.74 name for option C<prefixes>.
 
-=back
-
-. prefixes => HASH|ARRAY
-
-=over 4
+=item prefixes => HASH|ARRAY
 
 Like L<XML::Compile::Schema::compile(prefixes)|XML::Compile::Schema/"Compilers">, this can
 be a HASH (see example) or an ARRAY with prefix-uri pairs.
@@ -293,20 +239,12 @@ example:
  # or
  $soap->startEncoding(doc => $doc, prefixes => [ m => $MYNS ]);
 
-=back
-
-$obj-E<gt>B<struct>(TYPE, CHILDS)
-
-=over 4
+=item $obj-E<gt>B<struct>(TYPE, CHILDS)
 
 Create a structure, an element with childs.  The CHILDS must be fully
 prepared XML::LibXML::Element objects.
 
-=back
-
-$obj-E<gt>B<typed>(TYPE, NAME, VALUE)
-
-=over 4
+=item $obj-E<gt>B<typed>(TYPE, NAME, VALUE)
 
 A "typed" element shows its type explicitly, via the "xsi:type" attribute.
 The VALUE will get processed via an auto-generated XML::Compile writer,
@@ -332,9 +270,9 @@ example:
 
 =head3 Decoding
 
-$obj-E<gt>B<dec>(XMLNODES)
-
 =over 4
+
+=item $obj-E<gt>B<dec>(XMLNODES)
 
 Decode the XMLNODES (list of XML::LibXML::Element objects).  Use
 Data::Dumper to figure-out what the produced output is: it is a guess,
@@ -346,11 +284,7 @@ then the returned data is compact but may be sloppy.  Otherwise,
 a HASH is returned containing as much info as could be extracted from
 the tree.
 
-=back
-
-$obj-E<gt>B<decSimplify>(TREE, OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<decSimplify>(TREE, OPTIONS)
 
 Simplify the TREE of output produced by L<dec()|XML::Compile::SOAP11::Encoding/"Decoding"> to contain only
 data.  Of course, this will remove useful information.
@@ -359,11 +293,7 @@ From each of the HASHes in the tree, the C<_NAME>, C<_TYPE>, C<id>,
 and any/anyAttribute fields are removed.  If only a C<_> is left over,
 that related value will replace the HASH as a whole.
 
-=back
-
-$obj-E<gt>B<startDecoding>(OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<startDecoding>(OPTIONS)
 
 Each call to this method will restart the cache of the decoding
 internals.
@@ -372,22 +302,18 @@ Currently B<not supported>, is the automatic decoding of elements which
 I<inherit> from C<SOAP-ENC:Array>.  If you encounter these, you have to
 play with hooks.
 
- Option     --Default
- reader_opts  {}
- simplify     <false>
+ -Option     --Default
+  reader_opts  {}
+  simplify     <false>
 
-. reader_opts => HASH
+=over 2
 
-=over 4
+=item reader_opts => HASH
 
 Extend or overrule the default reader options.  Available options
 are shown in L<XML::Compile::Schema::compile()|XML::Compile::Schema/"Compilers">.
 
-=back
-
-. simplify => BOOLEAN
-
-=over 4
+=item simplify => BOOLEAN
 
 Call L<decSimplify()|XML::Compile::SOAP11::Encoding/"Decoding"> automatically at the end of L<dec()|XML::Compile::SOAP11::Encoding/"Decoding">, so producing
 an easily accessible output tree.
@@ -396,10 +322,12 @@ an easily accessible output tree.
 
 =back
 
+SOAP defines encodings, especially for SOAP-RPC.
+
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.21,
-built on December 25, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.22,
+built on February 05, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -423,7 +351,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

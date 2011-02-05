@@ -11,8 +11,6 @@ XML::Compile::SOAP11::Client - SOAP1.1 client needs
  XML::Compile::SOAP11::Client
    is a XML::Compile::SOAP::Client
 
-=head1 SYNOPSIS
-
 =head1 DESCRIPTION
 
 See L<XML::Compile::SOAP11|XML::Compile::SOAP11>.
@@ -21,9 +19,9 @@ See L<XML::Compile::SOAP11|XML::Compile::SOAP11>.
 
 =head2 Constructors
 
-$obj-E<gt>B<new>(OPTIONS)
-
 =over 4
+
+=item $obj-E<gt>B<new>(OPTIONS)
 
 See L<XML::Compile::SOAP11/"Constructors">
 
@@ -31,25 +29,17 @@ See L<XML::Compile::SOAP11/"Constructors">
 
 =head2 Accessors
 
-$obj-E<gt>B<name>
-
 =over 4
+
+=item $obj-E<gt>B<name>
 
 See L<XML::Compile::SOAP/"Accessors">
 
-=back
-
-$obj-E<gt>B<schemas>
-
-=over 4
+=item $obj-E<gt>B<schemas>
 
 See L<XML::Compile::SOAP/"Accessors">
 
-=back
-
-$obj-E<gt>B<version>
-
-=over 4
+=item $obj-E<gt>B<version>
 
 See L<XML::Compile::SOAP/"Accessors">
 
@@ -57,19 +47,15 @@ See L<XML::Compile::SOAP/"Accessors">
 
 =head2 Single message
 
-$obj-E<gt>B<compileMessage>(('SENDER'|'RECEIVER'), OPTIONS)
-
 =over 4
+
+=item $obj-E<gt>B<compileMessage>(('SENDER'|'RECEIVER'), OPTIONS)
 
 See L<XML::Compile::SOAP11/"Single message">
 
-=back
+=item $obj-E<gt>B<messageStructure>(XML)
 
-$obj-E<gt>B<messageStructure>(XML)
-
-XML::Compile::SOAP11::Client-E<gt>B<messageStructure>(XML)
-
-=over 4
+=item XML::Compile::SOAP11::Client-E<gt>B<messageStructure>(XML)
 
 See L<XML::Compile::SOAP/"Single message">
 
@@ -79,25 +65,17 @@ See L<XML::Compile::SOAP/"Single message">
 
 =head2 Transcoding
 
-$obj-E<gt>B<replyMustUnderstandFault>(TYPE)
-
 =over 4
+
+=item $obj-E<gt>B<replyMustUnderstandFault>(TYPE)
 
 See L<XML::Compile::SOAP/"Transcoding">
 
-=back
-
-$obj-E<gt>B<roleAbbreviation>(URI)
-
-=over 4
+=item $obj-E<gt>B<roleAbbreviation>(URI)
 
 See L<XML::Compile::SOAP/"Transcoding">
 
-=back
-
-$obj-E<gt>B<roleURI>(URI|STRING)
-
-=over 4
+=item $obj-E<gt>B<roleURI>(URI|STRING)
 
 See L<XML::Compile::SOAP/"Transcoding">
 
@@ -105,20 +83,18 @@ See L<XML::Compile::SOAP/"Transcoding">
 
 =head2 Handlers
 
-$obj-E<gt>B<compileClient>(OPTIONS)
-
 =over 4
+
+=item $obj-E<gt>B<compileClient>(OPTIONS)
 
 See L<XML::Compile::SOAP::Client/"Handlers">
 
 =back
 
-=head1 DETAILS
-
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.21,
-built on December 25, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.22,
+built on February 05, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -142,7 +118,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -27,80 +27,60 @@ data which is transported inline or packaged seperately.
 
 =head2 Constructors
 
-XML::Compile::XOP::Include-E<gt>B<fromMime>(OBJECT)
-
 =over 4
+
+=item XML::Compile::XOP::Include-E<gt>B<fromMime>(OBJECT)
 
 Collect the data from a HTTP::Message object.
 
-=back
-
-XML::Compile::XOP::Include-E<gt>B<new>(OPTIONS)
-
-=over 4
+=item XML::Compile::XOP::Include-E<gt>B<new>(OPTIONS)
 
 You have to specify either a C<file> or C<byte> source.  Otherwise, the
 constructor will return C<undef>.
 
- Option--Default
- bytes   undef
- cid     <required>
- file    undef
- type    <required>
- xmime   <required>
- xop     <required>
+ -Option--Default
+  bytes   undef
+  cid     <required>
+  file    undef
+  type    <required>
+  xmime   <required>
+  xop     <required>
 
-. bytes => STRING|SCALAR
+=over 2
 
-=over 4
+=item bytes => STRING|SCALAR
 
 Take the data from a STRING of reference.
 
-=back
-
-. cid => STRING
-
-=over 4
+=item cid => STRING
 
 The Content-ID of the binary attachment.
 
-=back
-
-. file => FILENAME|FILEHANDLE
-
-=over 4
+=item file => FILENAME|FILEHANDLE
 
 Take the data from the specified file.
 
-=back
-
-. type => MIMETYPE
-
-=over 4
+=item type => MIMETYPE
 
 The MIME-Type of the data.
 
+=item xmime => VERSION
+
+=item xop => VERSION
+
 =back
-
-. xmime => VERSION
-
-. xop => VERSION
 
 =back
 
 =head2 Accessors
 
-$obj-E<gt>B<cid>
-
 =over 4
+
+=item $obj-E<gt>B<cid>
 
 Returns the Content-ID.
 
-=back
-
-$obj-E<gt>B<content>([BYREF])
-
-=over 4
+=item $obj-E<gt>B<content>([BYREF])
 
 Returns the content, when BYREF (boolean) is true, then the value is
 returned by reference.
@@ -109,27 +89,19 @@ returned by reference.
 
 =head2 Processing
 
-$obj-E<gt>B<mimePart>([HEADERS])
-
 =over 4
+
+=item $obj-E<gt>B<mimePart>([HEADERS])
 
 Produce the message part which contains a normal mime representation
 of a binary file.  You may provide an initial HEADERS (HTTP::Headers)
 object, or an ARRAY of headers to instantiate such an object.
 
-=back
-
-$obj-E<gt>B<write>(FILENAME|FILEHANDLE)
-
-=over 4
+=item $obj-E<gt>B<write>(FILENAME|FILEHANDLE)
 
 Write the content to the specified FILE.
 
-=back
-
-$obj-E<gt>B<xmlNode>(DOCUMENT, PATH, TAG)
-
-=over 4
+=item $obj-E<gt>B<xmlNode>(DOCUMENT, PATH, TAG)
 
 The DOCUMENT will be used to construct the node from.  The PATH
 is an indicator for the location of the node within the data
@@ -140,10 +112,20 @@ Returned is an XML node to be included in the output tree.
 
 =back
 
+=head1 OVERLOAD
+
+=over 4
+
+=item overload: B<"" (stringification)>
+
+This object stringifies to its binary content.
+
+=back
+
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.21,
-built on December 25, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.22,
+built on February 05, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -167,7 +149,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -33,9 +33,9 @@ the receiver) is avoided.
 
 =head2 Constructors
 
-$obj-E<gt>B<bytes>((STRING|SCALAR), OPTIONS)
-
 =over 4
+
+=item $obj-E<gt>B<bytes>((STRING|SCALAR), OPTIONS)
 
 Create a L<XML::Compile::XOP::Include|XML::Compile::XOP::Include> object which sources from a
 STRING (representing bytes) or a SCALAR reference to such a string.
@@ -47,11 +47,7 @@ example: use of bytes()
   my $data = $xop->bytes($string, type => 'text/html');
   # $data is a XML::Compile::XOP::Include
 
-=back
-
-$obj-E<gt>B<file>((FILENAME|FILEHANDLE), OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<file>((FILENAME|FILEHANDLE), OPTIONS)
 
 Create a L<XML::Compile::XOP::Include|XML::Compile::XOP::Include> object which sources from a
 FILE specified by NAME or HANDLE.  With the OPTIONS, you can overrule
@@ -66,38 +62,46 @@ example: use of file()
   my $data = $xop->file($fn, type => $fn);
   # $data is a XML::Compile::XOP::Include
 
-=back
+=item XML::Compile::XOP-E<gt>B<new>(OPTIONS)
 
-XML::Compile::XOP-E<gt>B<new>(OPTIONS)
+ -Option         --Default
+  hostname         'localhost'
+  xmlmime_version  XMIME11
+  xop_version      XOP10
 
-=over 4
+=over 2
 
- Option         --Default
- hostname         'localhost'
- xmlmime_version  XMIME11
- xop_version      XOP10
-
-. hostname => STRING
-
-=over 4
+=item hostname => STRING
 
 This is used as part of generated Content-IDs, which have the form of
 a email address.
 
-=back
+=item xmlmime_version => URI
 
-. xmlmime_version => URI
-
-. xop_version => URI
+=item xop_version => URI
 
 =back
 
-=head1 DETAILS
+=back
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.21,
-built on December 25, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+=over 4
+
+=item MTOM SOAP1.2: F<http://www.w3.org/TR/soap12-mtom/>
+
+=item MTOM SOAP1.1: F<http://schemas.xmlsoap.org/soap/mtom/SOAP11MTOM10.pdf>
+
+=item XOP: F<http://www.w3.org/TR/xop10/>
+
+=item XMLMIME: F<http://www.w3.org/TR/xml-media-types>
+
+=back
+
+=head1 SEE ALSO
+
+This module is part of XML-Compile-SOAP distribution version 2.22,
+built on February 05, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -121,7 +125,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

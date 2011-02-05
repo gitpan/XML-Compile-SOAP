@@ -1,13 +1,13 @@
-# Copyrights 2007-2010 by Mark Overmeer.
+# Copyrights 2007-2011 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.06.
+# Pod stripped from pm file by OODoc 2.00.
 use warnings;
 use strict;
 
 package XML::Compile::SOAP11::Operation;
 use vars '$VERSION';
-$VERSION = '2.21';
+$VERSION = '2.22';
 
 use base 'XML::Compile::SOAP::Operation';
 
@@ -310,8 +310,8 @@ sub explain($$$@)
             $elem = $name;
         }
 
-        push @attach, '', $sep
-          , $schema->template(PERL => $elem, skip_header => 1, %args);
+        push @attach, '', $sep, "\$$name ="
+          , $schema->template(PERL => $elem, skip_header => 1, %args), ';';
     }
 
     foreach my $fault (sort keys %$faults)
@@ -349,8 +349,8 @@ sub explain($$$@)
             $elem = $fault;
         }
 
-        push @attach, '', $sep
-          , $schema->template(PERL => $elem, skip_header => 1, %args);
+        push @attach, '', $sep, "# FAULT", "\$$fault ="
+          , $schema->template(PERL => $elem, skip_header => 1, %args), ';';
     }
 
     if($dir eq 'INPUT')

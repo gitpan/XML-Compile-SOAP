@@ -49,33 +49,33 @@ in parallel.
 
 =head2 Constructors
 
-XML::Compile::Transport-E<gt>B<new>(OPTIONS)
-
 =over 4
 
- Option --Default
- address  'http://localhost'
- charset  'utf-8'
+=item XML::Compile::Transport-E<gt>B<new>(OPTIONS)
 
-. address => URI|ARRAY-of-URI
+ -Option --Default
+  address  'http://localhost'
+  charset  'utf-8'
 
-=over 4
+=over 2
+
+=item address => URI|ARRAY-of-URI
 
 One or more URI which represents the servers.
 
-=back
+=item charset => STRING
 
-. charset => STRING
+=back
 
 =back
 
 =head2 WSDL11
 
-$obj-E<gt>B<wsdl11Init>(WSDL, ARGS)
-
-XML::Compile::Transport-E<gt>B<wsdl11Init>(WSDL, ARGS)
-
 =over 4
+
+=item $obj-E<gt>B<wsdl11Init>(WSDL, ARGS)
+
+=item XML::Compile::Transport-E<gt>B<wsdl11Init>(WSDL, ARGS)
 
 See L<XML::Compile::SOAP::Extension/"WSDL11">
 
@@ -83,27 +83,19 @@ See L<XML::Compile::SOAP::Extension/"WSDL11">
 
 =head2 SOAP11
 
-$obj-E<gt>B<soap11ClientWrapper>(OPERATION, CALL, ARGS)
-
 =over 4
+
+=item $obj-E<gt>B<soap11ClientWrapper>(OPERATION, CALL, ARGS)
 
 See L<XML::Compile::SOAP::Extension/"SOAP11">
 
-=back
-
-$obj-E<gt>B<soap11HandlerWrapper>(OPERATION, CALLBACK, ARGS)
-
-=over 4
+=item $obj-E<gt>B<soap11HandlerWrapper>(OPERATION, CALLBACK, ARGS)
 
 See L<XML::Compile::SOAP::Extension/"SOAP11">
 
-=back
+=item $obj-E<gt>B<soap11OperationInit>(OPERATION, ARGS)
 
-$obj-E<gt>B<soap11OperationInit>(OPERATION, ARGS)
-
-XML::Compile::Transport-E<gt>B<soap11OperationInit>(OPERATION, ARGS)
-
-=over 4
+=item XML::Compile::Transport-E<gt>B<soap11OperationInit>(OPERATION, ARGS)
 
 See L<XML::Compile::SOAP::Extension/"SOAP11">
 
@@ -111,26 +103,18 @@ See L<XML::Compile::SOAP::Extension/"SOAP11">
 
 =head2 Accessors
 
-$obj-E<gt>B<address>
-
 =over 4
+
+=item $obj-E<gt>B<address>
 
 Get a server address to contact. If multiple addresses were specified,
 than one is chosen at random.
 
-=back
-
-$obj-E<gt>B<addresses>
-
-=over 4
+=item $obj-E<gt>B<addresses>
 
 Returns a list of all server contact addresses (URIs)
 
-=back
-
-$obj-E<gt>B<charset>
-
-=over 4
+=item $obj-E<gt>B<charset>
 
 Returns the charset to be used when sending,
 
@@ -138,9 +122,9 @@ Returns the charset to be used when sending,
 
 =head2 Handlers
 
-$obj-E<gt>B<compileClient>(OPTIONS)
-
 =over 4
+
+=item $obj-E<gt>B<compileClient>(OPTIONS)
 
 Compile a client handler.  Returned is a subroutine which is called
 with a text represenation of the XML request, or an XML::LibXML tree.
@@ -148,13 +132,13 @@ In SCALAR context, an XML::LibXML parsed tree of the answer message
 is returned.  In LIST context, that answer is followed by a HASH which
 contains trace information.
 
- Option--Default
- hook    <undef>
- kind    'request-response'
+ -Option--Default
+  hook    <undef>
+  kind    'request-response'
 
-. hook => CODE
+=over 2
 
-=over 4
+=item hook => CODE
 
 See section L<DETAILS/Use of the transport hook>.
 When defined, the hook will be called, in stead of transmitting the
@@ -167,11 +151,7 @@ You may add information to the trace.  You have to return a textual
 representation of the XML answer, or C<undef> to indicate that the
 message was totally unacceptable.
 
-=back
-
-. kind => STRING
-
-=over 4
+=item kind => STRING
 
 Kind of communication, as defined by WSDL.
 
@@ -182,28 +162,6 @@ Kind of communication, as defined by WSDL.
 =head1 DETAILS
 
 =head2 Use of the transport hook
-
-A transport hook can be used to follow the process of creating a
-message to its furthest extend: it will be called with the data
-as used by the actual protocol, but will not actually connect to
-the internet.  Within the transport hook routine, you have to
-simulate the remote server's activities.
-
-There are two reasons to use a hook:
-
-=over 4
-
-=item .
-
-You may need to modify the request or answer messages outside the
-reach of L<XML::Compile::SOAP|XML::Compile::SOAP>, because something is wrong in either
-your WSDL of L<XML::Compile|XML::Compile> message processing.
-
-=item .
-
-You want to fake a server, to produce a test environment.
-
-=back
 
 =head3 Transport hook for debugging
 
@@ -245,10 +203,42 @@ or
   $wsdl->compileClient('GetLastTracePrice',
       transport_hook => \&fake_server);
 
+A transport hook can be used to follow the process of creating a
+message to its furthest extend: it will be called with the data
+as used by the actual protocol, but will not actually connect to
+the internet.  Within the transport hook routine, you have to
+simulate the remote server's activities.
+
+There are two reasons to use a hook:
+
+=over 4
+
+=item .
+
+You may need to modify the request or answer messages outside the
+reach of L<XML::Compile::SOAP|XML::Compile::SOAP>, because something is wrong in either
+your WSDL of L<XML::Compile|XML::Compile> message processing.
+
+=item .
+
+You want to fake a server, to produce a test environment.
+
+=back
+
+=head1 Helpers
+
+=over 4
+
+=item XML::Compile::Transport-E<gt>B<register>(URI)
+
+Declare an transporter type.
+
+=back
+
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.21,
-built on December 25, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.22,
+built on February 05, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -272,7 +262,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -20,19 +20,19 @@ L<XML::Compile::SOAP::WSA|XML::Compile::SOAP::WSA>)
 
 =head2 Constructors
 
-XML::Compile::SOAP::Extension-E<gt>B<new>(OPTIONS)
-
 =over 4
+
+=item XML::Compile::SOAP::Extension-E<gt>B<new>(OPTIONS)
 
 =back
 
 =head2 WSDL11
 
-$obj-E<gt>B<wsdl11Init>(WSDL, ARGS)
-
-XML::Compile::SOAP::Extension-E<gt>B<wsdl11Init>(WSDL, ARGS)
-
 =over 4
+
+=item $obj-E<gt>B<wsdl11Init>(WSDL, ARGS)
+
+=item XML::Compile::SOAP::Extension-E<gt>B<wsdl11Init>(WSDL, ARGS)
 
 Do not use this hook for adding WSDLs or Schemas, unless those are
 used to interpret WSDL or SOAP files.
@@ -41,35 +41,31 @@ used to interpret WSDL or SOAP files.
 
 =head2 SOAP11
 
-$obj-E<gt>B<soap11ClientWrapper>(OPERATION, CALL, ARGS)
-
 =over 4
 
-=back
+=item $obj-E<gt>B<soap11ClientWrapper>(OPERATION, CALL, ARGS)
 
-$obj-E<gt>B<soap11HandlerWrapper>(OPERATION, CALLBACK, ARGS)
-
-=over 4
+=item $obj-E<gt>B<soap11HandlerWrapper>(OPERATION, CALLBACK, ARGS)
 
 Called before the handler is created, to influence the encoder and
 decoder. Returned is a wrapped callback, or the same.
 
-=back
+=item $obj-E<gt>B<soap11OperationInit>(OPERATION, ARGS)
 
-$obj-E<gt>B<soap11OperationInit>(OPERATION, ARGS)
-
-XML::Compile::SOAP::Extension-E<gt>B<soap11OperationInit>(OPERATION, ARGS)
-
-=over 4
+=item XML::Compile::SOAP::Extension-E<gt>B<soap11OperationInit>(OPERATION, ARGS)
 
 ARGS is a reference.
 
 =back
 
+=head1 SYNOPSYS
+
+ # only as base-class
+
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.21,
-built on December 25, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.22,
+built on February 05, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -93,7 +89,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

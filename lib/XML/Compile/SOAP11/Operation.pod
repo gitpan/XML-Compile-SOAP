@@ -21,147 +21,103 @@ client side or server side.
 
 =head2 Constructors
 
-XML::Compile::SOAP11::Operation-E<gt>B<new>(OPTIONS)
-
 =over 4
+
+=item XML::Compile::SOAP11::Operation-E<gt>B<new>(OPTIONS)
 
 C<input_def>, C<output_def> and C<fault_def> are HASHes which contain
 the input and output message header, body and fault-header definitions
 in WSDL1.1 style.
 
- Option    --Defined in     --Default
- action      XML::Compile::SOAP::Operation  undef
- endpoints   XML::Compile::SOAP::Operation  []
- fault_def                    <undef>
- input_def                    <undef>
- kin         XML::Compile::SOAP::Operation  <required>
- nam         XML::Compile::SOAP::Operation  <required>
- output_def                   <undef>
- schemas     XML::Compile::SOAP::Operation  <required>
- style                        'document'
- transport   XML::Compile::SOAP::Operation  'HTTP'
+ -Option    --Defined in     --Default
+  action      XML::Compile::SOAP::Operation  undef
+  endpoints   XML::Compile::SOAP::Operation  []
+  fault_def                    <undef>
+  input_def                    <undef>
+  kin         XML::Compile::SOAP::Operation  <required>
+  nam         XML::Compile::SOAP::Operation  <required>
+  output_def                   <undef>
+  schemas     XML::Compile::SOAP::Operation  <required>
+  style                        'document'
+  transport   XML::Compile::SOAP::Operation  'HTTP'
 
-. action => STRING
+=over 2
 
-. endpoints => ADDRESS|ARRAY
+=item action => STRING
 
-. fault_def => HASH
+=item endpoints => ADDRESS|ARRAY
 
-. input_def => HASH
+=item fault_def => HASH
 
-. kin => d
+=item input_def => HASH
 
-. nam => e
+=item kin => d
 
-. output_def => HASH
+=item nam => e
 
-. schemas => XML::Compile::Cache
+=item output_def => HASH
 
-. style => 'document'|'rpc'
+=item schemas => XML::Compile::Cache
 
-. transport => URI|'HTTP'
+=item style => 'document'|'rpc'
+
+=item transport => URI|'HTTP'
+
+=back
 
 =back
 
 =head2 Accessors
 
-$obj-E<gt>B<bindingName>
-
 =over 4
+
+=item $obj-E<gt>B<bindingName>
 
 See L<XML::Compile::SOAP::Operation/"Accessors">
 
-=back
-
-$obj-E<gt>B<clientClass>
-
-=over 4
+=item $obj-E<gt>B<clientClass>
 
 See L<XML::Compile::SOAP::Operation/"Accessors">
 
-=back
-
-$obj-E<gt>B<endPoints>
-
-=over 4
+=item $obj-E<gt>B<endPoints>
 
 See L<XML::Compile::SOAP::Operation/"Accessors">
 
-=back
-
-$obj-E<gt>B<kind>
-
-=over 4
+=item $obj-E<gt>B<kind>
 
 See L<XML::Compile::SOAP::Operation/"Accessors">
 
-=back
-
-$obj-E<gt>B<name>
-
-=over 4
+=item $obj-E<gt>B<name>
 
 See L<XML::Compile::SOAP::Operation/"Accessors">
 
-=back
-
-$obj-E<gt>B<portName>
-
-=over 4
+=item $obj-E<gt>B<portName>
 
 See L<XML::Compile::SOAP::Operation/"Accessors">
 
-=back
-
-$obj-E<gt>B<schemas>
-
-=over 4
+=item $obj-E<gt>B<schemas>
 
 See L<XML::Compile::SOAP::Operation/"Accessors">
 
-=back
-
-$obj-E<gt>B<serverClass>
-
-=over 4
+=item $obj-E<gt>B<serverClass>
 
 See L<XML::Compile::SOAP::Operation/"Accessors">
 
-=back
-
-$obj-E<gt>B<serviceName>
-
-=over 4
+=item $obj-E<gt>B<serviceName>
 
 See L<XML::Compile::SOAP::Operation/"Accessors">
 
-=back
-
-$obj-E<gt>B<soapAction>
-
-=over 4
+=item $obj-E<gt>B<soapAction>
 
 See L<XML::Compile::SOAP::Operation/"Accessors">
 
-=back
+=item $obj-E<gt>B<style>
 
-$obj-E<gt>B<style>
-
-=over 4
-
-=back
-
-$obj-E<gt>B<version>
-
-=over 4
+=item $obj-E<gt>B<version>
 
 See L<XML::Compile::SOAP::Operation/"Accessors">
 
-=back
-
-$obj-E<gt>B<wsaAction>('INPUT'|'OUTPUT')
-
-=over 4
+=item $obj-E<gt>B<wsaAction>('INPUT'|'OUTPUT')
 
 See L<XML::Compile::SOAP::Operation/"Accessors">
 
@@ -173,17 +129,17 @@ Operations are often modified by SOAP extensions.
 See L<XML::Compile::SOAP::WSA|XML::Compile::SOAP::WSA>, for instance. Also demonstrated in
 the FAQ, XML::Compile::SOAP::FAQ.
 
-$obj-E<gt>B<addHeader>(('INPUT'|'OUTPUT'|'FAULT'), LABEL, ELEM)
-
 =over 4
+
+=item $obj-E<gt>B<addHeader>(('INPUT'|'OUTPUT'|'FAULT'), LABEL, ELEM)
 
 =back
 
 =head2 Handlers
 
-$obj-E<gt>B<compileClient>(OPTIONS)
-
 =over 4
+
+=item $obj-E<gt>B<compileClient>(OPTIONS)
 
 Returns one CODE reference which handles the processing for this
 operation. Options C<transporter>, C<transport_hook>, and
@@ -200,36 +156,28 @@ C<<sloppy_integers => 0>>, hooks or typemaps this way. Provide these to
 the C<::WSDL> or other C<::Cache> object which defines the types, via
 C<new> option C<opts_rw> and friends.
 
-=back
-
-$obj-E<gt>B<compileHandler>(OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<compileHandler>(OPTIONS)
 
 Prepare the routines which will decode the request and encode the answer,
 as will be run on the server. The L<XML::Compile::SOAP::Server|XML::Compile::SOAP::Server> will
 connect these. All OPTIONS will get passed to
 L<XML::Compile::SOAP11::Server::compileHandler()|XML::Compile::SOAP::Server/"Actions">
 
- Option  --Default
- callback  <required>
- selector  <from input def>
+ -Option  --Default
+  callback  <required>
+  selector  <from input def>
 
-. callback => CODE
+=over 2
 
-. selector => CODE
+=item callback => CODE
 
-=over 4
+=item selector => CODE
 
 Determines whether the handler belongs to a received message.
 
 =back
 
-=back
-
-$obj-E<gt>B<compileTransporter>(OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<compileTransporter>(OPTIONS)
 
 See L<XML::Compile::SOAP::Operation/"Handlers">
 
@@ -237,9 +185,9 @@ See L<XML::Compile::SOAP::Operation/"Handlers">
 
 =head2 Helpers
 
-$obj-E<gt>B<explain>(WSDL, FORMAT, DIRECTION, OPTIONS)
-
 =over 4
+
+=item $obj-E<gt>B<explain>(WSDL, FORMAT, DIRECTION, OPTIONS)
 
 [since 2.13]
 
@@ -254,25 +202,21 @@ sent as response by the server.
 All OPTIONS besides those described here are passed to
 L<XML::Compile::Schema::template()|XML::Compile::Schema/"Compilers">, when C<recurse> is enabled.
 
- Option     --Default
- recurse      <false>
- skip_header  <false>
+ -Option     --Default
+  recurse      <false>
+  skip_header  <false>
 
-. recurse => BOOLEAN
+=over 2
 
-=over 4
+=item recurse => BOOLEAN
 
 Append the templates of all the part structures.
 
-=back
-
-. skip_header => BOOLEAN
+=item skip_header => BOOLEAN
 
 =back
 
-XML::Compile::SOAP11::Operation-E<gt>B<register>(URI, ENVNS)
-
-=over 4
+=item XML::Compile::SOAP11::Operation-E<gt>B<register>(URI, ENVNS)
 
 See L<XML::Compile::SOAP::Operation/"Helpers">
 
@@ -280,8 +224,8 @@ See L<XML::Compile::SOAP::Operation/"Helpers">
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.21,
-built on December 25, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.22,
+built on February 05, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -305,7 +249,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

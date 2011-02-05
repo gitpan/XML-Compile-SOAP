@@ -4,13 +4,6 @@ XML::Compile::FAQ - frequently asked questions
 
 =head1 DESCRIPTION
 
-On this page, a wild collection of questions are answered related to
-the XML::Compile::SOAP modules.  Or better said: let's hope there will
-be more in the future. If you have contributions either in question or
-as answer, then please contribute via the xml mailinglist.
-
-See also L<XML::Compile::FAQ|XML::Compile::FAQ>.
-
 =head2 Modifing the messages
 
 =head3 add header fields
@@ -54,10 +47,17 @@ With C<soap11ClientWrapper()> and C<soap11HandlerWrapper()>
 you can influence the client respectively server processing, for
 instance to fill-in default values.
 
+On this page, a wild collection of questions are answered related to
+the XML::Compile::SOAP modules.  Or better said: let's hope there will
+be more in the future. If you have contributions either in question or
+as answer, then please contribute via the xml mailinglist.
+
+See also L<XML::Compile::FAQ|XML::Compile::FAQ>.
+
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.21,
-built on December 25, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.22,
+built on February 05, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -81,7 +81,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

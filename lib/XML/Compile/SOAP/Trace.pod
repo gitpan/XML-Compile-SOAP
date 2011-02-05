@@ -27,9 +27,9 @@ as produced by a SOAP call (client side).
 
 =head2 Constructors
 
-XML::Compile::SOAP::Trace-E<gt>B<new>(OPTIONS)
-
 =over 4
+
+=item XML::Compile::SOAP::Trace-E<gt>B<new>(OPTIONS)
 
 Called by the SOAP call implementation; not for normal users.
 
@@ -37,18 +37,14 @@ Called by the SOAP call implementation; not for normal users.
 
 =head2 Accessors
 
-$obj-E<gt>B<date>
-
 =over 4
+
+=item $obj-E<gt>B<date>
 
 Returns the date string which represent the moment that the call
 was initiated.
 
-=back
-
-$obj-E<gt>B<elapse>([KIND])
-
-=over 4
+=item $obj-E<gt>B<elapse>([KIND])
 
 Returns the time in seconds (with hires, sub-second detail) of a part of
 the SOAP communication. Some values may be C<undef>.  Elapse without
@@ -68,40 +64,24 @@ example:
 
  print $trace->elapse('decode');
 
-=back
-
-$obj-E<gt>B<error>
-
-=over 4
+=item $obj-E<gt>B<error>
 
 Often contains an error message, when something went wrong.
 
-=back
-
-$obj-E<gt>B<request>
-
-=over 4
+=item $obj-E<gt>B<request>
 
 Returns the HTTP::Request object used for this SOAP call.  This might
 be quite useful during debugging, because a lot of the processing is
 hidden for the user... but you may want to see or log what is actually
 begin send.
 
-=back
-
-$obj-E<gt>B<response>
-
-=over 4
+=item $obj-E<gt>B<response>
 
 Returns the HTTP::Response object, returned by the remote server.  In
 some erroneous cases, the client library will create an error response
 without any message was exchanged.
 
-=back
-
-$obj-E<gt>B<start>
-
-=over 4
+=item $obj-E<gt>B<start>
 
 Returns the (platform dependent) time value which represent the moment
 that the call was initiated.  See Time::HiRes method C<time>.
@@ -110,21 +90,13 @@ that the call was initiated.  See Time::HiRes method C<time>.
 
 =head2 Printing
 
-$obj-E<gt>B<printRequest>([FILEHANDLE])
-
 =over 4
 
-=back
+=item $obj-E<gt>B<printRequest>([FILEHANDLE])
 
-$obj-E<gt>B<printResponse>([FILEHANDLE])
+=item $obj-E<gt>B<printResponse>([FILEHANDLE])
 
-=over 4
-
-=back
-
-$obj-E<gt>B<printTimings>([FILEHANDLE])
-
-=over 4
+=item $obj-E<gt>B<printTimings>([FILEHANDLE])
 
 Print an overview on various timings to the selected filehandle.
 
@@ -132,8 +104,8 @@ Print an overview on various timings to the selected filehandle.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.21,
-built on December 25, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.22,
+built on February 05, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -157,7 +129,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

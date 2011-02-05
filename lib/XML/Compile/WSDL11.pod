@@ -74,194 +74,134 @@ to tell you how!)
 
 =head2 Constructors
 
-XML::Compile::WSDL11-E<gt>B<new>(XML, OPTIONS)
-
 =over 4
+
+=item XML::Compile::WSDL11-E<gt>B<new>(XML, OPTIONS)
 
 The XML is the WSDL file, which is anything accepted by
 L<XML::Compile::dataToXML()|XML::Compile/"Compilers">.
 
- Option            --Defined in     --Default
- allow_undeclared    XML::Compile::Cache  <false>
- any_element         XML::Compile::Cache  'SKIP_ALL'
- block_namespace     XML::Compile::Schema  []
- hook                XML::Compile::Schema  undef
- hooks               XML::Compile::Schema  []
- ignore_unused_tags  XML::Compile::Schema  <false>
- key_rewrite         XML::Compile::Schema  []
- opts_readers        XML::Compile::Cache  []
- opts_rw             XML::Compile::Cache  []
- opts_writers        XML::Compile::Cache  []
- prefixes            XML::Compile::Cache  <smart>
- schema_dirs         XML::Compile     undef
- typemap             XML::Compile::Cache  {}
- xsi_type            XML::Compile::Cache  {}
+ -Option            --Defined in     --Default
+  allow_undeclared    XML::Compile::Cache  <false>
+  any_element         XML::Compile::Cache  'SKIP_ALL'
+  block_namespace     XML::Compile::Schema  []
+  hook                XML::Compile::Schema  undef
+  hooks               XML::Compile::Schema  []
+  ignore_unused_tags  XML::Compile::Schema  <false>
+  key_rewrite         XML::Compile::Schema  []
+  opts_readers        XML::Compile::Cache  []
+  opts_rw             XML::Compile::Cache  []
+  opts_writers        XML::Compile::Cache  []
+  prefixes            XML::Compile::Cache  <smart>
+  schema_dirs         XML::Compile     undef
+  typemap             XML::Compile::Cache  {}
+  xsi_type            XML::Compile::Cache  {}
 
-. allow_undeclared => BOOLEAN
+=over 2
 
-. any_element => CODE|'TAKE_ALL'|'SKIP_ALL'|'ATTEMPT'|'SLOPPY'
+=item allow_undeclared => BOOLEAN
 
-. block_namespace => NAMESPACE|TYPE|HASH|CODE|ARRAY
+=item any_element => CODE|'TAKE_ALL'|'SKIP_ALL'|'ATTEMPT'|'SLOPPY'
 
-. hook => ARRAY-WITH-HOOKDATA | HOOK
+=item block_namespace => NAMESPACE|TYPE|HASH|CODE|ARRAY
 
-. hooks => ARRAY-OF-HOOK
+=item hook => ARRAY-WITH-HOOKDATA | HOOK
 
-. ignore_unused_tags => BOOLEAN|REGEXP
+=item hooks => ARRAY-OF-HOOK
 
-. key_rewrite => HASH|CODE|ARRAY-of-HASH-and-CODE
+=item ignore_unused_tags => BOOLEAN|REGEXP
 
-. opts_readers => HASH|ARRAY-of-PAIRS
+=item key_rewrite => HASH|CODE|ARRAY-of-HASH-and-CODE
 
-. opts_rw => HASH|ARRAY-of-PAIRS
+=item opts_readers => HASH|ARRAY-of-PAIRS
 
-. opts_writers => HASH|ARRAY-of-PAIRS
+=item opts_rw => HASH|ARRAY-of-PAIRS
 
-. prefixes => HASH|ARRAY-of-PAIRS
+=item opts_writers => HASH|ARRAY-of-PAIRS
 
-. schema_dirs => DIRECTORY|ARRAY-OF-DIRECTORIES
+=item prefixes => HASH|ARRAY-of-PAIRS
 
-. typemap => HASH|ARRAY
+=item schema_dirs => DIRECTORY|ARRAY-OF-DIRECTORIES
 
-. xsi_type => HASH|ARRAY
+=item typemap => HASH|ARRAY
+
+=item xsi_type => HASH|ARRAY
+
+=back
 
 =back
 
 =head2 Accessors
 
-$obj-E<gt>B<addHook>(HOOKDATA|HOOK|undef)
-
 =over 4
+
+=item $obj-E<gt>B<addHook>(HOOKDATA|HOOK|undef)
 
 See L<XML::Compile::Schema/"Accessors">
 
-=back
-
-$obj-E<gt>B<addHooks>(HOOK, [HOOK, ...])
-
-=over 4
+=item $obj-E<gt>B<addHooks>(HOOK, [HOOK, ...])
 
 See L<XML::Compile::Schema/"Accessors">
 
-=back
-
-$obj-E<gt>B<addKeyRewrite>(PREDEF|CODE|HASH, ...)
-
-=over 4
+=item $obj-E<gt>B<addKeyRewrite>(PREDEF|CODE|HASH, ...)
 
 See L<XML::Compile::Schema/"Accessors">
 
-=back
+=item $obj-E<gt>B<addSchemaDirs>(DIRECTORIES|FILENAME)
 
-$obj-E<gt>B<addSchemaDirs>(DIRECTORIES|FILENAME)
-
-XML::Compile::WSDL11-E<gt>B<addSchemaDirs>(DIRECTORIES|FILENAME)
-
-=over 4
+=item XML::Compile::WSDL11-E<gt>B<addSchemaDirs>(DIRECTORIES|FILENAME)
 
 See L<XML::Compile/"Accessors">
 
-=back
-
-$obj-E<gt>B<addSchemas>(XML, OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<addSchemas>(XML, OPTIONS)
 
 See L<XML::Compile::Schema/"Accessors">
 
-=back
-
-$obj-E<gt>B<addTypemap>(PAIR)
-
-=over 4
+=item $obj-E<gt>B<addTypemap>(PAIR)
 
 See L<XML::Compile::Schema/"Accessors">
 
-=back
-
-$obj-E<gt>B<addTypemaps>(PAIRS)
-
-=over 4
+=item $obj-E<gt>B<addTypemaps>(PAIRS)
 
 See L<XML::Compile::Schema/"Accessors">
 
-=back
-
-$obj-E<gt>B<allowUndeclared>([BOOLEAN])
-
-=over 4
+=item $obj-E<gt>B<allowUndeclared>([BOOLEAN])
 
 See L<XML::Compile::Cache/"Accessors">
 
-=back
-
-$obj-E<gt>B<blockNamespace>(NAMESPACE|TYPE|HASH|CODE|ARRAY)
-
-=over 4
+=item $obj-E<gt>B<blockNamespace>(NAMESPACE|TYPE|HASH|CODE|ARRAY)
 
 See L<XML::Compile::Schema/"Accessors">
 
-=back
-
-$obj-E<gt>B<hooks>
-
-=over 4
+=item $obj-E<gt>B<hooks>
 
 See L<XML::Compile::Schema/"Accessors">
 
-=back
-
-$obj-E<gt>B<prefix>(PREFIX)
-
-=over 4
+=item $obj-E<gt>B<prefix>(PREFIX)
 
 See L<XML::Compile::Cache/"Accessors">
 
-=back
-
-$obj-E<gt>B<prefixFor>(URI)
-
-=over 4
+=item $obj-E<gt>B<prefixFor>(URI)
 
 See L<XML::Compile::Cache/"Accessors">
 
-=back
-
-$obj-E<gt>B<prefixed>(TYPE)
-
-=over 4
+=item $obj-E<gt>B<prefixed>(TYPE)
 
 See L<XML::Compile::Cache/"Accessors">
 
-=back
-
-$obj-E<gt>B<prefixes>([PAIRS|ARRAY|HASH])
-
-=over 4
+=item $obj-E<gt>B<prefixes>([PAIRS|ARRAY|HASH])
 
 See L<XML::Compile::Cache/"Accessors">
 
-=back
-
-$obj-E<gt>B<typemap>([HASH|ARRAY|PAIRS])
-
-=over 4
+=item $obj-E<gt>B<typemap>([HASH|ARRAY|PAIRS])
 
 See L<XML::Compile::Cache/"Accessors">
 
-=back
-
-$obj-E<gt>B<useSchema>(SCHEMA, [SCHEMA])
-
-=over 4
+=item $obj-E<gt>B<useSchema>(SCHEMA, [SCHEMA])
 
 See L<XML::Compile::Schema/"Accessors">
 
-=back
-
-$obj-E<gt>B<xsiType>([HASH|ARRAY|LIST])
-
-=over 4
+=item $obj-E<gt>B<xsiType>([HASH|ARRAY|LIST])
 
 See L<XML::Compile::Cache/"Accessors">
 
@@ -269,9 +209,9 @@ See L<XML::Compile::Cache/"Accessors">
 
 =head2 Compilers
 
-$obj-E<gt>B<call>(OPERATION, DATA)
-
 =over 4
+
+=item $obj-E<gt>B<call>(OPERATION, DATA)
 
 [2.20] Call the OPERATION (by name) with DATA (HASH or LIST of parameters).
 This only works when you have called L<compileCalls()|XML::Compile::WSDL11/"Compilers"> beforehand,
@@ -285,28 +225,16 @@ example:
    # at runtime (run often)
    my $answer = $wsdl->call($operation, $request);
 
-=back
-
-$obj-E<gt>B<compile>(('READER'|'WRITER'), TYPE, OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<compile>(('READER'|'WRITER'), TYPE, OPTIONS)
 
 See L<XML::Compile::Schema/"Compilers">
 
-=back
-
-$obj-E<gt>B<compileAll>(['READERS'|'WRITERS'|'RW'|'CALLS', [NAMESPACE]])
-
-=over 4
+=item $obj-E<gt>B<compileAll>(['READERS'|'WRITERS'|'RW'|'CALLS', [NAMESPACE]])
 
 [2.20] With explicit C<CALLS> or without any parameter, it will call
 L<compileCalls()|XML::Compile::WSDL11/"Compilers">. Otherwise, see L<XML::Compile::Cache::compileAll()|XML::Compile::Cache/"Compilers">.
 
-=back
-
-$obj-E<gt>B<compileCalls>(OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<compileCalls>(OPTIONS)
 
 [2.20] Compile a handler for each of the available operations. The OPTIONS are
 passed to each call of L<compileClient()|XML::Compile::WSDL11/"Extension">, but will be overruled by more
@@ -331,35 +259,19 @@ example:
    
    my $answer = $wsdl->call($myop, $request);
 
-=back
-
-XML::Compile::WSDL11-E<gt>B<dataToXML>(NODE|REF-XML-STRING|XML-STRING|FILENAME|FILEHANDLE|KNOWN)
-
-=over 4
+=item XML::Compile::WSDL11-E<gt>B<dataToXML>(NODE|REF-XML-STRING|XML-STRING|FILENAME|FILEHANDLE|KNOWN)
 
 See L<XML::Compile/"Compilers">
 
-=back
-
-$obj-E<gt>B<reader>(TYPE|NAME, OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<reader>(TYPE|NAME, OPTIONS)
 
 See L<XML::Compile::Cache/"Compilers">
 
-=back
-
-$obj-E<gt>B<template>('XML'|'PERL', ELEMENT, OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<template>('XML'|'PERL', ELEMENT, OPTIONS)
 
 See L<XML::Compile::Schema/"Compilers">
 
-=back
-
-$obj-E<gt>B<writer>(TYPE|NAME)
-
-=over 4
+=item $obj-E<gt>B<writer>(TYPE|NAME)
 
 See L<XML::Compile::Cache/"Compilers">
 
@@ -367,20 +279,16 @@ See L<XML::Compile::Cache/"Compilers">
 
 =head2 Extension
 
-$obj-E<gt>B<addWSDL>(XMLDATA)
-
 =over 4
+
+=item $obj-E<gt>B<addWSDL>(XMLDATA)
 
 The XMLDATA must be acceptable to L<XML::Compile::dataToXML()|XML::Compile/"Compilers"> and 
 should represent the top-level of a (partial) WSDL document.
 The specification can be spread over multiple files, each of
 which must have a C<definition> root element.
 
-=back
-
-$obj-E<gt>B<compileClient>([NAME], OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<compileClient>([NAME], OPTIONS)
 
 Creates an L<XML::Compile::SOAP::Operation|XML::Compile::SOAP::Operation> temporary object using
 L<operation()|XML::Compile::WSDL11/"Extension">, and then calls C<compileClient()> on that.
@@ -411,21 +319,13 @@ example:
     , port      => 'PrefillSoap' # only needed when multiple ports
     );
 
-=back
-
-$obj-E<gt>B<namesFor>(CLASS)
-
-=over 4
+=item $obj-E<gt>B<namesFor>(CLASS)
 
 Returns the list of names available for a certain definition CLASS in
 the WSDL. See L<index()|XML::Compile::WSDL11/"Introspection"> for a way to determine the available CLASS
 information.
 
-=back
-
-$obj-E<gt>B<operation>([NAME], OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<operation>([NAME], OPTIONS)
 
 Collect all information for a certain operation.  Returned is an
 L<XML::Compile::SOAP::Operation|XML::Compile::SOAP::Operation> object.
@@ -436,41 +336,29 @@ left-out: in the many configurations where there are no alternative
 choices. In case there are alternatives, you will be requested to
 pick an option.
 
- Option   --Default
- action     <undef>
- operation  <required>
- port       <only when just one port in WSDL>
- service    <only when just one service in WSDL>
+ -Option   --Default
+  action     <undef>
+  operation  <required>
+  port       <only when just one port in WSDL>
+  service    <only when just one service in WSDL>
 
-. action => STRING
+=over 2
 
-=over 4
+=item action => STRING
 
 Overrule the soapAction from the WSDL.
 
-=back
-
-. operation => NAME
-
-=over 4
+=item operation => NAME
 
 Ignored when the parameter list starts with a NAME (which is an
 alternative for this option).  Optional when there is only
 one operation defined within the portType.
 
-=back
-
-. port => NAME
-
-=over 4
+=item port => NAME
 
 Required when more than one port is defined.
 
-=back
-
-. service => QNAME|PREFIXED
-
-=over 4
+=item service => QNAME|PREFIXED
 
 Required when more than one service is defined.
 
@@ -480,9 +368,9 @@ Required when more than one service is defined.
 
 =head2 Administration
 
-$obj-E<gt>B<declare>(GROUP, COMPONENT|ARRAY, OPTIONS)
-
 =over 4
+
+=item $obj-E<gt>B<declare>(GROUP, COMPONENT|ARRAY, OPTIONS)
 
 Register specific compile OPTIONS for the specific COMPONENT. See also
 L<XML::Compile::Cache::declare()|XML::Compile::Cache/"Administration">. The GROUP is either C<READER>,
@@ -496,79 +384,43 @@ example:
    $wsdl->compileCalls;
    my $answer = $wsdl->call(GetStockPrice => %request);
 
-=back
-
-$obj-E<gt>B<doesExtend>(EXTTYPE, BASETYPE)
-
-=over 4
+=item $obj-E<gt>B<doesExtend>(EXTTYPE, BASETYPE)
 
 See L<XML::Compile::Schema/"Administration">
 
-=back
-
-$obj-E<gt>B<elements>
-
-=over 4
+=item $obj-E<gt>B<elements>
 
 See L<XML::Compile::Schema/"Administration">
 
-=back
-
-$obj-E<gt>B<findName>(NAME)
-
-=over 4
+=item $obj-E<gt>B<findName>(NAME)
 
 See L<XML::Compile::Cache/"Administration">
 
-=back
+=item $obj-E<gt>B<findSchemaFile>(FILENAME)
 
-$obj-E<gt>B<findSchemaFile>(FILENAME)
-
-XML::Compile::WSDL11-E<gt>B<findSchemaFile>(FILENAME)
-
-=over 4
+=item XML::Compile::WSDL11-E<gt>B<findSchemaFile>(FILENAME)
 
 See L<XML::Compile/"Administration">
 
-=back
-
-$obj-E<gt>B<importDefinitions>(XMLDATA, OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<importDefinitions>(XMLDATA, OPTIONS)
 
 See L<XML::Compile::Schema/"Administration">
 
-=back
+=item $obj-E<gt>B<knownNamespace>(NAMESPACE|PAIRS)
 
-$obj-E<gt>B<knownNamespace>(NAMESPACE|PAIRS)
-
-XML::Compile::WSDL11-E<gt>B<knownNamespace>(NAMESPACE|PAIRS)
-
-=over 4
+=item XML::Compile::WSDL11-E<gt>B<knownNamespace>(NAMESPACE|PAIRS)
 
 See L<XML::Compile/"Administration">
 
-=back
-
-$obj-E<gt>B<namespaces>
-
-=over 4
+=item $obj-E<gt>B<namespaces>
 
 See L<XML::Compile::Schema/"Administration">
 
-=back
-
-$obj-E<gt>B<types>
-
-=over 4
+=item $obj-E<gt>B<types>
 
 See L<XML::Compile::Schema/"Administration">
 
-=back
-
-$obj-E<gt>B<walkTree>(NODE, CODE)
-
-=over 4
+=item $obj-E<gt>B<walkTree>(NODE, CODE)
 
 See L<XML::Compile/"Administration">
 
@@ -579,27 +431,27 @@ See L<XML::Compile/"Administration">
 All of the following methods are usually NOT meant for end-users. End-users
 should stick to the L<operation()|XML::Compile::WSDL11/"Extension"> and L<compileClient()|XML::Compile::WSDL11/"Extension"> methods.
 
-$obj-E<gt>B<endPoint>(OPTIONS)
-
 =over 4
+
+=item $obj-E<gt>B<endPoint>(OPTIONS)
 
 [2.20] Returns the address of the server, as specified by the WSDL. When
 there are no alternatives for service or port, you not not need to
 specify those paramters.
 
- Option --Default
- port     <undef>
- service  <undef>
+ -Option --Default
+  port     <undef>
+  service  <undef>
 
-. port => NAME
+=over 2
 
-. service => QNAME|PREFIXED
+=item port => NAME
+
+=item service => QNAME|PREFIXED
 
 =back
 
-$obj-E<gt>B<explain>(OPERATION, FORMAT, DIRECTION, OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<explain>(OPERATION, FORMAT, DIRECTION, OPTIONS)
 
 [2.13]
 Produce templates (see L<XML::Compile::Schema::template()|XML::Compile::Schema/"Compilers"> which detail
@@ -617,11 +469,7 @@ example:
 
   print $wsdl->explain('CheckStatus', PERL => 'INPUT');
 
-=back
-
-$obj-E<gt>B<findDef>(CLASS, [QNAME|PREFIXED|NAME])
-
-=over 4
+=item $obj-E<gt>B<findDef>(CLASS, [QNAME|PREFIXED|NAME])
 
 With a QNAME, the HASH which contains the parsed XML information
 from the WSDL template for that CLASS-NAME combination is returned.
@@ -638,11 +486,7 @@ example:
  $service  = $obj->findDef(service => 'http://xyz');
  @services = $obj->findDef('service');
 
-=back
-
-$obj-E<gt>B<index>([CLASS, [QNAME]])
-
-=over 4
+=item $obj-E<gt>B<index>([CLASS, [QNAME]])
 
 With a CLASS and QNAME, it returns one WSDL definition HASH or undef.
 Returns the index for the CLASS group of names as HASH.  When no CLASS is
@@ -650,63 +494,123 @@ specified, a HASH of HASHes is returned with the CLASSes on the top-level.
 
 CLASS includes C<service>, C<binding>, C<portType>, and C<message>.
 
-=back
-
-$obj-E<gt>B<operations>(OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<operations>(OPTIONS)
 
 Return a list with all operations defined in the WSDL.
 
- Option --Default
- binding  <undef>
- port     <undef>
- service  <undef>
+ -Option --Default
+  binding  <undef>
+  port     <undef>
+  service  <undef>
 
-. binding => NAME
+=over 2
 
-=over 4
+=item binding => NAME
 
 Only return operations which use the binding with the specified NAME.
 By default, all bindings are accepted.
 
-=back
-
-. port => NAME
-
-=over 4
+=item port => NAME
 
 Return only operations related to the specified port NAME.
 By default operations from all ports.
 
-=back
-
-. service => NAME
-
-=over 4
+=item service => NAME
 
 Only return operations related to the NAMEd service, by default all services.
 
 =back
 
-=back
-
-$obj-E<gt>B<printIndex>([FILEHANDLE], OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<printIndex>([FILEHANDLE], OPTIONS)
 
 For available OPTIONS, see L<operations()|XML::Compile::WSDL11/"Introspection">.  This method is useful to
 understand the structure of your WSDL: it shows a nested list of
 services, bindings, ports and portTypes.
 
- Option       --Defined in         --Default
- show_declared  XML::Compile::Cache  <true>
+ -Option       --Defined in         --Default
+  show_declared  XML::Compile::Cache  <true>
 
-. show_declared => BOOLEAN
+=over 2
+
+=item show_declared => BOOLEAN
+
+=back
 
 =back
 
 =head1 DETAILS
+
+=head2 Comparison
+
+=head2 Collecting definitions
+
+=head3 Organizing your definitions
+
+=head2 Addressing components
+
+=head2 Representing data-structures
+
+=head3 simpleType
+
+=head3 complexType/simpleContent
+
+=head3 complexType and complexType/complexContent
+
+=head3 Manually produced XML NODE
+
+=head3 Occurence
+
+=head3 Default Values
+
+=head3 Repetative blocks
+
+=head4 repetative sequence, choice, all
+
+=head4 repetative groups
+
+=head4 repetative substitutionGroups
+
+=head3 List type
+
+=head3 Using substitutionGroup constructs
+
+=head3 Wildcards any and anyAttribute
+
+=head3 ComplexType with "mixed" attribute
+
+=head3 hexBinary and base64Binary
+
+=head2 Schema hooks
+
+=head3 defining hooks
+
+=head3 general syntax
+
+=head3 hooks on matching types
+
+=head3 hooks on matching ids
+
+=head3 hooks on matching paths
+
+=head2 Typemaps
+
+=head3 Private variables in objects
+
+=head3 Typemap limitations
+
+=head2 Handling xsi:type
+
+=head2 Key rewrite
+
+=head3 key_rewrite via table
+
+=head3 rewrite via function
+
+=head3 key_rewrite when localNames collide
+
+=head3 rewrite for convenience
+
+=head3 pre-defined key_rewrite rules
 
 =head2 Initializing SOAP operations via WSDL
 
@@ -738,8 +642,8 @@ a choice, then you must explicitly select one.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.21,
-built on December 25, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.22,
+built on February 05, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -763,7 +667,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

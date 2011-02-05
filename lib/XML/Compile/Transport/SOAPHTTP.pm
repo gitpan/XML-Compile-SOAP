@@ -1,13 +1,13 @@
-# Copyrights 2007-2010 by Mark Overmeer.
+# Copyrights 2007-2011 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.06.
+# Pod stripped from pm file by OODoc 2.00.
 use warnings;
 use strict;
 
 package XML::Compile::Transport::SOAPHTTP;
 use vars '$VERSION';
-$VERSION = '2.21';
+$VERSION = '2.22';
 
 use base 'XML::Compile::Transport';
 
@@ -163,6 +163,7 @@ sub _prepare_call($)
 
         $trace->{http_request}  = $request;
 
+warn $request->as_string;
         my $response = $ua->request($request)
             or return undef;
 

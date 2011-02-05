@@ -23,53 +23,41 @@ a server.
 
 =head2 Constructors
 
-XML::Compile::SOAP::Operation-E<gt>B<new>(OPTIONS)
-
 =over 4
 
- Option   --Default
- action     undef
- endpoints  []
- kin        <required>
- nam        <required>
- schemas    <required>
- transport  'HTTP'
+=item XML::Compile::SOAP::Operation-E<gt>B<new>(OPTIONS)
 
-. action => STRING
+ -Option   --Default
+  action     undef
+  endpoints  []
+  kin        <required>
+  nam        <required>
+  schemas    <required>
+  transport  'HTTP'
 
-=over 4
+=over 2
+
+=item action => STRING
 
 Some string which is refering to the action which is taken.  For SOAP
 protocols, this defines the soapAction header.
 
-=back
-
-. endpoints => ADDRESS|ARRAY
-
-=over 4
+=item endpoints => ADDRESS|ARRAY
 
 Where to contact the server.
 
-=back
-
-. kin => d
-
-=over 4
+=item kin => d
 
 This returns the type of operation this is.  There are four kinds, which
 are returned as strings C<one-way>, C<request-response>, C<sollicit-response>,
 and C<notification>.  The latter two are initiated by a server, the former
 two by a client.
 
-=back
+=item nam => e
 
-. nam => e
+=item schemas => XML::Compile::Cache
 
-. schemas => XML::Compile::Cache
-
-. transport => URI|'HTTP'
-
-=over 4
+=item transport => URI|'HTTP'
 
 C<HTTP> is short for C<http://schemas.xmlsoap.org/soap/http/>, which
 is a constant to indicate that transport should use the HyperText
@@ -81,85 +69,41 @@ Transfer Protocol.
 
 =head2 Accessors
 
-$obj-E<gt>B<bindingName>
-
 =over 4
 
-=back
+=item $obj-E<gt>B<bindingName>
 
-$obj-E<gt>B<clientClass>
-
-=over 4
+=item $obj-E<gt>B<clientClass>
 
 Returns the class name which implements the Client side for this protocol.
 
-=back
-
-$obj-E<gt>B<endPoints>
-
-=over 4
+=item $obj-E<gt>B<endPoints>
 
 Returns the list of alternative URLs for the end-point, which should
 be defined within the service's port declaration.
 
-=back
+=item $obj-E<gt>B<kind>
 
-$obj-E<gt>B<kind>
+=item $obj-E<gt>B<name>
 
-=over 4
+=item $obj-E<gt>B<portName>
 
-=back
+=item $obj-E<gt>B<schemas>
 
-$obj-E<gt>B<name>
-
-=over 4
-
-=back
-
-$obj-E<gt>B<portName>
-
-=over 4
-
-=back
-
-$obj-E<gt>B<schemas>
-
-=over 4
-
-=back
-
-$obj-E<gt>B<serverClass>
-
-=over 4
+=item $obj-E<gt>B<serverClass>
 
 Returns the class name which implements the Server side for this protocol.
 
-=back
+=item $obj-E<gt>B<serviceName>
 
-$obj-E<gt>B<serviceName>
-
-=over 4
-
-=back
-
-$obj-E<gt>B<soapAction>
-
-=over 4
+=item $obj-E<gt>B<soapAction>
 
 Used for the C<soapAction> header in HTTP transport, for routing
 messages through firewalls.
 
-=back
+=item $obj-E<gt>B<version>
 
-$obj-E<gt>B<version>
-
-=over 4
-
-=back
-
-$obj-E<gt>B<wsaAction>('INPUT'|'OUTPUT')
-
-=over 4
+=item $obj-E<gt>B<wsaAction>('INPUT'|'OUTPUT')
 
 Only available when C<XML::Compile::SOAP::WSA> is loaded. It specifies
 the name of the operation in the WSA header.  With C<INPUT>, it is the
@@ -170,75 +114,59 @@ server). The C<OUTPUT> is used by the server in its message back.
 
 =head2 Handlers
 
-$obj-E<gt>B<compileClient>(OPTIONS)
-
 =over 4
+
+=item $obj-E<gt>B<compileClient>(OPTIONS)
 
 Returns one CODE reference which handles the conversion from a perl
 data-structure into a request message, the transmission of the
 request, the receipt of the answer, and the decoding of that answer
 into a Perl data-structure.
 
-=back
-
-$obj-E<gt>B<compileHandler>(OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<compileHandler>(OPTIONS)
 
 Returns a code reference which translates in incoming XML message
 into Perl a data-structure, then calls the callback.  The result of
 the callback is encoded from Perl into XML and returned.
 
- Option  --Default
- callback  <required>
+ -Option  --Default
+  callback  <required>
 
-. callback => CODE
+=over 2
+
+=item callback => CODE
 
 =back
 
-$obj-E<gt>B<compileTransporter>(OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<compileTransporter>(OPTIONS)
 
 Create the transporter code for a certain specific target.
 
- Option        --Default
- endpoint        <from WSDL>
- server          undef
- transport_hook  undef
- transporter     <created>
+ -Option        --Default
+  endpoint        <from WSDL>
+  server          undef
+  transport_hook  undef
+  transporter     <created>
 
-. endpoint => URI|ARRAY-of-URI
+=over 2
 
-=over 4
+=item endpoint => URI|ARRAY-of-URI
 
 Overrule the destination address(es).
 
-=back
-
-. server => URI-HOST
-
-=over 4
+=item server => URI-HOST
 
 Overrule only the server part in the endpoint, not the whole endpoint.
 This could be a string like C<username:password@myhost:4711>.  Only
 used when no explicit C<endpoint> is provided.
 
-=back
-
-. transport_hook => CODE
-
-=over 4
+=item transport_hook => CODE
 
 Passed to L<XML::Compile::Transport::compileClient(hook)|XML::Compile::Transport/"Handlers">.  Can be
 used to create off-line tests and last resort work-arounds.  See the
 DETAILs chapter in the L<XML::Compile::Transport|XML::Compile::Transport> manual page.
 
-=back
-
-. transporter => CODE
-
-=over 4
+=item transporter => CODE
 
 The routine which will be used to exchange the data with the server.
 This code is created by an L<XML::Compile::Transport::compileClient()|XML::Compile::Transport/"Handlers">
@@ -252,9 +180,9 @@ connection to a server.
 
 =head2 Helpers
 
-$obj-E<gt>B<explain>(WSDL, FORMAT, DIRECTION, OPTIONS)
-
 =over 4
+
+=item $obj-E<gt>B<explain>(WSDL, FORMAT, DIRECTION, OPTIONS)
 
 Dump an annotated structure showing how the operation works, helping
 developers to understand the schema. FORMAT is C<PERL> or C<XML>.
@@ -263,11 +191,7 @@ The DIRECTION is C<INPUT>, it will return the message which the client
 sends to the server (input for the server). The C<OUTPUT> message is
 sent as response by the server.
 
-=back
-
-XML::Compile::SOAP::Operation-E<gt>B<register>(URI, ENVNS)
-
-=over 4
+=item XML::Compile::SOAP::Operation-E<gt>B<register>(URI, ENVNS)
 
 Declare an operation type, but WSDL specific URI and envelope namespace.
 
@@ -275,8 +199,8 @@ Declare an operation type, but WSDL specific URI and envelope namespace.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.21,
-built on December 25, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.22,
+built on February 05, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -300,7 +224,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

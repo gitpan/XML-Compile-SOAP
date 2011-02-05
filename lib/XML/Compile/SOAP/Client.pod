@@ -26,65 +26,49 @@ base class.  The primary must contain the C<new>.
 
 =head2 Handlers
 
-$obj-E<gt>B<compileClient>(OPTIONS)
-
 =over 4
 
- Option   --Default
- async      <false>
- decode     <required>
- encode     <required>
- kind       request-response
- name       <undef>
- transport  <required>
+=item $obj-E<gt>B<compileClient>(OPTIONS)
 
-. async => BOOLEAN
+ -Option   --Default
+  async      <false>
+  decode     <required>
+  encode     <required>
+  kind       request-response
+  name       <undef>
+  transport  <required>
 
-=over 4
+=over 2
+
+=item async => BOOLEAN
 
 If true, a whole different code-reference is returned. Each time it
 is called, the call will be made but the function returns immediately.
 As additional parameter to the call, you must provide a C<_callback>
 parameter which is a code-reference which will handle the result.
 
-=back
-
-. decode => CODE
-
-=over 4
+=item decode => CODE
 
 The CODE reference is produced by L<XML::Compile::SOAP::compileMessage()|XML::Compile::SOAP/"Single message">,
 and must be a RECEIVER: translate a SOAP message into Perl data.  Even in
 one-way operation, this decode should be provided: some servers may pass
 back some XML in case of errors.
 
-=back
-
-. encode => CODE
-
-=over 4
+=item encode => CODE
 
 The CODE reference is produced by L<XML::Compile::SOAP::compileMessage()|XML::Compile::SOAP/"Single message">,
 and must be a SENDER: translates Perl data structures into the SOAP
 message in XML.
 
-=back
-
-. kind => STRING
-
-=over 4
+=item kind => STRING
 
 Which kind of client is this.  WSDL11 defines four kinds of client-server
 interaction.  Only C<request-response> (the default) and C<one-way> are
 currently supported.
 
-=back
+=item name => STRING
 
-. name => STRING
-
-. transport => CODE|OBJECT
-
-=over 4
+=item transport => CODE|OBJECT
 
 The CODE reference is produced by an extensions of
 L<XML::Compile::Transport::compileClient()|XML::Compile::Transport/"Handlers"> (usually
@@ -497,8 +481,8 @@ equivalent to the C<%data_in> from the client.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.21,
-built on December 25, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.22,
+built on February 05, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -522,7 +506,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

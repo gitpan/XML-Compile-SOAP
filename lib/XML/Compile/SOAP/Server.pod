@@ -36,16 +36,16 @@ message exchange protocols must implement.
 This object can not be instantiated, but is only used as secundary
 base class.  The primary must contain the C<new>.
 
-XML::Compile::SOAP::Server-E<gt>B<new>(OPTIONS)
-
 =over 4
 
- Option--Default
- role    'NEXT'
+=item XML::Compile::SOAP::Server-E<gt>B<new>(OPTIONS)
 
-. role => URI
+ -Option--Default
+  role    'NEXT'
 
-=over 4
+=over 2
+
+=item role => URI
 
 In SOAP1.1, the term is 'actor', but SOAP1.2 has renamed this into
 'role': the role [this daemon] plays in the transport protocol.
@@ -61,9 +61,9 @@ and the constants defined in L<XML::Compile::SOAP::Util|XML::Compile::SOAP::Util
 
 =head2 Accessors
 
-$obj-E<gt>B<role>
-
 =over 4
+
+=item $obj-E<gt>B<role>
 
 Returns the URI of the role (actor) of this server.
 
@@ -71,54 +71,50 @@ Returns the URI of the role (actor) of this server.
 
 =head2 Actions
 
-$obj-E<gt>B<compileFilter>(OPTIONS)
-
 =over 4
+
+=item $obj-E<gt>B<compileFilter>(OPTIONS)
 
 This routine returns a CODE reference which can be used for
 L<compileHandler(selector)|XML::Compile::SOAP::Server/"Actions">; so see whether a certain message has arrived.
 On the moment, only the first C<body> element is used to determine that.
 
- Option--Default
- body    []
- fault   <undef>
- header  <undef>
+ -Option--Default
+  body    []
+  fault   <undef>
+  header  <undef>
 
-. body => ARRAY-of-TYPES
+=over 2
 
-. fault => ARRAY-of-TYPES
+=item body => ARRAY-of-TYPES
 
-. header => ARRAY-of-TYPES
+=item fault => ARRAY-of-TYPES
+
+=item header => ARRAY-of-TYPES
 
 =back
 
-$obj-E<gt>B<compileHandler>(OPTIONS)
-
-=over 4
+=item $obj-E<gt>B<compileHandler>(OPTIONS)
 
 Returns an HTTP status code and an XML::LibXML::Document pair.
 
- Option  --Default
- callback  <fault: not implemented>
- decode    <undef>
- encode    <undef>
- name      <required>
- selector  sub {0}
+ -Option  --Default
+  callback  <fault: not implemented>
+  decode    <undef>
+  encode    <undef>
+  name      <required>
+  selector  sub {0}
 
-. callback => CODE
+=over 2
 
-=over 4
+=item callback => CODE
 
 As input, the SERVER object and the translated input message (Perl version)
 are passed in.  As output, a suitable output structure must be produced.
 If the callback is not set, then a fault message will be returned to the
 user.
 
-=back
-
-. decode => CODE
-
-=over 4
+=item decode => CODE
 
 The CODE reference is used to decode the (parsed) XML input message
 into the pure Perl request.  The reference is a READER, created with
@@ -126,11 +122,7 @@ L<XML::Compile::Schema::compile()|XML::Compile::Schema/"Compilers">.  If no inpu
 then the  callbackhandler will be called with the un-decoded
 XML::LibXML::Document node.
 
-=back
-
-. encode => CODE
-
-=over 4
+=item encode => CODE
 
 The CODE reference is used to encode the Perl answer structure into the
 output message.  The reference is a WRITER.  created with
@@ -138,11 +130,7 @@ L<XML::Compile::Schema::compile()|XML::Compile::Schema/"Compilers">.  If no outp
 then the callback must return an XML::LibXML::Document, or only
 produce error messages.
 
-=back
-
-. name => STRING
-
-=over 4
+=item name => STRING
 
 The identification for this action, for instance used for logging.  When
 the action is created via a WSDL, the portname will be used here.
@@ -150,11 +138,7 @@ the action is created via a WSDL, the portname will be used here.
 It is a pitty that the portname is not passed in the SOAP message,
 because it is not so easy to detect which handler must be called.
 
-=back
-
-. selector => CODE
-
-=over 4
+=item selector => CODE
 
 One way or the other, you have to figure-out whether a message addresses
 a certain process.  The callback will only be used if the CODE reference
@@ -166,11 +150,7 @@ L<XML::Compile::SOAP::messageStructure()|XML::Compile::SOAP/"Single message"> pl
 
 =back
 
-=back
-
-XML::Compile::SOAP::Server-E<gt>B<faultWriter>
-
-=over 4
+=item XML::Compile::SOAP::Server-E<gt>B<faultWriter>
 
 Returns a CODE reference which can be used to produce faults.
 
@@ -178,8 +158,8 @@ Returns a CODE reference which can be used to produce faults.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.21,
-built on December 25, 2010. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.22,
+built on February 05, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -203,7 +183,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2010 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

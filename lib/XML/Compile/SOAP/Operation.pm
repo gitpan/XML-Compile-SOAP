@@ -1,13 +1,13 @@
-# Copyrights 2007-2010 by Mark Overmeer.
+# Copyrights 2007-2011 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 1.06.
+# Pod stripped from pm file by OODoc 2.00.
 use warnings;
 use strict;
 
 package XML::Compile::SOAP::Operation;
 use vars '$VERSION';
-$VERSION = '2.21';
+$VERSION = '2.22';
 
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
@@ -77,8 +77,10 @@ sub compileTransporter(@)
     return $send if $send;
 
     my $proto     = $self->transport;
-    my $endpoints = $args{endpoint} || [];
-    my @endpoints = ref $endpoints eq 'ARRAY' ? @$endpoints : ();
+    my @endpoints;
+    if(my $endpoints = $args{endpoint})
+    {   @endpoints = ref $endpoints eq 'ARRAY' ? @$endpoints : $endpoints;
+    }
     unless(@endpoints)
     {   @endpoints = $self->endPoints;
         if(my $s = $args{server})
@@ -95,7 +97,7 @@ sub compileTransporter(@)
              , proto => $proto;
 
     my $transport = $self->{transp_cache}{$proto}{$id}
-                  = $transp->new(address => \@endpoints);
+                  = $transp->new(address => \@endpoints, %args);
 
     $transport->compileClient
       ( name     => $self->name
