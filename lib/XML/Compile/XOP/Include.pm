@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::XOP::Include;
 use vars '$VERSION';
-$VERSION = '2.22';
+$VERSION = '2.23';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -22,9 +22,8 @@ use overload '""'     => 'content'
 
 sub new(@)
 {   my ($class, %args) = @_;
-    ref $args{bytes} eq 'SCALAR'
-        or $args{bytes} = \(delete $args{bytes});
-
+    $args{bytes} = \(delete $args{bytes})
+        if defined $args{bytes} && ref $args{bytes} ne 'SCALAR';
     bless \%args, $class;
 }
 
@@ -54,9 +53,9 @@ sub content(;$)
     unless($self->{bytes})
     {   my $f     = $self->{file};
         my $bytes = try { read_file $f };
+        fault "failed reading XOP file {fn}", fn => $f;
         $self->{bytes} = \$bytes;
     }
-
     $byref ? $self->{bytes} : ${$self->{bytes}};
 }
 

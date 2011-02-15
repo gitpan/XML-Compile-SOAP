@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport::SOAPHTTP;
 use vars '$VERSION';
-$VERSION = '2.22';
+$VERSION = '2.23';
 
 use base 'XML::Compile::Transport';
 
@@ -163,7 +163,7 @@ sub _prepare_call($)
 
         $trace->{http_request}  = $request;
 
-warn $request->as_string;
+#warn $request->as_string;
         my $response = $ua->request($request)
             or return undef;
 
