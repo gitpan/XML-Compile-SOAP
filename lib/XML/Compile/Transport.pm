@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport;
 use vars '$VERSION';
-$VERSION = '2.23';
+$VERSION = '2.24';
 
 use base 'XML::Compile::SOAP::Extension';
 
@@ -60,10 +60,16 @@ sub compileClient(@)
 #warn $xmlout->toString(1);   # show message sent
 
         my $stringify = time;
+        $trace->{stringify_elapse} = $stringify - $start;
         $trace->{transport_start}  = $start;
 
-        my ($textin, $xops) = $call->(\$textout, $trace, $mtom);
+        my ($textin, $xops) = eval { $call->(\$textout, $trace, $mtom) };
         my $connected = time;
+        $trace->{connect_elapse}   = $connected - $stringify;
+        if($@)
+        {   $trace->{error} = $@;
+            return;
+        }
 
         my $xmlin;
         if($textin)
@@ -83,8 +89,6 @@ sub compileClient(@)
 
         my $end = $trace->{transport_end} = time;
 
-        $trace->{stringify_elapse} = $stringify - $start;
-        $trace->{connect_elapse}   = $connected - $stringify;
         $trace->{parse_elapse}     = $end - $connected;
         $trace->{transport_elapse} = $end - $start;
 

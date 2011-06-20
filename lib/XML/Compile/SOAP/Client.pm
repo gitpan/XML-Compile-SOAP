@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::Client;
 use vars '$VERSION';
-$VERSION = '2.23';
+$VERSION = '2.24';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -65,7 +65,8 @@ sub compileClient(@)
             $trace->{elapse} = $end - $trace->{start};
         }
         else
-        {   $trace->{elapse} = $trace->{transport_end} - $trace->{start};
+        {   $trace->{elapse} = $trace->{transport_end} - $trace->{start}
+                if defined $trace->{transport_end};
         }
         ($ans, XML::Compile::SOAP::Trace->new($trace));
     };

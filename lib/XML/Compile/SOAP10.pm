@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP10;
 use vars '$VERSION';
-$VERSION = '2.23';
+$VERSION = '2.24';
 
 use base 'XML::Compile::SOAP';
 

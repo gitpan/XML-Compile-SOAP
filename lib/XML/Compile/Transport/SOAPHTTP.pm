@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport::SOAPHTTP;
 use vars '$VERSION';
-$VERSION = '2.23';
+$VERSION = '2.24';
 
 use base 'XML::Compile::Transport';
 
@@ -150,7 +150,7 @@ sub _prepare_call($)
         $trace->{hooked}        = 1;
 
         my $response = $hook->($request, $trace)
-           or return undef;
+            or return undef;
 
         $trace->{http_response} = $response;
 

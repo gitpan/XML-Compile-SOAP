@@ -34,7 +34,7 @@ XML::Compile::WSDL11 - create SOAP messages defined by WSDL 1.1
  my $answer = $wsdl->call(GetStockPrice => %request);
 
  # investigate the %request structure (server input)
- print $wsdl->explain('GetStockPrice', PERL => 'INPUT');
+ print $wsdl->explain('GetStockPrice', PERL => 'INPUT', recurse => 1);
 
  # investigate the $answer structure (server output)
  print $wsdl->explain('GetStockPrice', PERL => 'OUTPUT');
@@ -92,6 +92,7 @@ L<XML::Compile::dataToXML()|XML::Compile/"Compilers">.
   opts_readers        XML::Compile::Cache  []
   opts_rw             XML::Compile::Cache  []
   opts_writers        XML::Compile::Cache  []
+  parser_options      XML::Compile     <many>
   prefixes            XML::Compile::Cache  <smart>
   schema_dirs         XML::Compile     undef
   typemap             XML::Compile::Cache  {}
@@ -119,6 +120,8 @@ L<XML::Compile::dataToXML()|XML::Compile/"Compilers">.
 
 =item opts_writers => HASH|ARRAY-of-PAIRS
 
+=item parser_options => HASH|ARRAY
+
 =item prefixes => HASH|ARRAY-of-PAIRS
 
 =item schema_dirs => DIRECTORY|ARRAY-OF-DIRECTORIES
@@ -134,6 +137,10 @@ L<XML::Compile::dataToXML()|XML::Compile/"Compilers">.
 =head2 Accessors
 
 =over 4
+
+=item $obj-E<gt>B<addCompileOptions>(['READERS'|'WRITERS'|'RW'], OPTIONS)
+
+See L<XML::Compile::Cache/"Accessors">
 
 =item $obj-E<gt>B<addHook>(HOOKDATA|HOOK|undef)
 
@@ -166,6 +173,10 @@ See L<XML::Compile::Schema/"Accessors">
 See L<XML::Compile::Schema/"Accessors">
 
 =item $obj-E<gt>B<allowUndeclared>([BOOLEAN])
+
+See L<XML::Compile::Cache/"Accessors">
+
+=item $obj-E<gt>B<anyElement>('ATTEMPT'|'SLOPPY'|'SKIP_ALL'|'TAKE_ALL'|CODE)
 
 See L<XML::Compile::Cache/"Accessors">
 
@@ -259,7 +270,15 @@ example:
    
    my $answer = $wsdl->call($myop, $request);
 
+=item $obj-E<gt>B<dataToXML>(NODE|REF-XML-STRING|XML-STRING|FILENAME|FILEHANDLE|KNOWN)
+
 =item XML::Compile::WSDL11-E<gt>B<dataToXML>(NODE|REF-XML-STRING|XML-STRING|FILENAME|FILEHANDLE|KNOWN)
+
+See L<XML::Compile/"Compilers">
+
+=item $obj-E<gt>B<initParser>(OPTIONS)
+
+=item XML::Compile::WSDL11-E<gt>B<initParser>(OPTIONS)
 
 See L<XML::Compile/"Compilers">
 
@@ -469,6 +488,11 @@ example:
 
   print $wsdl->explain('CheckStatus', PERL => 'INPUT');
 
+  print $wsdl->explain('CheckStatus', PERL => 'OUTPUT'
+     , recurse => 1                 # explain options
+     , port    => 'Soap12PortName'  # operation options
+     );
+
 =item $obj-E<gt>B<findDef>(CLASS, [QNAME|PREFIXED|NAME])
 
 With a QNAME, the HASH which contains the parsed XML information
@@ -642,8 +666,8 @@ a choice, then you must explicitly select one.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.23,
-built on February 15, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.24,
+built on June 20, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -651,6 +675,8 @@ L<XML::Compile::SOAP>,
 L<XML::Compile::SOAP12>,
 L<XML::Compile::SOAP::Daemon>,
 L<XML::Compile::SOAP::WSA>,
+L<XML::Compile::C14N>,
+L<XML::Compile::WSS>,
 L<XML::Compile::Tester>,
 L<XML::Compile::Cache>,
 L<XML::Compile::Dumper>,

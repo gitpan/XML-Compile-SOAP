@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '2.23';
+$VERSION = '2.24';
 
 use base 'XML::Compile::Cache';
 
@@ -57,7 +57,8 @@ sub init($)
     $self->{XCW_dcopts} = {};
 
     $self->importDefinitions(WSDL11);
-    $self->addWSDL($wsdl);
+
+    $self->addWSDL(ref $wsdl eq 'ARRAY' ? @$wsdl : $wsdl);
     $self;
 }
 
@@ -262,6 +263,8 @@ sub operation(@)
         error __x"ports of type {ns} not supported (not loaded?)", ns => $ns;
     }
 
+#use Data::Dumper;
+#warn Dumper $port, $self->prefixes;
     my ($prefix)  = $address =~ m/(\w+)_address$/;
     $prefix
         or error __x"port address not prefixed; probably need to add a plugin";
