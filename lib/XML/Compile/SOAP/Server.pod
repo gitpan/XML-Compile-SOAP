@@ -119,7 +119,7 @@ user.
 The CODE reference is used to decode the (parsed) XML input message
 into the pure Perl request.  The reference is a READER, created with
 L<XML::Compile::Schema::compile()|XML::Compile::Schema/"Compilers">.  If no input decoder is specified,
-then the  callbackhandler will be called with the un-decoded
+then the callback handler will be called with the un-decoded
 XML::LibXML::Document node.
 
 =item encode => CODE
@@ -141,7 +141,7 @@ because it is not so easy to detect which handler must be called.
 =item selector => CODE
 
 One way or the other, you have to figure-out whether a message addresses
-a certain process.  The callback will only be used if the CODE reference
+a certain process. The callback will only be used if the CODE reference
 specified here returns a true value.
 
 The CODE reference will be called with the XML version of the message,
@@ -158,8 +158,8 @@ Returns a CODE reference which can be used to produce faults.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.24,
-built on June 20, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.25,
+built on September 22, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

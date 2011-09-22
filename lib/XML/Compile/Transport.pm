@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport;
 use vars '$VERSION';
-$VERSION = '2.24';
+$VERSION = '2.25';
 
 use base 'XML::Compile::SOAP::Extension';
 
@@ -77,15 +77,16 @@ sub compileClient(@)
             $trace->{error} = $@ if $@;
         }
 
-        my $answer;
+        my $answer = $xmlin;
         if($kind eq 'one-way')
         {   my $response = $trace->{http_response};
             my $code = defined $response ? $response->code : -1;
-            if($code==202) { $answer = $xmlin || {} }
+            if($code==202) { $answer ||= {} }
             else { $trace->{error} = "call failed with code $code" }
         }
-        elsif($xmlin) { $answer = $xmlin }
-        else { $trace->{error} ||= 'no xml as answer' }
+        elsif(!$xmlin)
+        {   $trace->{error} ||= 'no xml as answer';
+        }
 
         my $end = $trace->{transport_end} = time;
 

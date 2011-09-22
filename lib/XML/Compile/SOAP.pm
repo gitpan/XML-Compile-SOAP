@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '2.24';
+$VERSION = '2.25';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -447,7 +447,8 @@ sub _reader_body_rpc_wrapper($$)
 {   my ($self, $procedure, $body) = @_;
     my %trans = map { ($_->[1] => [ $_->[0], $_->[2] ]) } @$body;
 
-    # this should use key_rewrite
+    # this should use key_rewrite, but there is no $wsdl here
+    # my $label = $wsdl->prefixed($procedure);
     my $label = (unpack_type $procedure)[1];
 
     my $code = sub

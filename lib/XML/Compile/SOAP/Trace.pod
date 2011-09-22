@@ -92,9 +92,24 @@ that the call was initiated.  See Time::HiRes method C<time>.
 
 =over 4
 
+=item $obj-E<gt>B<printErrors>([FILEHANDLE])
+
+The filehandle defaults to STDERR.
+
+If you want to see more output, try adding C<<use Log::Report mode => 3;>>
+
 =item $obj-E<gt>B<printRequest>([FILEHANDLE])
 
-=item $obj-E<gt>B<printResponse>([FILEHANDLE])
+=item $obj-E<gt>B<printResponse>([FILEHANDLE], OPTIONS)
+
+ -Option      --Default
+  pretty_print  false
+
+=over 2
+
+=item pretty_print => BOOLEAN
+
+=back
 
 =item $obj-E<gt>B<printTimings>([FILEHANDLE])
 
@@ -104,8 +119,8 @@ Print an overview on various timings to the selected filehandle.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.24,
-built on June 20, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.25,
+built on September 22, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

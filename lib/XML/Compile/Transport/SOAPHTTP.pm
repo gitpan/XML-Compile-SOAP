@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport::SOAPHTTP;
 use vars '$VERSION';
-$VERSION = '2.24';
+$VERSION = '2.25';
 
 use base 'XML::Compile::Transport';
 
@@ -153,6 +153,13 @@ sub _prepare_call($)
             or return undef;
 
         $trace->{http_response} = $response;
+        if($response->is_error)
+        {   error $response->message
+                if $response->header('Client-Warning');
+
+            warning $response->message;
+            # still try to parse the response for Fault blocks
+        }
 
         $parse_message->($response);
       }
@@ -192,8 +199,9 @@ sub _prepare_simple_call($)
       };
 
     my $parse  = sub
-      { my $response = shift
-            or error __x"no response produced";
+      { my $response = shift;
+        UNIVERSAL::isa($response, 'HTTP::Response')
+            or error __x"no response object received";
 
         my $ct       = $response->content_type || '';
 
@@ -226,7 +234,7 @@ sub _prepare_xop_call($)
         $mtom ||= [];
         @$mtom or return $simple_create->($request, $content);
 
-        my $bound     = "MIME-boundary-".int rand 10000;
+        my $bound = "MIME-boundary-".int rand 10000;
         (my $start_cid = $mtom->[0]->cid) =~ s/^.*\@/xml@/;
 
         $request->header(Content_Type => <<_CT);
@@ -254,9 +262,8 @@ _CT
 
     my $parse  = sub
       { my ($response, $mtom) = @_;
-        my $ct       = $response->header('Content-Type') || '';
-
-        $ct =~ m!^\s*multipart/related\s*\;!
+        my $ct = $response->header('Content-Type') || '';
+        $ct    =~ m!^\s*multipart/related\s*\;!
              or return $simple_parse->($response);
 
         my %parts;

@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::Server;
 use vars '$VERSION';
-$VERSION = '2.24';
+$VERSION = '2.25';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -46,7 +46,10 @@ sub compileHandler(@)
     my $callback = $args{callback};
 
     sub
-    {   my ($name, $xmlin, $info) = @_;
+    {   my ($name, $xmlin, $info, $session) = @_;
+        # info is used to help determine if the xmlin is of the type for
+        # this call. $session is passed in by the server and is in turn
+        # passed to the handlers
         $selector->($xmlin, $info) or return;
         trace __x"procedure {name} selected", name => $name;
 
@@ -63,15 +66,15 @@ sub compileHandler(@)
         {   $data = $xmlin;
         }
 
-        my $answer = $callback->($self, $data);
+        my $answer = $callback->($self, $data, $session);
         unless(defined $answer)
-        {   alert "procedure {name} did not produce an answer", name=> $name;
+        {   alert __x"procedure {name} did not produce an answer", name=> $name;
             return ( RC_INTERNAL_SERVER_ERROR, 'no answer produced'
                       , $self->faultNoAnswerProduced($name));
         }
 
         if(ref $answer ne 'HASH')
-        {   alert "procedure {name} did not return a HASH", name => $name;
+        {   alert __x"procedure {name} did not return a HASH", name => $name;
             return ( RC_INTERNAL_SERVER_ERROR, 'invalid answer produced'
                       , $self->faultNoAnswerProduced($name));
         }

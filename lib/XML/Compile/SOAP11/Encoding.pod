@@ -326,8 +326,8 @@ SOAP defines encodings, especially for SOAP-RPC.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.24,
-built on June 20, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.25,
+built on September 22, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
