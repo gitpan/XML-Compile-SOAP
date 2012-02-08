@@ -1,4 +1,4 @@
-# Copyrights 2007-2011 by Mark Overmeer.
+# Copyrights 2007-2012 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.00.
@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport;
 use vars '$VERSION';
-$VERSION = '2.25';
+$VERSION = '2.26';
 
 use base 'XML::Compile::SOAP::Extension';
 
@@ -50,13 +50,14 @@ my $parser = XML::LibXML->new;
 
 sub compileClient(@)
 {   my ($self, %args) = @_;
-    my $call  = $self->_prepare_call(\%args);
-    my $kind  = $args{kind} || 'request-response';
+    my $call   = $self->_prepare_call(\%args);
+    my $kind   = $args{kind} || 'request-response';
+    my $format = $args{xml_format} || 0;
 
     sub
     {   my ($xmlout, $trace, $mtom) = @_;
         my $start     = time;
-        my $textout   = ref $xmlout ? $xmlout->toString : $xmlout;
+        my $textout   = ref $xmlout ? $xmlout->toString($format) : $xmlout;
 #warn $xmlout->toString(1);   # show message sent
 
         my $stringify = time;

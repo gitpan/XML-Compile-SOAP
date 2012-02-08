@@ -1,4 +1,4 @@
-# Copyrights 2007-2011 by Mark Overmeer.
+# Copyrights 2007-2012 by Mark Overmeer.
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.00.
@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport::SOAPHTTP;
 use vars '$VERSION';
-$VERSION = '2.25';
+$VERSION = '2.26';
 
 use base 'XML::Compile::Transport';
 
@@ -149,7 +149,7 @@ sub _prepare_call($)
         $trace->{user_agent}    = $ua;
         $trace->{hooked}        = 1;
 
-        my $response = $hook->($request, $trace)
+        my $response = $hook->($request, $trace, $self)
             or return undef;
 
         $trace->{http_response} = $response;
@@ -231,10 +231,10 @@ sub _prepare_xop_call($)
     my $charset = $self->charset;
     my $create  = sub
       { my ($request, $content, $mtom) = @_;
-        $mtom ||= [];
+        $mtom        ||= [];
         @$mtom or return $simple_create->($request, $content);
 
-        my $bound = "MIME-boundary-".int rand 10000;
+        my $bound      = "MIME-boundary-".int rand 10000;
         (my $start_cid = $mtom->[0]->cid) =~ s/^.*\@/xml@/;
 
         $request->header(Content_Type => <<_CT);

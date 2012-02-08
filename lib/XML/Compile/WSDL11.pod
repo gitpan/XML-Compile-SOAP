@@ -184,7 +184,7 @@ See L<XML::Compile::Cache/"Accessors">
 
 See L<XML::Compile::Schema/"Accessors">
 
-=item $obj-E<gt>B<hooks>
+=item $obj-E<gt>B<hooks>()
 
 See L<XML::Compile::Schema/"Accessors">
 
@@ -407,7 +407,7 @@ example:
 
 See L<XML::Compile::Schema/"Administration">
 
-=item $obj-E<gt>B<elements>
+=item $obj-E<gt>B<elements>()
 
 See L<XML::Compile::Schema/"Administration">
 
@@ -431,11 +431,11 @@ See L<XML::Compile::Schema/"Administration">
 
 See L<XML::Compile/"Administration">
 
-=item $obj-E<gt>B<namespaces>
+=item $obj-E<gt>B<namespaces>()
 
 See L<XML::Compile::Schema/"Administration">
 
-=item $obj-E<gt>B<types>
+=item $obj-E<gt>B<types>()
 
 See L<XML::Compile::Schema/"Administration">
 
@@ -666,8 +666,8 @@ a choice, then you must explicitly select one.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.25,
-built on September 22, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.26,
+built on February 08, 2012. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -693,7 +693,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2012 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

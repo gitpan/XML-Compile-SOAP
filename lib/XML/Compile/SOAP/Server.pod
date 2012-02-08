@@ -63,7 +63,7 @@ and the constants defined in L<XML::Compile::SOAP::Util|XML::Compile::SOAP::Util
 
 =over 4
 
-=item $obj-E<gt>B<role>
+=item $obj-E<gt>B<role>()
 
 Returns the URI of the role (actor) of this server.
 
@@ -150,7 +150,7 @@ L<XML::Compile::SOAP::messageStructure()|XML::Compile::SOAP/"Single message"> pl
 
 =back
 
-=item XML::Compile::SOAP::Server-E<gt>B<faultWriter>
+=item XML::Compile::SOAP::Server-E<gt>B<faultWriter>()
 
 Returns a CODE reference which can be used to produce faults.
 
@@ -158,8 +158,8 @@ Returns a CODE reference which can be used to produce faults.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.25,
-built on September 22, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.26,
+built on February 08, 2012. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -185,7 +185,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2012 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

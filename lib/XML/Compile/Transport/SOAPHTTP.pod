@@ -114,15 +114,15 @@ See L<XML::Compile::SOAP::Extension/"SOAP11">
 
 =over 4
 
-=item $obj-E<gt>B<address>
+=item $obj-E<gt>B<address>()
 
 See L<XML::Compile::Transport/"Accessors">
 
-=item $obj-E<gt>B<addresses>
+=item $obj-E<gt>B<addresses>()
 
 See L<XML::Compile::Transport/"Accessors">
 
-=item $obj-E<gt>B<charset>
+=item $obj-E<gt>B<charset>()
 
 See L<XML::Compile::Transport/"Accessors">
 
@@ -149,15 +149,16 @@ In SCALAR context, an XML::LibXML parsed tree of the answer message
 is returned.  In LIST context, that answer is followed by a HASH which
 contains trace information.
 
- -Option   --Defined in     --Default
-  action                      ''
-  header                      <created>
-  hook       XML::Compile::Transport  <undef>
-  kind                        'request-response'
-  method                      'POST'
-  mime_type                   <depends on soap version>
-  mpost_id                    42
-  soap                        'SOAP11'
+ -Option    --Defined in     --Default
+  action                       ''
+  header                       <created>
+  hook        XML::Compile::Transport  <undef>
+  kind                         'request-response'
+  method                       'POST'
+  mime_type                    <depends on soap version>
+  mpost_id                     42
+  soap                         'SOAP11'
+  xml_format  XML::Compile::Transport  0
 
 =over 2
 
@@ -192,6 +193,8 @@ With method C<M-POST>, the header extension fields require (any) number
 to be grouped.
 
 =item soap => 'SOAP11'|'SOAP12'|OBJECT
+
+=item xml_format => 0|1|2
 
 =back
 
@@ -234,8 +237,8 @@ See L<XML::Compile::Transport/"Helpers">
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.25,
-built on September 22, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.26,
+built on February 08, 2012. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -261,7 +264,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2012 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

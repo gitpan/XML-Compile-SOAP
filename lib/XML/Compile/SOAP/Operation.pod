@@ -71,37 +71,37 @@ Transfer Protocol.
 
 =over 4
 
-=item $obj-E<gt>B<bindingName>
+=item $obj-E<gt>B<bindingName>()
 
-=item $obj-E<gt>B<clientClass>
+=item $obj-E<gt>B<clientClass>()
 
 Returns the class name which implements the Client side for this protocol.
 
-=item $obj-E<gt>B<endPoints>
+=item $obj-E<gt>B<endPoints>()
 
 Returns the list of alternative URLs for the end-point, which should
 be defined within the service's port declaration.
 
-=item $obj-E<gt>B<kind>
+=item $obj-E<gt>B<kind>()
 
-=item $obj-E<gt>B<name>
+=item $obj-E<gt>B<name>()
 
-=item $obj-E<gt>B<portName>
+=item $obj-E<gt>B<portName>()
 
-=item $obj-E<gt>B<schemas>
+=item $obj-E<gt>B<schemas>()
 
-=item $obj-E<gt>B<serverClass>
+=item $obj-E<gt>B<serverClass>()
 
 Returns the class name which implements the Server side for this protocol.
 
-=item $obj-E<gt>B<serviceName>
+=item $obj-E<gt>B<serviceName>()
 
-=item $obj-E<gt>B<soapAction>
+=item $obj-E<gt>B<soapAction>()
 
 Used for the C<soapAction> header in HTTP transport, for routing
 messages through firewalls.
 
-=item $obj-E<gt>B<version>
+=item $obj-E<gt>B<version>()
 
 =item $obj-E<gt>B<wsaAction>('INPUT'|'OUTPUT')
 
@@ -199,8 +199,8 @@ Declare an operation type, but WSDL specific URI and envelope namespace.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.25,
-built on September 22, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.26,
+built on February 08, 2012. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -226,7 +226,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2012 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

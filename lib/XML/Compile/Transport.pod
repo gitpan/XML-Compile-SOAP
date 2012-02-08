@@ -105,16 +105,16 @@ See L<XML::Compile::SOAP::Extension/"SOAP11">
 
 =over 4
 
-=item $obj-E<gt>B<address>
+=item $obj-E<gt>B<address>()
 
 Get a server address to contact. If multiple addresses were specified,
 than one is chosen at random.
 
-=item $obj-E<gt>B<addresses>
+=item $obj-E<gt>B<addresses>()
 
 Returns a list of all server contact addresses (URIs)
 
-=item $obj-E<gt>B<charset>
+=item $obj-E<gt>B<charset>()
 
 Returns the charset to be used when sending,
 
@@ -132,9 +132,10 @@ In SCALAR context, an XML::LibXML parsed tree of the answer message
 is returned.  In LIST context, that answer is followed by a HASH which
 contains trace information.
 
- -Option--Default
-  hook    <undef>
-  kind    'request-response'
+ -Option    --Default
+  hook        <undef>
+  kind        'request-response'
+  xml_format  0
 
 =over 2
 
@@ -142,10 +143,10 @@ contains trace information.
 
 See section L<DETAILS/Use of the transport hook>.
 When defined, the hook will be called, in stead of transmitting the
-message.  The hook will get a two parameters passed in: the textual
-representation of the XML message to be transmitted, and the trace
-HASH with all values collected so far.  The trace HASH will have a
-massive amount of additional information added as well.
+message.  The hook will gets three parameters passed in: the textual
+representation of the XML message to be transmitted, the trace HASH with
+all values collected so far, and the transporter object.  The trace HASH
+will have a massive amount of additional information added as well.
 
 You may add information to the trace.  You have to return a textual
 representation of the XML answer, or C<undef> to indicate that the
@@ -155,6 +156,11 @@ message was totally unacceptable.
 
 Kind of communication, as defined by WSDL.
 
+=item xml_format => 0|1|2
+
+[2.26] See XML::LibXML::Document subroutine toString.  With '1', you will get
+beautified output.
+
 =back
 
 =back
@@ -163,13 +169,35 @@ Kind of communication, as defined by WSDL.
 
 =head2 Use of the transport hook
 
+A I<transport hook> can be used to follow the process of creating a
+message to its furthest extend: it will be called with the data as
+used by the actual protocol, but will not connect to the internet.
+Within the transport hook routine, you have to simulate the remote
+server's activities.
+
+There are two reasons to use a hook:
+
+=over 4
+
+=item .
+
+You want to fake a server, to produce a test environment.
+
+=item .
+
+You may need to modify the request or answer messages outside the
+reach of L<XML::Compile::SOAP|XML::Compile::SOAP>, because something is wrong in either
+your WSDL of L<XML::Compile|XML::Compile> message processing.
+
+=back
+
 =head3 XML and Header Modifications
 
 Some servers require special extensions, which do not follow any standard
 (or logic). But even those features can be tricked, although it requires
 quite some programming skills.
 
-The C<transfer_hook> routine is called with a C<$trace> hash, one of
+The C<transport_hook> routine is called with a C<$trace> hash, one of
 whose entries is the UserAgent which was set up for the data transfer. You
 can modify the outgoing message XML body and headers, carry out the data
 exchange using the UserAgent, and then examine the returned Reponse for
@@ -244,28 +272,6 @@ or
   $wsdl->compileClient('GetLastTracePrice',
       transport_hook => \&fake_server);
 
-A transport hook can be used to follow the process of creating a
-message to its furthest extendt it will be called with the data
-as used by the actual protocol, but will not actually connect to
-the internet.  Within the transport hook routine, you have to
-simulate the remote server's activities.
-
-There are two reasons to use a hook:
-
-=over 4
-
-=item .
-
-You want to fake a server, to produce a test environment.
-
-=item .
-
-You may need to modify the request or answer messages outside the
-reach of L<XML::Compile::SOAP|XML::Compile::SOAP>, because something is wrong in either
-your WSDL of L<XML::Compile|XML::Compile> message processing.
-
-=back
-
 =head1 Helpers
 
 =over 4
@@ -278,8 +284,8 @@ Declare an transporter type.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.25,
-built on September 22, 2011. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.26,
+built on February 08, 2012. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -305,7 +311,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2011 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2012 by Mark Overmeer. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
