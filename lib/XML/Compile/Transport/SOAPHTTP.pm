@@ -1,4 +1,4 @@
-# Copyrights 2007-2012 by Mark Overmeer.
+# Copyrights 2007-2012 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.00.
@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport::SOAPHTTP;
 use vars '$VERSION';
-$VERSION = '2.26';
+$VERSION = '2.27';
 
 use base 'XML::Compile::Transport';
 
@@ -137,7 +137,8 @@ sub _prepare_call($)
         unless $expect;
 
     my $hook = $args->{hook};
-      $hook
+
+    $hook
     ? sub  # hooked code
       { my $trace = $_[1];
         $create_message->($request, $_[0], $_[2]);

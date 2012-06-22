@@ -1,4 +1,4 @@
-# Copyrights 2007-2012 by Mark Overmeer.
+# Copyrights 2007-2012 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.00.
@@ -7,13 +7,15 @@ use strict;
 
 package XML::Compile::SOAP::Trace;
 use vars '$VERSION';
-$VERSION = '2.26';
+$VERSION = '2.27';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'REPORT';
   # no syntax SHORT, because we have own error()
 
 use IO::Handle;
+
+my @xml_parse_opts = (load_ext_dtd => 0, recover => 1, no_network => 1);
 
 
 sub new($)
@@ -41,6 +43,9 @@ sub request() {shift->{http_request}}
 
 
 sub response() {shift->{http_response}}
+
+
+sub responseDOM() {shift->{response_dom}}
 
 
 sub printTimings(;$)
@@ -75,10 +80,11 @@ sub printRequest(;$%)
     my $fh      = @_%2 ? shift : *STDOUT;
     my %args    = @_;
 
-    if(my $format = $args{pretty_print})
+    my $format = $args{pretty_print} || 0;
+    if($format && $request->content_type =~ m/xml/i)
     {   $fh->print("\n", $request->headers->as_string, "\n");
         XML::LibXML
-          ->load_xml(string => $request->content)
+          ->load_xml(string => $request->content, @xml_parse_opts)
           ->toFH($fh, $format);
     }
     else
@@ -96,11 +102,13 @@ sub printResponse(;$%)
     my $fh   = @_%2 ? shift : *STDOUT;
     my %args = @_;
 
-    if(my $format = $args{pretty_print})
+    my $format = $args{pretty_print} || 0;
+    if($format && $resp->content_type =~ m/xml/i)
     {   $fh->print("\n", $resp->headers->as_string, "\n");
-        XML::LibXML
-          ->load_xml(string => ($resp->decoded_content || $resp->content))
-          ->toFH($fh, $format);
+        XML::LibXML->load_xml
+          ( string => ($resp->decoded_content || $resp->content)
+          , @xml_parse_opts
+          )->toFH($fh, $format);
     }
     else
     {   my $resp = $resp->as_string;

@@ -1,4 +1,4 @@
-# Copyrights 2007-2012 by Mark Overmeer.
+# Copyrights 2007-2012 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.00.
@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::Server;
 use vars '$VERSION';
-$VERSION = '2.26';
+$VERSION = '2.27';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -68,13 +68,13 @@ sub compileHandler(@)
 
         my $answer = $callback->($self, $data, $session);
         unless(defined $answer)
-        {   alert __x"procedure {name} did not produce an answer", name=> $name;
+        {   notice __x"procedure {name} did not produce an answer", name=> $name;
             return ( RC_INTERNAL_SERVER_ERROR, 'no answer produced'
                       , $self->faultNoAnswerProduced($name));
         }
 
         if(ref $answer ne 'HASH')
-        {   alert __x"procedure {name} did not return a HASH", name => $name;
+        {   notice __x"procedure {name} did not return a HASH", name => $name;
             return ( RC_INTERNAL_SERVER_ERROR, 'invalid answer produced'
                       , $self->faultNoAnswerProduced($name));
         }

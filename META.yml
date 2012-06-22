@@ -1,30 +1,30 @@
---- #YAML:1.0
-name:               XML-Compile-SOAP
-version:            2.26
-abstract:           SOAP and WSDL, client side
+---
+abstract: 'SOAP and WSDL, client side'
 author:
-    - Mark Overmeer
-license:            perl
-distribution_type:  module
-configure_requires:
-    ExtUtils::MakeMaker:  0
+  - 'Mark Overmeer'
 build_requires:
-    ExtUtils::MakeMaker:  0
-requires:
-    File::Slurp:          0
-    Log::Report:          0.9
-    LWP:                  5.816
-    Test::Deep:           0.095
-    Test::More:           0.54
-    Time::HiRes:          0
-    XML::Compile:         1.22
-    XML::Compile::Cache:  0.98
-    XML::Compile::Tester:  0.05
-no_index:
-    directory:
-        - t
-        - inc
-generated_by:       ExtUtils::MakeMaker version 6.56
+  ExtUtils::MakeMaker: 0
+configure_requires:
+  ExtUtils::MakeMaker: 0
+dynamic_config: 1
+generated_by: 'ExtUtils::MakeMaker version 6.6302, CPAN::Meta::Converter version 2.120921'
+license: perl
 meta-spec:
-    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
-    version:  1.4
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: XML-Compile-SOAP
+no_index:
+  directory:
+    - t
+    - inc
+requires:
+  File::Slurp: 0
+  LWP: 5.816
+  Log::Report: 0.9
+  Test::Deep: 0.095
+  Test::More: 0.54
+  Time::HiRes: 0
+  XML::Compile: 1.22
+  XML::Compile::Cache: 0.98
+  XML::Compile::Tester: 0.05
+version: 2.27

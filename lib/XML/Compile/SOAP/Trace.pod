@@ -81,6 +81,11 @@ Returns the HTTP::Response object, returned by the remote server.  In
 some erroneous cases, the client library will create an error response
 without any message was exchanged.
 
+=item $obj-E<gt>B<responseDOM>()
+
+Returns the XML::LibXML::Document top node of the response: the parsed
+text of the content of the received HTTP message.
+
 =item $obj-E<gt>B<start>()
 
 Returns the (platform dependent) time value which represent the moment
@@ -108,7 +113,7 @@ If you want to see more output, try adding C<<use Log::Report mode => 3;>>
 =item pretty_print => 0|1|2
 
 Use L<XML::Compile::Transport::compileClient(xml_format)|XML::Compile::Transport/"Handlers"> if you want
-the messages to be sent readible.
+the messages to be shown readible.
 
 =back
 
@@ -122,7 +127,7 @@ the messages to be sent readible.
 =item pretty_print => 0|1|2
 
 Use L<XML::Compile::Transport::compileClient(xml_format)|XML::Compile::Transport/"Handlers"> if you want
-the messages to be sent readible.
+the messages to be shown readible.
 
 =back
 
@@ -134,8 +139,8 @@ Print an overview on various timings to the selected filehandle.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.26,
-built on February 08, 2012. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.27,
+built on June 22, 2012. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -161,7 +166,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2012 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2012 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

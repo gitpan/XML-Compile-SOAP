@@ -1,4 +1,4 @@
-# Copyrights 2007-2012 by Mark Overmeer.
+# Copyrights 2007-2012 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.00.
@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport;
 use vars '$VERSION';
-$VERSION = '2.26';
+$VERSION = '2.27';
 
 use base 'XML::Compile::SOAP::Extension';
 
@@ -75,7 +75,8 @@ sub compileClient(@)
         my $xmlin;
         if($textin)
         {   $xmlin = eval {$parser->parse_string($$textin)};
-            $trace->{error} = $@ if $@;
+            if($@) { $trace->{error} = $@ }
+            else   { $trace->{response_dom} = $xmlin }
         }
 
         my $answer = $xmlin;

@@ -97,6 +97,78 @@ See L<XML::Compile::SOAP/"Transcoding">
 
 =back
 
+=head3 Encoding
+
+=over 4
+
+=item $obj-E<gt>B<array>((NAME|undef), ITEM_TYPE, ARRAY-of-ELEMENTS, OPTIONS)
+
+See L<XML::Compile::SOAP11::Encoding/"Encoding">
+
+=item $obj-E<gt>B<element>(TYPE, NAME, VALUE)
+
+See L<XML::Compile::SOAP11::Encoding/"Encoding">
+
+=item $obj-E<gt>B<enc>(LOCAL, VALUE, [ID])
+
+See L<XML::Compile::SOAP11::Encoding/"Encoding">
+
+=item $obj-E<gt>B<encAddNamespace>(PAIRS)
+
+See L<XML::Compile::SOAP11::Encoding/"Encoding">
+
+=item $obj-E<gt>B<encAddNamespaces>(PAIRS)
+
+See L<XML::Compile::SOAP11::Encoding/"Encoding">
+
+=item $obj-E<gt>B<href>(NAME, ELEMENT, [ID])
+
+See L<XML::Compile::SOAP11::Encoding/"Encoding">
+
+=item $obj-E<gt>B<multidim>((NAME|undef), ITEM_TYPE, ARRAY-of-ELEMENTS, OPTIONS)
+
+See L<XML::Compile::SOAP11::Encoding/"Encoding">
+
+=item $obj-E<gt>B<nil>([TYPE], NAME)
+
+See L<XML::Compile::SOAP11::Encoding/"Encoding">
+
+=item $obj-E<gt>B<prefixed>(TYPE|(NAMESPACE,LOCAL))
+
+See L<XML::Compile::SOAP11::Encoding/"Encoding">
+
+=item $obj-E<gt>B<startEncoding>(OPTIONS)
+
+See L<XML::Compile::SOAP11::Encoding/"Encoding">
+
+=item $obj-E<gt>B<struct>(TYPE, CHILDS)
+
+See L<XML::Compile::SOAP11::Encoding/"Encoding">
+
+=item $obj-E<gt>B<typed>(TYPE, NAME, VALUE)
+
+See L<XML::Compile::SOAP11::Encoding/"Encoding">
+
+=back
+
+=head3 Decoding
+
+=over 4
+
+=item $obj-E<gt>B<dec>(XMLNODES)
+
+See L<XML::Compile::SOAP11::Encoding/"Decoding">
+
+=item $obj-E<gt>B<decSimplify>(TREE, OPTIONS)
+
+See L<XML::Compile::SOAP11::Encoding/"Decoding">
+
+=item $obj-E<gt>B<startDecoding>(OPTIONS)
+
+See L<XML::Compile::SOAP11::Encoding/"Decoding">
+
+=back
+
 =head2 Actions
 
 =over 4
@@ -117,8 +189,8 @@ See L<XML::Compile::SOAP::Server/"Actions">
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.26,
-built on February 08, 2012. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.27,
+built on June 22, 2012. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -144,7 +216,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2012 by Mark Overmeer. For other contributors see ChangeLog.
+Copyrights 2007-2012 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -1,4 +1,4 @@
-# Copyrights 2007-2012 by Mark Overmeer.
+# Copyrights 2007-2012 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.00.
@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11::Server;
 use vars '$VERSION';
-$VERSION = '2.26';
+$VERSION = '2.27';
 
 use base 'XML::Compile::SOAP11', 'XML::Compile::SOAP::Server';
 
@@ -101,7 +101,7 @@ sub faultMessageNotRecognized($$$)
     my $message;
     if($handlers && @$handlers)
     {   my $sa = $action ? " (soapAction $action)" : '';
-        $message = __x"{version} body element {name}{sa} not recognized, available are {def}"
+        $message = __x"{version} body element {name}{sa} not recognized, available ports are {def}"
          , version => 'SOAP11', name => $name, sa => $sa, def => $handlers;
     }
     else

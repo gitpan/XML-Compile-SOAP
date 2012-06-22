@@ -1,4 +1,4 @@
-# Copyrights 2007-2012 by Mark Overmeer.
+# Copyrights 2007-2012 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.00.
@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11;
 use vars '$VERSION';
-$VERSION = '2.26';
+$VERSION = '2.27';
 
 use base 'XML::Compile::SOAP';
 
@@ -309,6 +309,10 @@ sub replyMustUnderstandFault($)
 sub roleURI($) { $_[1] && $_[1] eq 'NEXT' ? SOAP11NEXT : $_[1] }
 
 sub roleAbbreviation($) { $_[1] && $_[1] eq SOAP11NEXT ? 'NEXT' : $_[1] }
+
+#-------------------------------------
+
+#loaded from ::SOAP11::Encoding
 
 #-------------------------------------
 
