@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11;
 use vars '$VERSION';
-$VERSION = '2.27';
+$VERSION = '2.28';
 
 use base 'XML::Compile::SOAP';
 
@@ -273,7 +273,8 @@ sub _reader_faults($$)
             $name = $names{$dettype->[0]};
             if(keys %$details==1)
             {   my (undef, $v) = %$details;
-                @nice{keys %$v} = values %$v;
+                if(ref $v eq 'HASH') { @nice{keys %$v} = values %$v }
+                else { $nice{details} = $v }
             }
         }
         elsif(keys %$details==1)

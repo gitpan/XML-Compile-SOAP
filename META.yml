@@ -27,4 +27,4 @@ requires:
   XML::Compile: 1.22
   XML::Compile::Cache: 0.98
   XML::Compile::Tester: 0.05
-version: 2.27
+version: 2.28
