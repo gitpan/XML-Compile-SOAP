@@ -38,12 +38,12 @@
             "Test::Deep" : "0.095",
             "Test::More" : "0.54",
             "Time::HiRes" : "0",
-            "XML::Compile" : "1.22",
-            "XML::Compile::Cache" : "0.98",
-            "XML::Compile::Tester" : "0.05"
+            "XML::Compile" : "1.26",
+            "XML::Compile::Cache" : "0.991",
+            "XML::Compile::Tester" : "0.9"
          }
       }
    },
    "release_status" : "stable",
-   "version" : "2.28"
+   "version" : "2.29"
 }

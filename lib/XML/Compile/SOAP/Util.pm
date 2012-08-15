@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::Util;
 use vars '$VERSION';
-$VERSION = '2.28';
+$VERSION = '2.29';
 
 use base 'Exporter';
 

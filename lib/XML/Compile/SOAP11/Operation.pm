@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11::Operation;
 use vars '$VERSION';
-$VERSION = '2.28';
+$VERSION = '2.29';
 
 use base 'XML::Compile::SOAP::Operation';
 
@@ -215,7 +215,6 @@ sub addHeader($$$)
 #-------------------------------------------
 
 
-
 sub compileHandler(@)
 {   my ($self, %args) = @_;
 
@@ -420,7 +419,7 @@ sub explain($$$@)
 
         push @main, ''
          , '   # This will end-up as $answer at client-side'
-         , "   return    # optional keyword"
+         , '   return    # optional keyword'
          , "   +{", @struct, "    };", "}";
     }
     else
@@ -473,6 +472,16 @@ sub explain($$$@)
     }
 
     join "\n", @header, @main, @postproc, @attach, '';
+}
+
+
+sub parsedWSDL()
+{   my $self = shift;
+      +{ input  => $self->{input_def}{body}
+       , output => $self->{output_def}{body}
+       , faults => $self->{fault_def}{faults}
+       , style  => $self->style
+       };
 }
 
 1;

@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport;
 use vars '$VERSION';
-$VERSION = '2.28';
+$VERSION = '2.29';
 
 use base 'XML::Compile::SOAP::Extension';
 
@@ -46,8 +46,6 @@ sub address()
 #-------------------------------------
 
 
-my $parser = XML::LibXML->new;
-
 sub compileClient(@)
 {   my ($self, %args) = @_;
     my $call   = $self->_prepare_call(\%args);
@@ -74,7 +72,7 @@ sub compileClient(@)
 
         my $xmlin;
         if($textin)
-        {   $xmlin = eval {$parser->parse_string($$textin)};
+        {   $xmlin = eval {XML::LibXML->load_xml(string => $$textin)};
             if($@) { $trace->{error} = $@ }
             else   { $trace->{response_dom} = $xmlin }
         }

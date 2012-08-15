@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport::SOAPHTTP;
 use vars '$VERSION';
-$VERSION = '2.28';
+$VERSION = '2.29';
 
 use base 'XML::Compile::Transport';
 
@@ -205,10 +205,9 @@ sub _prepare_simple_call($)
             or error __x"no response object received";
 
         my $ct       = $response->content_type || '';
-
         lc($ct) ne 'multipart/related'
             or error __x"remote system uses XOP, use XML::Compile::XOP";
-        
+ 
         info "received ".$response->status_line;
 
         $ct =~ m,[/+]xml$,i
@@ -264,7 +263,7 @@ _CT
     my $parse  = sub
       { my ($response, $mtom) = @_;
         my $ct = $response->header('Content-Type') || '';
-        $ct    =~ m!^\s*multipart/related\s*\;!
+        $ct    =~ m!^\s*multipart/related\s*\;!i
              or return $simple_parse->($response);
 
         my %parts;

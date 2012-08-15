@@ -52,9 +52,10 @@ XML::Compile::WSDL11 - create SOAP messages defined by WSDL 1.1
 
 =head1 DESCRIPTION
 
-This module implements WSDL version 1.1.
-An WSDL file defines a set of messages to be send and received over
-(SOAP) connections.
+This module understands WSDL version 1.1.  An WSDL file defines a set of
+messages to be send and received over (SOAP) connections. This involves
+encoding of the message to be send into XML, sending the message to the
+server, collect the answer, and finally decoding the XML to Perl.
 
 As end-user, you do not have to worry about the complex details of the
 messages and the way to exchange them: it's all simple Perl for you.
@@ -286,7 +287,7 @@ See L<XML::Compile/"Compilers">
 
 See L<XML::Compile::Cache/"Compilers">
 
-=item $obj-E<gt>B<template>('XML'|'PERL', ELEMENT, OPTIONS)
+=item $obj-E<gt>B<template>('XML'|'PERL'|'TREE', ELEMENT, OPTIONS)
 
 See L<XML::Compile::Schema/"Compilers">
 
@@ -316,11 +317,11 @@ The OPTIONS available include all of the options for:
 
 =over 4
 
-=item .
+=item *
 
 L<operation()|XML::Compile::WSDL11/"Extension"> (i.e. C<service> and C<port>), and all of
 
-=item .
+=item *
 
 L<XML::Compile::SOAP::Operation::compileClient()|XML::Compile::SOAP::Operation/"Handlers"> (there are many of
 these, for instance C<transport_hook> and C<server>)
@@ -333,10 +334,11 @@ and friends to declare those.
 
 example: 
 
-  $wsdl->compileClient
+  my $call = $wsdl->compileClient
     ( operation => 'HelloWorld'
     , port      => 'PrefillSoap' # only needed when multiple ports
     );
+  my ($answer, $trace) = $call->($request);
 
 =item $obj-E<gt>B<namesFor>(CLASS)
 
@@ -666,8 +668,8 @@ a choice, then you must explicitly select one.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.28,
-built on June 22, 2012. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.29,
+built on August 16, 2012. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
