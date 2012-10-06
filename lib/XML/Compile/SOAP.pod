@@ -41,7 +41,7 @@ XML::Compile::SOAP - base-class for SOAP implementations
    , faults   => [ ... ]
    );
 
- my $http = XML::Compile::Transport::SOAPHTTP
+ my $transport = XML::Compile::Transport::SOAPHTTP
     ->new(address => $server);
  my $http = $transport->compileClient(action => ...);
 
@@ -394,8 +394,8 @@ it still works... but you may get into characterset problems and such.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.29,
-built on August 16, 2012. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.30,
+built on October 06, 2012. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

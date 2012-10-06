@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport::SOAPHTTP;
 use vars '$VERSION';
-$VERSION = '2.29';
+$VERSION = '2.30';
 
 use base 'XML::Compile::Transport';
 
@@ -54,12 +54,13 @@ sub initWSDL11($)
 #-------------------------------------------
 
 
+my $default_ua;
 sub userAgent(;$)
 {   my ($self, $agent) = (shift, shift);
     return $self->{user_agent} = $agent
         if defined $agent;
 
-    $self->{user_agent} ||= LWP::UserAgent->new
+    $self->{user_agent} ||= $default_ua ||= LWP::UserAgent->new
       ( requests_redirectable => [ qw/GET HEAD POST M-POST/ ]
       , parse_head => 0
       , protocols_allowed => [ qw/http https/ ]
@@ -266,23 +267,28 @@ _CT
         $ct    =~ m!^\s*multipart/related\s*\;!i
              or return $simple_parse->($response);
 
-        my %parts;
+        my (@parts, %parts);
         foreach my $part ($response->parts)
         {   my $include = XML::Compile::XOP::Include->fromMime($part)
                or next;
             $parts{$include->cid} = $include;
+            push @parts, $include;
         }
 
-        if($ct !~ m!start\=(["']?)\<([^"']*)\>\1!)
-        {   warning __x"cannot find root node in content-type `{ct}'", ct=>$ct;
-            return ();
-        }
+        @parts
+            or error "no parts in response multi-part for XOP";
 
-        my $startid = $2;
-        my $root = delete $parts{$startid};
-        unless(defined $root)
-        {   warning __x"cannot find root node id in parts `{id}'",id=>$startid;
-            return ();
+        my $root;
+        if($ct =~ m!start\=(["']?)\<([^"']*)\>\1!)
+        {   my $startid = $2;
+            $root = delete $parts{$startid};
+            defined $root
+                or warning __x"cannot find root node id in parts `{id}'"
+                    , id => $startid;
+        }
+        unless($root)
+        {   $root = shift @parts;
+            delete $parts{$root->cid};
         }
 
         ($root->content(1), \%parts);

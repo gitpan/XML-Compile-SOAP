@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '2.29';
+$VERSION = '2.30';
 
 use base 'XML::Compile::Cache';
 
@@ -58,7 +58,7 @@ sub init($)
 
     $self->importDefinitions(WSDL11);
 
-    $self->addWSDL(ref $wsdl eq 'ARRAY' ? @$wsdl : $wsdl);
+    $self->addWSDL($_) for ref $wsdl eq 'ARRAY' ? @$wsdl : $wsdl;
     $self;
 }
 

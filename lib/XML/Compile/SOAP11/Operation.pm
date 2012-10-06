@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11::Operation;
 use vars '$VERSION';
-$VERSION = '2.29';
+$VERSION = '2.30';
 
 use base 'XML::Compile::SOAP::Operation';
 
@@ -351,7 +351,8 @@ sub explain($$$@)
         my ($kind, $value) = $part->{type} ? (type => $part->{type})
           : (element => $part->{element});
 
-        my $type = $schema->prefixed($value) || $value;
+        my $type = $schema->prefixFor($value)
+          ? $schema->prefixed($value) : $value;
 
         if($dir eq 'OUTPUT')
         {   push @main, ''
@@ -366,9 +367,10 @@ sub explain($$$@)
             push @struct, "    $fault => \$fault,";
         }
         else
-        {   push @postproc
+        {   my $nice = $schema->prefixed($type) || $type;
+            push @postproc
               , "    elsif(\$errname eq '$fault')"
-              , "    {   # \$details is a $type"
+              , "    {   # \$details is a $nice"
               , "    }";
         }
 
