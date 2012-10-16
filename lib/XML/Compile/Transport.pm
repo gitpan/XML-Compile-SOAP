@@ -7,14 +7,15 @@ use strict;
 
 package XML::Compile::Transport;
 use vars '$VERSION';
-$VERSION = '2.30';
+$VERSION = '2.31';
 
 use base 'XML::Compile::SOAP::Extension';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
+use Log::Report::Exception ();
 
-use XML::LibXML ();
-use Time::HiRes qw/time/;
+use XML::LibXML            ();
+use Time::HiRes            qw/time/;
 
 
 sub init($)
@@ -62,18 +63,18 @@ sub compileClient(@)
         $trace->{stringify_elapse} = $stringify - $start;
         $trace->{transport_start}  = $start;
 
-        my ($textin, $xops) = eval { $call->(\$textout, $trace, $mtom) };
+        my ($textin, $xops) = try { $call->(\$textout, $trace, $mtom) };
         my $connected = time;
         $trace->{connect_elapse}   = $connected - $stringify;
         if($@)
-        {   $trace->{error} = $@;
+        {   $trace->{errors} = [$@->wasFatal];
             return;
         }
 
         my $xmlin;
         if($textin)
-        {   $xmlin = eval {XML::LibXML->load_xml(string => $$textin)};
-            if($@) { $trace->{error} = $@ }
+        {   $xmlin = try {XML::LibXML->load_xml(string => $$textin)};
+            if($@) { $trace->{errors} = [$@->wasFatal] }
             else   { $trace->{response_dom} = $xmlin }
         }
 
@@ -82,10 +83,14 @@ sub compileClient(@)
         {   my $response = $trace->{http_response};
             my $code = defined $response ? $response->code : -1;
             if($code==202) { $answer ||= {} }
-            else { $trace->{error} = "call failed with code $code" }
+            else
+            {   push @{$trace->{errors}}, Log::Report::Exception->new
+                 (reason => 'error', message => __"call failed with code $code")
+            }
         }
         elsif(!$xmlin)
-        {   $trace->{error} ||= 'no xml as answer';
+        {   push @{$trace->{errors}}, Log::Report::Exception->new
+              (reason => 'error', message => __"no xml as answer");
         }
 
         my $end = $trace->{transport_end} = time;

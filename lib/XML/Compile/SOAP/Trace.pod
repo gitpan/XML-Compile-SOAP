@@ -64,9 +64,20 @@ example:
 
  print $trace->elapse('decode');
 
-=item $obj-E<gt>B<error>()
+=item $obj-E<gt>B<error>([ERROR])
 
-Often contains an error message, when something went wrong.
+Often contains an error message, when something went wrong.  The message
+is returned as Log::Report::Exception.  Only the first error is returned,
+use L<errors()|XML::Compile::SOAP::Trace/"Accessors"> to get all.
+
+[2.31] When an ERROR is provided, it is added to the internal list of errors.
+The ERROR parameter may be a Log::Report::Exception, a
+Log::Report::Message or a simple string.
+
+=item $obj-E<gt>B<errors>()
+
+[2.31] Return all errors, which are Log::Report::Exception objects.
+See also L<error()|XML::Compile::SOAP::Trace/"Accessors">.
 
 =item $obj-E<gt>B<request>()
 
@@ -139,8 +150,8 @@ Print an overview on various timings to the selected filehandle.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.30,
-built on October 06, 2012. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.31,
+built on October 16, 2012. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

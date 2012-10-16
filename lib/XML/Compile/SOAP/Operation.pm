@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::Operation;
 use vars '$VERSION';
-$VERSION = '2.30';
+$VERSION = '2.31';
 
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
@@ -93,8 +93,8 @@ sub compileTransporter(@)
     return $send if $send;
 
     my $transp    = XML::Compile::Transport->plugin($proto)
-        or error __x"transporter type {proto} not supported (not loaded?)"
-             , proto => $proto;
+        or error __x"transporter type {proto} not supported (add 'use {pkg}'?)"
+             , proto => $proto, pkg => 'XML::Compile::Transport::SOAPHTTP';
 
     my $transport = $self->{transp_cache}{$proto}{$id}
                   = $transp->new(address => \@endpoints, %args);

@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '2.30';
+$VERSION = '2.31';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -164,8 +164,10 @@ sub _sender(@)
         }
 
         @mtom = ();   # filled via hook
-        my $root = $envelope->($doc, \%data)
-            or return;
+
+        my $headless = $envelope->($doc, {Body => $data{Body}});
+        $data{Body}  = ($headless->childNodes)[0];
+        my $root     = $envelope->($doc, \%data);
         $doc->setDocumentElement($root);
 
         return ($doc, \@mtom)
@@ -183,6 +185,9 @@ sub _writer_hook($$@)
 
     my $code = sub
      {  my ($doc, $data, $path, $tag) = @_;
+        UNIVERSAL::isa($data, 'XML::LibXML::Element')
+            and return $data;
+
         my %data = %$data;
         my @h = @do;
         my @childs;
@@ -206,12 +211,21 @@ sub _writer_hook($$@)
 
 sub _writer_rpc_hook($$$$$)
 {   my ($self, $type, $procedure, $params, $faults) = @_;
-    my @params = @$params;
-    my @faults = @$faults;
-    my $proc   = $self->schemas->prefixed($procedure);
+    my @params   = @$params;
+    my @faults   = @$faults;
+    my $schemas  = $self->schemas;
+
+    my $proc     = $schemas->prefixed($procedure);
+    my ($prefix) = split /:/, $proc;
+    my $prefdef  = $schemas->prefix($prefix);
+    my $proc_ns  = $prefdef->{uri};
+    $prefdef->{used} = 0;
 
     my $code   = sub
      {  my ($doc, $data, $path, $tag) = @_;
+        UNIVERSAL::isa($data, 'XML::LibXML::Element')
+            and return $data;
+
         my %data = %$data;
         my @f = @faults;
         my (@fchilds, @pchilds);
@@ -227,9 +241,11 @@ sub _writer_rpc_hook($$$$$)
         warning __x"unused values {names}", names => [keys %data]
             if keys %data;
 
-        my $node = $doc->createElement($tag);
         my $proc = $doc->createElement($proc);
+        $proc->setNamespace($proc_ns, $prefix, 0);
         $proc->appendChild($_) for @pchilds;
+
+        my $node = $doc->createElement($tag);
         $node->appendChild($proc);
         $node->appendChild($_) for @fchilds;
         $node;

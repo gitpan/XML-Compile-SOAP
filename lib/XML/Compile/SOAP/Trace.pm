@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::Trace;
 use vars '$VERSION';
-$VERSION = '2.30';
+$VERSION = '2.31';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'REPORT';
@@ -30,7 +30,22 @@ sub start() {shift->{start}}
 sub date() {scalar localtime shift->start}
 
 
-sub error() {shift->{error}}
+sub error(;$)
+{   my $self   = shift;
+    my $errors = $self->{errors} ||= {};
+
+    foreach my $err (@_)
+    {   $err = __$err unless ref $err;
+        $err = Log::Report::Exception->new(reason => 'ERROR', message => $err)
+            unless $err->isa('Log::Report::Exception');
+        push @$errors, $err;
+    }
+
+    wantarray ? @$errors : $errors->[0];
+}
+
+
+sub errors() { @{shift->{errors} || []} }
 
 
 sub elapse($)
@@ -122,9 +137,7 @@ sub printErrors(;$)
 {   my ($self, $fh) = @_;
     $fh ||= *STDERR;
 
-    if(my $e = $self->{error})   # Log::Report::Exception
-    {   print $fh $e->toString;
-    }
+    print $fh $_->toString for $self->errors;
 
     if(my $d = $self->{decode_errors})  # Log::Report::Dispatcher::Try object
     {   print $fh "Errors while decoding:\n";

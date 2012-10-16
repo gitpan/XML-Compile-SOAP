@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport::SOAPHTTP;
 use vars '$VERSION';
-$VERSION = '2.30';
+$VERSION = '2.31';
 
 use base 'XML::Compile::Transport';
 
@@ -153,6 +153,10 @@ sub _prepare_call($)
 
         my $response = $hook->($request, $trace, $self)
             or return undef;
+
+	UNIVERSAL::isa($response, 'HTTP::Response')
+            or error __x"transport_hook must produce a HTTP::Response, got {resp}"
+                 , resp => $response;
 
         $trace->{http_response} = $response;
         if($response->is_error)

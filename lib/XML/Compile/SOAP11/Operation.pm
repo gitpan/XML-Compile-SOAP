@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11::Operation;
 use vars '$VERSION';
-$VERSION = '2.30';
+$VERSION = '2.31';
 
 use base 'XML::Compile::SOAP::Operation';
 
@@ -205,10 +205,21 @@ sub addHeader($$$)
       : $dir eq 'OUTPUT' ? 'output_def'
       : $dir eq 'FAULT'  ? 'fault_def'
       : panic "addHeader $dir";
+    my $headers = $self->{$defs}{header} ||= [];
+
+    if(my $already = first {$_->{part} eq $label} @$headers)
+    {   # the header is already defined, ignore second declaration
+        my $other_type = $already->{parts}[0]{element};
+        $other_type eq $elem
+            or error __x"header {label} already defined with type {type}"
+                 , label => $label, type => $other_type;
+        return $already;
+    }
 
     my %part = (part => $label, use => 'literal'
       , parts => [{name => $label, element => $elem}]);
-    push @{$self->{$defs}{header}}, \%part;
+
+    push @$headers, \%part;
     \%part;
 }
 
