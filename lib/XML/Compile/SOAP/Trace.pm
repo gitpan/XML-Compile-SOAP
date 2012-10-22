@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::Trace;
 use vars '$VERSION';
-$VERSION = '2.31';
+$VERSION = '2.32';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'REPORT';
@@ -32,7 +32,7 @@ sub date() {scalar localtime shift->start}
 
 sub error(;$)
 {   my $self   = shift;
-    my $errors = $self->{errors} ||= {};
+    my $errors = $self->{errors} ||= [];
 
     foreach my $err (@_)
     {   $err = __$err unless ref $err;

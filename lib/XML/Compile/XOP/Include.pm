@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::XOP::Include;
 use vars '$VERSION';
-$VERSION = '2.31';
+$VERSION = '2.32';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';

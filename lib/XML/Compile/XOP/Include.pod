@@ -124,8 +124,8 @@ This object stringifies to its binary content.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.31,
-built on October 16, 2012. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.32,
+built on October 22, 2012. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
