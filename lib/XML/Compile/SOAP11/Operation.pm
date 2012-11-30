@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11::Operation;
 use vars '$VERSION';
-$VERSION = '2.32';
+$VERSION = '2.33';
 
 use base 'XML::Compile::SOAP::Operation';
 
@@ -198,8 +198,8 @@ sub clientClass { 'XML::Compile::SOAP11::Client' }
 #-------------------------------------------
 
 
-sub addHeader($$$)
-{   my ($self, $dir, $label, $elem) = @_;
+sub addHeader($$$%)
+{   my ($self, $dir, $label, $elem, %opts) = @_;
     my $defs
       = $dir eq 'INPUT'  ? 'input_def'
       : $dir eq 'OUTPUT' ? 'output_def'
@@ -216,8 +216,13 @@ sub addHeader($$$)
         return $already;
     }
 
-    my %part = (part => $label, use => 'literal'
-      , parts => [{name => $label, element => $elem}]);
+    my %part =
+      ( part  => $label, use => 'literal'
+      , parts => [
+         { name => $label, element => $elem
+         , mustUnderstand => $opts{mustUnderstand}
+         , destination    => $opts{destination}
+         } ]);
 
     push @$headers, \%part;
     \%part;
