@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::Client;
 use vars '$VERSION';
-$VERSION = '2.33';
+$VERSION = '2.34';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -60,7 +60,7 @@ sub compileClient(@)
         {   $ans = try { $decode->($ans) };
             if($@)
             {   $trace->{decode_errors} = $@;
-                my $fatal = $trace->{error} = $@->wasFatal;
+                my $fatal = $trace->{errors} = [$@->wasFatal];
                 $fatal->message($fatal->message->concat("decode error: ", 1));
             }
 
