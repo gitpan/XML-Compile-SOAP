@@ -1,13 +1,13 @@
-# Copyrights 2007-2012 by [Mark Overmeer].
+# Copyrights 2007-2013 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 2.00.
+# Pod stripped from pm file by OODoc 2.01.
 use warnings;
 use strict;
 
 package XML::Compile::SOAP::Client;
 use vars '$VERSION';
-$VERSION = '2.34';
+$VERSION = '2.35';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -60,8 +60,9 @@ sub compileClient(@)
         {   $ans = try { $decode->($ans) };
             if($@)
             {   $trace->{decode_errors} = $@;
-                my $fatal = $trace->{errors} = [$@->wasFatal];
-                $fatal->message($fatal->message->concat("decode error: ", 1));
+                my $fatal = $@->wasFatal;
+                $trace->{errors} = [$fatal];
+                $fatal->message($fatal->message->concat('decode error: ', 1));
             }
 
             my $end = time;
