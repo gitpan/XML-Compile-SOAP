@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 NAME
 
 XML::Compile::SOAP10 - SOAP11 HTTP-GET/POST
@@ -18,10 +20,16 @@ described (as far as I know). So, it is unclear where they came from.
 Probably from the time before SOAP 1.1.  For simplicity, I name this
 SOAP 1.0.  There is B<no SOAP 1.0> standard.
 
+See L<documentation in base class|XML::Compile::SOAP/"DESCRIPTION">.
+ 
 =head1 METHODS
 
+See L<documentation in base class|XML::Compile::SOAP/"METHODS">.
+ 
 =head2 Constructors
 
+See L<documentation in base class|XML::Compile::SOAP/"Constructors">.
+ 
 =over 4
 
 =item $obj-E<gt>B<new>(OPTIONS)
@@ -42,6 +50,8 @@ SOAP 1.0.  There is B<no SOAP 1.0> standard.
 
 =head2 Accessors
 
+See L<documentation in base class|XML::Compile::SOAP/"Accessors">.
+ 
 =over 4
 
 =item $obj-E<gt>B<name>()
@@ -60,6 +70,8 @@ See L<XML::Compile::SOAP/"Accessors">
 
 =head2 Single message
 
+See L<documentation in base class|XML::Compile::SOAP/"Single message">.
+ 
 =over 4
 
 =item $obj-E<gt>B<compileMessage>(('SENDER'|'RECEIVER'), OPTIONS)
@@ -76,8 +88,12 @@ See L<XML::Compile::SOAP/"Single message">
 
 =head2 Helpers
 
+See L<documentation in base class|XML::Compile::SOAP/"Helpers">.
+ 
 =head2 Transcoding
 
+See L<documentation in base class|XML::Compile::SOAP/"Transcoding">.
+ 
 =over 4
 
 =item $obj-E<gt>B<replyMustUnderstandFault>(TYPE)
@@ -94,10 +110,14 @@ See L<XML::Compile::SOAP/"Transcoding">
 
 =back
 
+=head1 DETAILS
+
+See L<documentation in base class|XML::Compile::SOAP/"DETAILS">.
+ 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.35,
-built on January 14, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.36,
+built on May 03, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

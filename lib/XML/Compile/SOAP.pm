@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '2.35';
+$VERSION = '2.36';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -118,7 +118,7 @@ sub _sender(@)
     {   push @$hooks, $self->_writer_hook('SOAP-ENV:Body', @$body, @$faults);
     }
     elsif($style eq 'rpc')
-    {   my $procedure = $args{body}{procedure}
+    {   my $procedure = $args{procedure} || $args{body}{procedure}
             or error __x"sending operation requires procedure name with RPC";
         push @$hooks, $self->_writer_rpc_hook('SOAP-ENV:Body'
           , $procedure, $body, $faults);
@@ -235,12 +235,14 @@ sub _writer_rpc_hook($$$$$)
         my (@fchilds, @pchilds);
         while(@f)
         {   my ($k, $c) = (shift @f, shift @f);
-            if(my $v = delete $data{$k}) { push @fchilds, $c->($doc, $v) }
+            my $v = delete $data{$k};
+            push @fchilds, $c->($doc, $v) if defined $v;
         }
         my @p = @params;
         while(@p)
         {   my ($k, $c) = (shift @p, shift @p);
-            if(my $v = delete $data{$k}) { push @pchilds, $c->($doc, $v) }
+            my $v = delete $data{$k};
+            push @pchilds, $c->($doc, $v) if defined $v;
         }
         warning __x"unused values {names}", names => [keys %data]
             if keys %data;

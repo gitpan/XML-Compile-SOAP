@@ -4,7 +4,7 @@
       "Mark Overmeer"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "ExtUtils::MakeMaker version 6.6302, CPAN::Meta::Converter version 2.120921",
+   "generated_by" : "ExtUtils::MakeMaker version 6.64, CPAN::Meta::Converter version 2.120630",
    "license" : [
       "perl_5"
    ],
@@ -35,15 +35,14 @@
             "File::Slurp" : "0",
             "LWP" : "5.816",
             "Log::Report" : "0.9",
-            "Test::Deep" : "0.095",
             "Test::More" : "0.54",
             "Time::HiRes" : "0",
-            "XML::Compile" : "1.28",
-            "XML::Compile::Cache" : "0.992",
+            "XML::Compile" : "1.33",
+            "XML::Compile::Cache" : "0.993",
             "XML::Compile::Tester" : "0.9"
          }
       }
    },
    "release_status" : "stable",
-   "version" : "2.35"
+   "version" : "2.36"
 }

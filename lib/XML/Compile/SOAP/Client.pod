@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 NAME
 
 XML::Compile::SOAP::Client - SOAP message initiators
@@ -182,7 +184,7 @@ Now, calling the compiled function can be done like this:
 
 If the first arguments for the code ref is a HASH, then there may be
 a second which specifies the required character-set.  The default is
-C<UTF-8>, which is very much adviced.
+C<UTF-8>, which is very much advised.
 
 =head3 Parameter unpacking (Document Style)
 
@@ -481,8 +483,8 @@ equivalent to the C<%data_in> from the client.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.35,
-built on January 14, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.36,
+built on May 03, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

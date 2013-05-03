@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 NAME
 
 XML::Compile::SOAP::Util - general purpose routines for XML::Compile::SOAP
@@ -10,7 +12,7 @@ XML::Compile::SOAP::Util - general purpose routines for XML::Compile::SOAP
 =head1 DESCRIPTION
 
 This module collects functions which are useful on many places in the
-SOAP implemention, just as L<XML::Compile::Util|XML::Compile::Util> does for general XML
+SOAP implementation, just as L<XML::Compile::Util|XML::Compile::Util> does for general XML
 implementations (often you will needs things from both).
 
 On the moment, only a long list of constant URIs are exported.
@@ -44,8 +46,8 @@ The export TAG C<:xop10> refers to C<XOP10>, C<XMIME10> and C<XMIME11>
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.35,
-built on January 14, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.36,
+built on May 03, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

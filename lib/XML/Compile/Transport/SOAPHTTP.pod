@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 NAME
 
 XML::Compile::Transport::SOAPHTTP - exchange XML-SOAP via HTTP
@@ -28,10 +30,16 @@ This module handles the exchange of (XML) messages, according to the
 rules of SOAP (any version).  The module does not known how to parse
 or compose XML, but only worries about the HTTP aspects.
 
+See L<documentation in base class|XML::Compile::Transport/"DESCRIPTION">.
+ 
 =head1 METHODS
 
+See L<documentation in base class|XML::Compile::Transport/"METHODS">.
+ 
 =head2 Constructors
 
+See L<documentation in base class|XML::Compile::Transport/"Constructors">.
+ 
 =over 4
 
 =item XML::Compile::Transport::SOAPHTTP-E<gt>B<new>(OPTIONS)
@@ -80,6 +88,8 @@ seems like a good idea.
 
 =head2 WSDL11
 
+See L<documentation in base class|XML::Compile::Transport/"WSDL11">.
+ 
 =over 4
 
 =item $obj-E<gt>B<wsdl11Init>(WSDL, ARGS)
@@ -92,6 +102,8 @@ See L<XML::Compile::SOAP::Extension/"WSDL11">
 
 =head2 SOAP11
 
+See L<documentation in base class|XML::Compile::Transport/"SOAP11">.
+ 
 =over 4
 
 =item $obj-E<gt>B<soap11ClientWrapper>(OPERATION, CALL, ARGS)
@@ -112,6 +124,8 @@ See L<XML::Compile::SOAP::Extension/"SOAP11">
 
 =head2 Accessors
 
+See L<documentation in base class|XML::Compile::Transport/"Accessors">.
+ 
 =over 4
 
 =item $obj-E<gt>B<address>()
@@ -139,6 +153,8 @@ compilation, or even inbetween SOAP calls.
 
 =head2 Handlers
 
+See L<documentation in base class|XML::Compile::Transport/"Handlers">.
+ 
 =over 4
 
 =item $obj-E<gt>B<compileClient>(OPTIONS)
@@ -225,8 +241,18 @@ is being created.
 
 =back
 
+=head1 DETAILS
+
+See L<documentation in base class|XML::Compile::Transport/"DETAILS">.
+ 
+=head1 SYNOPSYS
+
+See L<documentation in base class|XML::Compile::Transport/"SYNOPSYS">.
+ 
 =head1 Helpers
 
+See L<documentation in base class|XML::Compile::Transport/"Helpers">.
+ 
 =over 4
 
 =item XML::Compile::Transport::SOAPHTTP-E<gt>B<register>(URI)
@@ -237,8 +263,8 @@ See L<XML::Compile::Transport/"Helpers">
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.35,
-built on January 14, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.36,
+built on May 03, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

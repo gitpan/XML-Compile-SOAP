@@ -7,12 +7,14 @@ use strict;
 
 package XML::Compile::SOAP11;
 use vars '$VERSION';
-$VERSION = '2.35';
+$VERSION = '2.36';
   #!!!
 
-use Log::Report 'xml-compile-soap', syntax => 'SHORT';
-use List::Util qw/min first/;
-use XML::Compile::Util qw/odd_elements SCHEMA2001 unpack_type/;
+use Log::Report 'xml-compile-soap';
+use List::Util         qw/first/;
+use XML::Compile::Util
+   qw/odd_elements SCHEMA2001 SCHEMA2001i unpack_type type_of_node/;
+use XML::Compile::SOAP::Util qw/:soap11/;
 
 
 # startEncoding is always implemented, loading this class
@@ -23,71 +25,27 @@ sub _init_encoding($)
     $doc && UNIVERSAL::isa($doc, 'XML::LibXML::Document')
         or error __x"encoding required an XML document to work with";
 
-    my $ns = $args->{prefixes} || $args->{namespaces} || {};
-    if(ref $ns eq 'ARRAY')
-    {   my @ns = @$ns;
-        $ns    = {};
-        while(@ns)
-        {   my ($prefix, $uri) = (shift @ns, shift @ns);
-            $ns->{$uri} = {uri => $uri, prefix => $prefix};
-        }
-    }
-
-    $args->{prefixes} = $ns;
     $self->{enc} = $args;
-
-    $self->encAddNamespaces
-      ( xsd => $self->schemaNS
-      , xsi => $self->schemaInstanceNS
-      );
-
     $self;
 }
 
 
-sub encAddNamespaces(@)
-{   my $prefs = shift->{enc}{prefixes};
-    while(@_)
-    {   my ($prefix, $uri) = (shift, shift);
-        $prefs->{$uri} = {uri => $uri, prefix => $prefix};
-    }
-    $prefs;
-}
-
-sub encAddNamespace(@) { shift->encAddNamespaces(@_) }
-
-
 sub prefixed($;$)
 {   my $self = shift;
-    my ($ns, $local) = @_==2 ? @_ : unpack_type $_[0];
-    length $ns or return $local;
-
-    my $def  =  $self->{enc}{prefixes}{$ns}
-        or error __x"namespace prefix for your {ns} not defined", ns => $ns;
-
-    $def->{prefix}.':'.$local;
+    $self->schemas->prefixed(@_);
 }
 
 
 sub enc($$$)
 {   my ($self, $local, $value, $id) = @_;
-    my $enc   = $self->{enc};
-    my $type  = pack_type $self->encodingNS, $local;
-
-    my $write = $self->{writer}{$type} ||= $self->schemas->compile
-      ( WRITER   => $type
-      , prefixes => $enc->{prefixes}
-      , include_namespaces => 0
-      );
-
-    $write->($enc->{doc}, {_ => $value, id => $id} );
+    my $type = pack_type SOAP11ENC, $local;
+    $self->schemas->writer($type, include_namespaces => 0)
+         ->($self->{enc}{doc}, {_ => $value, id => $id} );
 }
 
 
 sub typed($$$)
 {   my ($self, $type, $name, $value) = @_;
-    my $enc = $self->{enc};
-    my $doc = $enc->{doc};
 
     my $showtype;
     if($type =~ s/^\{\}//)
@@ -96,14 +54,14 @@ sub typed($$$)
     else
     {   my ($tns, $tlocal) = unpack_type $type;
         unless(length $tns)
-        {   $tns = $self->schemaNS;
+        {   $tns  = SCHEMA2001;
             $type = pack_type $tns, $tlocal;
         }
         $showtype = $self->prefixed($tns, $tlocal);
     }
 
     my $el = $self->element($type, $name, $value);
-    my $typedef = $self->prefixed($self->schemaInstanceNS, 'type');
+    my $typedef = $self->prefixed(SCHEMA2001i, 'type');
     $el->setAttribute($typedef, $showtype);
     $el;
 }
@@ -125,21 +83,14 @@ sub element($$$)
     return $value
         if UNIVERSAL::isa($value, 'XML::LibXML::Element');
 
-    my $enc = $self->{enc};
-    my $doc = $enc->{doc};
+    $type     = $self->prefixed(SCHEMA2001, $type)
+        if $type !~ m/^\{|\:/;
 
-    $type = pack_type $self->schemaNS, $type   # make absolute
-        if $type !~ m/^\{/;
-
-    my $el  = $doc->createElement($name);
-    my $write = $self->{writer}{$type} ||= $self->schemas->compile
-      ( WRITER   => $type
-      , prefixes => $enc->{prefixes}
-      , include_namespaces => 0
-      );
-
-    $value = $write->($doc, $value);
-    $el->addChild($value) if defined $value;
+    my $doc   = $self->{enc}{doc};
+    my $el    = $doc->createElement($name);
+    my $child = $self->schemas->writer($type, include_namespaces => 0)
+         ->($doc, $value);
+    $el->addChild($child) if $child;
     $el;
 }
 
@@ -163,19 +114,16 @@ sub href($$$)
 sub nil($;$)
 {   my $self = shift;
     my ($type, $name) = @_==2 ? @_ : (undef, $_[0]);
-    my ($ns, $local) = unpack_type $name;
+    my ($ns, $local)  = unpack_type $name;
 
     my $doc  = $self->{enc}{doc};
-    my $el
-      = $ns
+    my $el   = $ns
       ? $doc->createElementNS($ns, $local)
       : $doc->createElement($local);
 
-    my $xsi = $self->schemaInstanceNS;
-    $el->setAttribute($self->prefixed($xsi, 'nil'), 'true');
-
-    $el->setAttribute($self->prefixed($xsi, 'type'), $self->prefixed($type))
-       if $type;
+    $el->setAttribute($self->prefixed(SCHEMA2001i, 'nil'), 'true');
+    $el->setAttribute($self->prefixed(SCHEMA2001i, 'type')
+      , $self->prefixed($type)) if $type;
 
     $el;
 }
@@ -184,7 +132,6 @@ sub nil($;$)
 sub array($$$@)
 {   my ($self, $name, $itemtype, $array, %opts) = @_;
 
-    my $encns   = $self->encodingNS;
     my $enc     = $self->{enc};
     my $doc     = $enc->{doc};
 
@@ -204,18 +151,18 @@ sub array($$$@)
         last;
     }
 
-    my $elname = $self->prefixed(defined $name ? $name : ($encns, 'Array'));
+    my $elname = $self->prefixed(defined $name ? $name : (SOAP11ENC, 'Array'));
     my $el     = $doc->createElement($elname);
     my $nested = $opts{nested_array} || '';
     my $type   = $self->prefixed($itemtype)."$nested\[$size]";
 
     $el->setAttribute(id => $opts{id}) if defined $opts{id};
     my $at     = $opts{array_type} ? $opts{arrayType} 
-               : $self->prefixed($encns, 'arrayType');
+               : $self->prefixed(SOAP11ENC, 'arrayType');
     $el->setAttribute($at, $type) if defined $at;
 
     if($sparse)
-    {   my $placeition = $self->prefixed($encns, 'position');
+    {   my $placeition = $self->prefixed(SOAP11ENC, 'position');
         for(my $r = $min; $r <= $max; $r++)
         {   my $row  = $array->[$r] or next;
             my $node = $row->cloneNode(1);
@@ -224,7 +171,7 @@ sub array($$$@)
         }
     }
     else
-    {   $el->setAttribute($self->prefixed($encns, 'offset'), "[$min]")
+    {   $el->setAttribute($self->prefixed(SOAP11ENC, 'offset'), "[$min]")
             if $min > 0;
         $el->addChild($array->[$_]) for $min..$max;
     }
@@ -235,7 +182,6 @@ sub array($$$@)
 
 sub multidim($$$@)
 {   my ($self, $name, $itemtype, $array, %opts) = @_;
-    my $encns   = $self->encodingNS;
     my $enc     = $self->{enc};
     my $doc     = $enc->{doc};
 
@@ -246,16 +192,16 @@ sub multidim($$$@)
     }
 
     my $sparse = $self->_check_multidim($array, \@dims, '');
-    my $elname = $self->prefixed(defined $name ? $name : ($encns, 'Array'));
+    my $elname = $self->prefixed(defined $name ? $name : (SOAP11ENC, 'Array'));
     my $el     = $doc->createElement($elname);
     my $type   = $self->prefixed($itemtype) . '['.join(',', @dims).']';
 
     $el->setAttribute(id => $opts{id}) if defined $opts{id};
-    $el->setAttribute($self->prefixed($encns, 'arrayType'), $type);
+    $el->setAttribute($self->prefixed(SOAP11ENC, 'arrayType'), $type);
 
     my @data   = $self->_flatten_multidim($array, \@dims, '');
     if($sparse)
-    {   my $placeition = $self->prefixed($encns, 'position');
+    {   my $placeition = $self->prefixed(SOAP11ENC, 'position');
         while(@data)
         {   my ($place, $field) = (shift @data, shift @data);
             my $node = $field->cloneNode(1);
@@ -332,7 +278,7 @@ sub _init_decoding($)
     $r{permit_href}    = 1;
 
     push @{$r{hooks}},
-     { type    => pack_type($self->encodingNS, 'Array')
+     { type    => pack_type(SOAP11ENC, 'Array')
      , replace => sub { $self->_dec_array_hook(@_) }
      };
 
@@ -360,10 +306,9 @@ sub dec(@)
         or return $data;
 
     # find the root element(s)
-    my $encns = $self->encodingNS;
     my @roots;
     for(my $i = 0; $i < @_ && $i < @$data; $i++)
-    {   my $root = $_[$i]->getAttributeNS($encns, 'root');
+    {   my $root = $_[$i]->getAttributeNS(SOAP11ENC, 'root');
         next if defined $root && $root==0;
         push @roots, $data->[$i];
     }
@@ -382,8 +327,8 @@ sub _dec_reader($@)
     return $self->{dec}{$type} if $self->{dec}{$type};
 
     my ($typens, $typelocal) = unpack_type $type;
-    my $schemans  = $self->schemaNS;
 
+    my $schemans = SCHEMA2001;
     if(   $typens ne $schemans
        && !$self->schemas->namespaces->find(element => $type))
     {   # work-around missing element
@@ -394,13 +339,11 @@ sub _dec_reader($@)
 __FAKE_SCHEMA
     }
 
-    $self->{dec}{$type} ||= $self->schemas->compile
-      (READER => $type, @{$self->{dec}{reader_opts}}, @_);
+    $self->schemas->reader($type, @{$self->{dec}{reader_opts}}, @_);
 }
 
 sub _dec($;$$$)
 {   my ($self, $nodes, $basetype, $offset, $dims) = @_;
-    my $encns = $self->encodingNS;
 
     my @res;
     $#res = $offset-1 if defined $offset;
@@ -409,7 +352,7 @@ sub _dec($;$$$)
     {   my $ns    = $node->namespaceURI || '';
         my $place;
         if($dims)
-        {   my $pos = $node->getAttributeNS($encns, 'position');
+        {   my $pos = $node->getAttributeNS(SOAP11ENC, 'position');
             if($pos && $pos =~ m/^\[([\d,]+)\]/ )
             {   my @pos = split /\,/, $1;
                 $place  = \$res[shift @pos];
@@ -427,8 +370,8 @@ sub _dec($;$$$)
             next;
         }
 
-        if($ns ne $encns)
-        {   my $typedef = $node->getAttributeNS($self->schemaInstanceNS,'type');
+        if($ns ne SOAP11ENC)
+        {   my $typedef = $node->getAttributeNS(SCHEMA2001i,'type');
             if($typedef)
             {   $$place = $self->_dec_typed($node, $typedef);
                 next;
@@ -574,7 +517,7 @@ sub _dec_resolve_hrefs($$)
 sub _dec_array_hook($$$)
 {   my ($self, $node, $args, $where, $local) = @_;
 
-    my $at = $node->getAttributeNS($self->encodingNS, 'arrayType')
+    my $at = $node->getAttributeNS(SOAP11ENC, 'arrayType')
         or return $node;
 
     $at =~ m/^(.*) \s* \[ ([\d,]+) \] $/x
@@ -597,7 +540,7 @@ sub _dec_array_hook($$$)
 
      my $first = first {$_->isa('XML::LibXML::Element')} $node->childNodes;
 
-       $first && $first->getAttributeNS($self->encodingNS, 'position')
+       $first && $first->getAttributeNS(SOAP11ENC, 'position')
      ? $self->_dec_array_multisparse($node, $basetype, \@dims)
      : $self->_dec_array_multi($node, $basetype, \@dims);
 }
@@ -605,7 +548,7 @@ sub _dec_array_hook($$$)
 sub _dec_array_one($$$)
 {   my ($self, $node, $basetype, $size) = @_;
 
-    my $off    = $node->getAttributeNS($self->encodingNS, 'offset') || '[0]';
+    my $off    = $node->getAttributeNS(SOAP11ENC, 'offset') || '[0]';
     $off =~ m/^\[(\d+)\]$/ or return $node;
 
     my $offset = $1;

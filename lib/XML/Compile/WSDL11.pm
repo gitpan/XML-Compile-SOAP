@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '2.35';
+$VERSION = '2.36';
 
 use base 'XML::Compile::Cache';
 
@@ -118,32 +118,6 @@ sub call($@)
 #--------------------------
 
 
-sub _learn_prefixes($)
-{   my ($self, $node) = @_;
-
-    my $namespaces = $self->prefixes;
-  PREFIX:
-    foreach my $ns ($node->getNamespaces)  # learn preferred ns
-    {   my ($prefix, $uri) = ($ns->getLocalName, $ns->getData);
-        next if !defined $prefix || $namespaces->{$uri};
-
-        if(my $def = $self->prefix($prefix))
-        {   next PREFIX if $def->{uri} eq $uri;
-        }
-        else
-        {   $self->prefixes($prefix => $uri);
-            next PREFIX;
-        }
-
-        $prefix =~ s/0?$/0/;
-        while(my $def = $self->prefix($prefix))
-        {   next PREFIX if $def->{uri} eq $uri;
-            $prefix++;
-        }
-        $self->prefixes($prefix => $uri);
-    }
-}
-
 sub addWSDL($)
 {   my ($self, $data) = @_;
     defined $data or return ();
@@ -156,7 +130,7 @@ sub addWSDL($)
         or error __x"root element for WSDL is not 'wsdl:definitions'";
 
     $self->importDefinitions($node, details => \%details);
-    $self->_learn_prefixes($node);
+    $self->learnPrefixes($node);
 
     my $spec = $self->reader('wsdl:definitions')->($node);
     my $tns  = $spec->{targetNamespace}

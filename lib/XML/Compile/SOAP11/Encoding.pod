@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 NAME
 
 XML::Compile::SOAP11::Encoding - SOAP encoding
@@ -5,7 +7,7 @@ XML::Compile::SOAP11::Encoding - SOAP encoding
 =head1 SYNOPSIS
 
  ### FOR THE MOMENT UNUSABLE
- # see t/13enc11.t in the distribution for complex examples
+ # see t/70enc11.t in the distribution for complex examples
 
  my $client = XML::Compile::SOAP11::Client->new();
  $client->startEncoding(...);  # loads this module
@@ -40,7 +42,7 @@ XML::Compile::SOAP11::Encoding - SOAP encoding
 
 =head1 DESCRIPTION
 
-This module loads extra functionality into the L<XML::Compile::SOAP|XML::Compile::SOAP>
+This module loads extra functionality into the L<XML::Compile::SOAP11|XML::Compile::SOAP11>
 namespace: all kinds of methods which are used to SOAP-encode data.
 
 The loading is triggered by calling L<startEncoding()|XML::Compile::SOAP11::Encoding/"Encoding">.  In threaded
@@ -150,16 +152,6 @@ example:
   print $xml->toString;
     # <SOAP-ENC:int id="me">42</SOAP-ENC:int>
 
-=item $obj-E<gt>B<encAddNamespace>(PAIRS)
-
-Convenience alternative for L<encAddNamespaces()|XML::Compile::SOAP11::Encoding/"Encoding">.
-
-=item $obj-E<gt>B<encAddNamespaces>(PAIRS)
-
-Add prefix definitions for this one encoding cyclus.  Each time
-L<startEncoding()|XML::Compile::SOAP11::Encoding/"Encoding"> is called, the table is reset.  The namespace
-table is returned.
-
 =item $obj-E<gt>B<href>(NAME, ELEMENT, [ID])
 
 Create a reference element with NAME to the existing ELEMENT.  When the
@@ -198,11 +190,6 @@ If a TYPE is given, then an explicit type parameter is added.
 Translate a NAMESPACE-LOCAL combination (which may be represented as
 a packed TYPE) into a prefixed notation.
 
-The complication is that the NAMESPACE may not naturally have a prefixed
-assigned to it: the produced SOAP message is the result of compilation,
-and only the namespaces which are registered to be used during compile-time
-are added to the list on the top-level.
-
 =item $obj-E<gt>B<startEncoding>(OPTIONS)
 
 This needs to be called before any encoding routine, because it
@@ -212,38 +199,22 @@ cached translator routines.
 When you use the standard RPC-encoded interface, this will be
 called for you.
 
- -Option    --Default
-  doc         <required>
-  namespaces  {}
-  prefixes    {}
+ -Option--Default
+  doc     <required>
 
 =over 2
 
 =item doc => XML::LibXML::Document
 
-=item namespaces => HASH|ARRAY
-
-Pre release 0.74 name for option C<prefixes>.
-
-=item prefixes => HASH|ARRAY
-
-Like L<XML::Compile::Schema::compile(prefixes)|XML::Compile::Schema/"Compilers">, this can
-be a HASH (see example) or an ARRAY with prefix-uri pairs.
-
 =back
 
 example: 
 
- my %ns;
- $ns{$MYNS} = {uri => $MYNS, prefix => 'm'};
- $soap->startEncoding(doc => $doc, prefixes => \%ns);
-
- # or
- $soap->startEncoding(doc => $doc, prefixes => [ m => $MYNS ]);
+ $soap->startEncoding(doc => $doc);
 
 =item $obj-E<gt>B<struct>(TYPE, CHILDS)
 
-Create a structure, an element with childs.  The CHILDS must be fully
+Create a structure, an element with children.  The CHILDS must be fully
 prepared XML::LibXML::Element objects.
 
 =item $obj-E<gt>B<typed>(TYPE, NAME, VALUE)
@@ -326,8 +297,8 @@ an easily accessible output tree.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.35,
-built on January 14, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.36,
+built on May 03, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

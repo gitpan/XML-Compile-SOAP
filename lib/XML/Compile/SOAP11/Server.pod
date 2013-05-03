@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 NAME
 
 XML::Compile::SOAP11::Server - SOAP1.1 server needs
@@ -11,186 +13,32 @@ XML::Compile::SOAP11::Server - SOAP1.1 server needs
  XML::Compile::SOAP11::Server
    is a XML::Compile::SOAP::Server
 
+=head1 SYNOPSIS
+
 =head1 DESCRIPTION
 
 This module does not implement an actual soap server, but the
 needs to create the server side.  The server daemon is implemented
 by L<XML::Compile::SOAP::Daemon|XML::Compile::SOAP::Daemon>
 
+See L<documentation in base class|XML::Compile::SOAP::Server/"DESCRIPTION">.
+ 
+See L<documentation in base class|XML::Compile::SOAP11/"DESCRIPTION">.
+ 
 =head1 METHODS
 
-=head2 Constructors
-
-=over 4
-
-=item $obj-E<gt>B<new>(OPTIONS)
-
-See L<XML::Compile::SOAP11/"Constructors">
-
-=back
-
-=head2 Instantiation
-
-=over 4
-
-=item XML::Compile::SOAP11::Server-E<gt>B<new>(OPTIONS)
-
-See L<XML::Compile::SOAP::Server/"Instantiation">
-
-=back
-
-=head2 Accessors
-
-=over 4
-
-=item $obj-E<gt>B<name>()
-
-See L<XML::Compile::SOAP/"Accessors">
-
-=item $obj-E<gt>B<role>()
-
-See L<XML::Compile::SOAP::Server/"Accessors">
-
-=item $obj-E<gt>B<schemas>()
-
-See L<XML::Compile::SOAP/"Accessors">
-
-=item $obj-E<gt>B<version>()
-
-See L<XML::Compile::SOAP/"Accessors">
-
-=back
-
-=head2 Single message
-
-=over 4
-
-=item $obj-E<gt>B<compileMessage>(('SENDER'|'RECEIVER'), OPTIONS)
-
-See L<XML::Compile::SOAP11/"Single message">
-
-=item $obj-E<gt>B<messageStructure>(XML)
-
-=item XML::Compile::SOAP11::Server-E<gt>B<messageStructure>(XML)
-
-See L<XML::Compile::SOAP/"Single message">
-
-=back
-
-=head2 Helpers
-
-=head2 Transcoding
-
-=over 4
-
-=item $obj-E<gt>B<replyMustUnderstandFault>(TYPE)
-
-See L<XML::Compile::SOAP/"Transcoding">
-
-=item $obj-E<gt>B<roleAbbreviation>(URI)
-
-See L<XML::Compile::SOAP/"Transcoding">
-
-=item $obj-E<gt>B<roleURI>(URI|STRING)
-
-See L<XML::Compile::SOAP/"Transcoding">
-
-=back
-
-=head3 Encoding
-
-=over 4
-
-=item $obj-E<gt>B<array>((NAME|undef), ITEM_TYPE, ARRAY-of-ELEMENTS, OPTIONS)
-
-See L<XML::Compile::SOAP11::Encoding/"Encoding">
-
-=item $obj-E<gt>B<element>(TYPE, NAME, VALUE)
-
-See L<XML::Compile::SOAP11::Encoding/"Encoding">
-
-=item $obj-E<gt>B<enc>(LOCAL, VALUE, [ID])
-
-See L<XML::Compile::SOAP11::Encoding/"Encoding">
-
-=item $obj-E<gt>B<encAddNamespace>(PAIRS)
-
-See L<XML::Compile::SOAP11::Encoding/"Encoding">
-
-=item $obj-E<gt>B<encAddNamespaces>(PAIRS)
-
-See L<XML::Compile::SOAP11::Encoding/"Encoding">
-
-=item $obj-E<gt>B<href>(NAME, ELEMENT, [ID])
-
-See L<XML::Compile::SOAP11::Encoding/"Encoding">
-
-=item $obj-E<gt>B<multidim>((NAME|undef), ITEM_TYPE, ARRAY-of-ELEMENTS, OPTIONS)
-
-See L<XML::Compile::SOAP11::Encoding/"Encoding">
-
-=item $obj-E<gt>B<nil>([TYPE], NAME)
-
-See L<XML::Compile::SOAP11::Encoding/"Encoding">
-
-=item $obj-E<gt>B<prefixed>(TYPE|(NAMESPACE,LOCAL))
-
-See L<XML::Compile::SOAP11::Encoding/"Encoding">
-
-=item $obj-E<gt>B<startEncoding>(OPTIONS)
-
-See L<XML::Compile::SOAP11::Encoding/"Encoding">
-
-=item $obj-E<gt>B<struct>(TYPE, CHILDS)
-
-See L<XML::Compile::SOAP11::Encoding/"Encoding">
-
-=item $obj-E<gt>B<typed>(TYPE, NAME, VALUE)
-
-See L<XML::Compile::SOAP11::Encoding/"Encoding">
-
-=back
-
-=head3 Decoding
-
-=over 4
-
-=item $obj-E<gt>B<dec>(XMLNODES)
-
-See L<XML::Compile::SOAP11::Encoding/"Decoding">
-
-=item $obj-E<gt>B<decSimplify>(TREE, OPTIONS)
-
-See L<XML::Compile::SOAP11::Encoding/"Decoding">
-
-=item $obj-E<gt>B<startDecoding>(OPTIONS)
-
-See L<XML::Compile::SOAP11::Encoding/"Decoding">
-
-=back
-
-=head2 Actions
-
-=over 4
-
-=item $obj-E<gt>B<compileFilter>(OPTIONS)
-
-See L<XML::Compile::SOAP::Server/"Actions">
-
-=item $obj-E<gt>B<compileHandler>(OPTIONS)
-
-See L<XML::Compile::SOAP::Server/"Actions">
-
-=item XML::Compile::SOAP11::Server-E<gt>B<faultWriter>()
-
-See L<XML::Compile::SOAP::Server/"Actions">
-
-=back
-
+See L<documentation in base class|XML::Compile::SOAP::Server/"METHODS">.
+ 
+See L<documentation in base class|XML::Compile::SOAP11/"METHODS">.
+ 
+=head1 DETAILS
+
+See L<documentation in base class|XML::Compile::SOAP11/"DETAILS">.
+ 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.35,
-built on January 14, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.36,
+built on May 03, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 NAME
 
 XML::Compile::SOAP11::Operation - defines a SOAP11 interaction
@@ -18,10 +20,16 @@ XML::Compile::SOAP11::Operation - defines a SOAP11 interaction
 Objects of this type define one possible SOAP11 interaction, either
 client side or server side.
 
+See L<documentation in base class|XML::Compile::SOAP::Operation/"DESCRIPTION">.
+ 
 =head1 METHODS
 
+See L<documentation in base class|XML::Compile::SOAP::Operation/"METHODS">.
+ 
 =head2 Constructors
 
+See L<documentation in base class|XML::Compile::SOAP::Operation/"Constructors">.
+ 
 =over 4
 
 =item XML::Compile::SOAP11::Operation-E<gt>B<new>(OPTIONS)
@@ -70,6 +78,8 @@ in WSDL1.1 style.
 
 =head2 Accessors
 
+See L<documentation in base class|XML::Compile::SOAP::Operation/"Accessors">.
+ 
 =over 4
 
 =item $obj-E<gt>B<bindingName>()
@@ -160,6 +170,8 @@ ignored unless the ELEMENT type differs.
 
 =head2 Handlers
 
+See L<documentation in base class|XML::Compile::SOAP::Operation/"Handlers">.
+ 
 =over 4
 
 =item $obj-E<gt>B<compileClient>(OPTIONS)
@@ -208,6 +220,8 @@ See L<XML::Compile::SOAP::Operation/"Handlers">
 
 =head2 Helpers
 
+See L<documentation in base class|XML::Compile::SOAP::Operation/"Helpers">.
+ 
 =over 4
 
 =item $obj-E<gt>B<explain>(WSDL, FORMAT, DIRECTION, OPTIONS)
@@ -267,8 +281,8 @@ See L<XML::Compile::SOAP::Operation/"Helpers">
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.35,
-built on January 14, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.36,
+built on May 03, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 NAME
 
 XML::Compile::WSDL11 - create SOAP messages defined by WSDL 1.1
@@ -71,10 +73,16 @@ purpose you B<must explicitly load> the files you need from local disk!
 (of course, it is simple to find one-liners as work-arounds, but I will
 to tell you how!)
 
+See L<documentation in base class|XML::Compile::Cache/"DESCRIPTION">.
+ 
 =head1 METHODS
 
+See L<documentation in base class|XML::Compile::Cache/"METHODS">.
+ 
 =head2 Constructors
 
+See L<documentation in base class|XML::Compile::Cache/"Constructors">.
+ 
 =over 4
 
 =item XML::Compile::WSDL11-E<gt>B<new>(XML, OPTIONS)
@@ -137,11 +145,9 @@ L<XML::Compile::dataToXML()|XML::Compile/"Compilers">.
 
 =head2 Accessors
 
+See L<documentation in base class|XML::Compile::Cache/"Accessors">.
+ 
 =over 4
-
-=item $obj-E<gt>B<addCompileOptions>(['READERS'|'WRITERS'|'RW'], OPTIONS)
-
-See L<XML::Compile::Cache/"Accessors">
 
 =item $obj-E<gt>B<addHook>(HOOKDATA|HOOK|undef)
 
@@ -189,22 +195,6 @@ See L<XML::Compile::Schema/"Accessors">
 
 See L<XML::Compile::Schema/"Accessors">
 
-=item $obj-E<gt>B<prefix>(PREFIX)
-
-See L<XML::Compile::Cache/"Accessors">
-
-=item $obj-E<gt>B<prefixFor>(URI)
-
-See L<XML::Compile::Cache/"Accessors">
-
-=item $obj-E<gt>B<prefixed>(TYPE)
-
-See L<XML::Compile::Cache/"Accessors">
-
-=item $obj-E<gt>B<prefixes>([PAIRS|ARRAY|HASH])
-
-See L<XML::Compile::Cache/"Accessors">
-
 =item $obj-E<gt>B<typemap>([HASH|ARRAY|PAIRS])
 
 See L<XML::Compile::Cache/"Accessors">
@@ -219,9 +209,43 @@ See L<XML::Compile::Cache/"Accessors">
 
 =back
 
+=head2 Prefix management
+
+See L<documentation in base class|XML::Compile::Cache/"Prefix management">.
+ 
+=over 4
+
+=item $obj-E<gt>B<learnPrefixes>(NODE)
+
+See L<XML::Compile::Cache/"Prefix management">
+
+=item $obj-E<gt>B<prefix>(PREFIX)
+
+See L<XML::Compile::Cache/"Prefix management">
+
+=item $obj-E<gt>B<prefixFor>(URI)
+
+See L<XML::Compile::Cache/"Prefix management">
+
+=item $obj-E<gt>B<prefixed>(TYPE|(NAMESPACE,LOCAL))
+
+See L<XML::Compile::Cache/"Prefix management">
+
+=item $obj-E<gt>B<prefixes>([PAIRS|ARRAY|HASH])
+
+See L<XML::Compile::Cache/"Prefix management">
+
+=back
+
 =head2 Compilers
 
+See L<documentation in base class|XML::Compile::Cache/"Compilers">.
+ 
 =over 4
+
+=item $obj-E<gt>B<addCompileOptions>(['READERS'|'WRITERS'|'RW'], OPTIONS)
+
+See L<XML::Compile::Cache/"Compilers">
 
 =item $obj-E<gt>B<call>(OPERATION, DATA)
 
@@ -389,6 +413,8 @@ Required when more than one service is defined.
 
 =head2 Administration
 
+See L<documentation in base class|XML::Compile::Cache/"Administration">.
+ 
 =over 4
 
 =item $obj-E<gt>B<declare>(GROUP, COMPONENT|ARRAY, OPTIONS)
@@ -458,7 +484,7 @@ should stick to the L<operation()|XML::Compile::WSDL11/"Extension"> and L<compil
 
 [2.20] Returns the address of the server, as specified by the WSDL. When
 there are no alternatives for service or port, you not not need to
-specify those paramters.
+specify those parameters.
 
  -Option --Default
   port     <undef>
@@ -566,78 +592,40 @@ services, bindings, ports and portTypes.
 
 =head1 DETAILS
 
+See L<documentation in base class|XML::Compile::Cache/"DETAILS">.
+ 
 =head2 Comparison
 
+See L<documentation in base class|XML::Compile::Cache/"Comparison">.
+ 
 =head2 Collecting definitions
 
-=head3 Organizing your definitions
-
+See L<documentation in base class|XML::Compile::Cache/"Collecting definitions">.
+ 
 =head2 Addressing components
 
+See L<documentation in base class|XML::Compile::Cache/"Addressing components">.
+ 
 =head2 Representing data-structures
 
-=head3 simpleType
-
-=head3 complexType/simpleContent
-
-=head3 complexType and complexType/complexContent
-
-=head3 Manually produced XML NODE
-
-=head3 Occurence
-
-=head3 Default Values
-
-=head3 Repetative blocks
-
-=head4 repetative sequence, choice, all
-
-=head4 repetative groups
-
-=head4 repetative substitutionGroups
-
-=head3 List type
-
-=head3 Using substitutionGroup constructs
-
-=head3 Wildcards any and anyAttribute
-
-=head3 ComplexType with "mixed" attribute
-
-=head3 hexBinary and base64Binary
-
+See L<documentation in base class|XML::Compile::Cache/"Representing data-structures">.
+ 
 =head2 Schema hooks
 
-=head3 defining hooks
-
-=head3 general syntax
-
-=head3 hooks on matching types
-
-=head3 hooks on matching ids
-
-=head3 hooks on matching paths
-
+See L<documentation in base class|XML::Compile::Cache/"Schema hooks">.
+ 
 =head2 Typemaps
 
-=head3 Private variables in objects
-
-=head3 Typemap limitations
-
+See L<documentation in base class|XML::Compile::Cache/"Typemaps">.
+ 
 =head2 Handling xsi:type
 
+See L<documentation in base class|XML::Compile::Cache/"Handling xsi:type">.
+ 
 =head2 Key rewrite
 
-=head3 key_rewrite via table
-
-=head3 rewrite via function
-
-=head3 key_rewrite when localNames collide
-
-=head3 rewrite for convenience
-
-=head3 pre-defined key_rewrite rules
-
+See L<documentation in base class|XML::Compile::Cache/"Key rewrite">.
+ 
 =head2 Initializing SOAP operations via WSDL
 
 When you have a WSDL file, then SOAP is simple.  If there is no such file
@@ -666,10 +654,14 @@ a choice, then you must explicitly select one.
  # see XML::Compile::SOAP chapter DETAILS about call params
  my $answer = $call->(%request);
 
+=head1 DESCRIPTIONS
+
+See L<documentation in base class|XML::Compile::Cache/"DESCRIPTIONS">.
+ 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.35,
-built on January 14, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.36,
+built on May 03, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

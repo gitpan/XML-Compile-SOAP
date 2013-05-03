@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 NAME
 
 XML::Compile::Transport - base class for XML transporters
@@ -45,10 +47,16 @@ in parallel.
 
 =back
 
+See L<documentation in base class|XML::Compile::SOAP::Extension/"DESCRIPTION">.
+ 
 =head1 METHODS
 
+See L<documentation in base class|XML::Compile::SOAP::Extension/"METHODS">.
+ 
 =head2 Constructors
 
+See L<documentation in base class|XML::Compile::SOAP::Extension/"Constructors">.
+ 
 =over 4
 
 =item XML::Compile::Transport-E<gt>B<new>(OPTIONS)
@@ -71,6 +79,8 @@ One or more URI which represents the servers.
 
 =head2 WSDL11
 
+See L<documentation in base class|XML::Compile::SOAP::Extension/"WSDL11">.
+ 
 =over 4
 
 =item $obj-E<gt>B<wsdl11Init>(WSDL, ARGS)
@@ -83,6 +93,8 @@ See L<XML::Compile::SOAP::Extension/"WSDL11">
 
 =head2 SOAP11
 
+See L<documentation in base class|XML::Compile::SOAP::Extension/"SOAP11">.
+ 
 =over 4
 
 =item $obj-E<gt>B<soap11ClientWrapper>(OPERATION, CALL, ARGS)
@@ -272,6 +284,10 @@ or
   $wsdl->compileClient('GetLastTracePrice',
       transport_hook => \&fake_server);
 
+=head1 SYNOPSYS
+
+See L<documentation in base class|XML::Compile::SOAP::Extension/"SYNOPSYS">.
+ 
 =head1 Helpers
 
 =over 4
@@ -284,8 +300,8 @@ Declare an transporter type.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.35,
-built on January 14, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.36,
+built on May 03, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
