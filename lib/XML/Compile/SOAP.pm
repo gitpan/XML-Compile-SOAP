@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '2.36';
+$VERSION = '2.37';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -516,7 +516,7 @@ sub _reader_body($$)
 
     my @rules;
     foreach my $part (@$parts)
-    {   my $label   = $part->{name};
+    {   my $label = $part->{name};
 
         my ($t, $code);
         if($part->{element})

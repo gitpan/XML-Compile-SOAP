@@ -110,6 +110,9 @@ The data is constructed in some ad-hoc way.
 Don't forget to have a look at the examples in the F<examples/> directory
 included in the distribution.
 
+Please support my development work by submitting bug-reports, patches
+and (if available) a donation.
+
 =head1 METHODS
 
 =head2 Constructors
@@ -402,8 +405,8 @@ it still works... but you may get into characterset problems and such.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.36,
-built on May 03, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.37,
+built on July 09, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -418,14 +421,12 @@ L<XML::Compile::Tester>,
 L<XML::Compile::Cache>,
 L<XML::Compile::Dumper>,
 L<XML::Compile::RPC>,
-L<XML::Rewrite>,
-L<XML::eXistDB>,
+L<XML::Rewrite>
 and
 L<XML::LibXML::Simple>.
 
 Please post questions or ideas to the mailinglist at
-F<http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/xml-compile>
-
+F<http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/xml-compile> .
 For live contact with other developers, visit the C<#xml-compile> channel
 on C<irc.perl.org>.
 

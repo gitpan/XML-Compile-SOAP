@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '2.36';
+$VERSION = '2.37';
 
 use base 'XML::Compile::Cache';
 
@@ -87,20 +87,20 @@ sub compileCalls(@)
       , binding => delete $args{binding}
       );
 
-    $self->{XCW_ccode} ||= {};
-    foreach my $op (@ops)
-    {   my $name  = $op->name;
-        my @opts  = %args;
-        my $dopts = $self->{XCW_dcopts} || {};
-        push @opts, ref $dopts eq 'ARRAY' ? @$dopts : %$dopts;
-
-        $self->{XCW_ccode}{$name} ||= $op->compileClient(@opts);
-    }
-
-    $self->{XCW_ccode};
+    $self->compileCall($_, %args) for @ops;
 }
 
-#--------------------------
+
+sub compileCall($@)
+{   my ($self, $op, @opts) = @_;
+    my $name  = $op->name;
+    error __x"attempt to compile operation {name} again", name => $name
+        if $self->{XCW_ccode}{$name};
+
+    my $dopts = $self->{XCW_dcopts} || {};
+    push @opts, ref $dopts eq 'ARRAY' ? @$dopts : %$dopts;
+    $self->{XCW_ccode}{$name} = $op->compileClient(@opts);
+}
 
 
 sub call($@)
@@ -223,8 +223,8 @@ sub operation(@)
             , portnames => join("\n    ", '', @portnames);
     }
 
-    # get plugin for operation # {
-    my $address   = first { $_ =~ m/address$/ } keys %$port
+    # get plugin for operation #
+    my $address   = first { /address$/ && $port->{$_}{location}} keys %$port
         or error __x"no address provided in service {service} port {port}"
              , service => $service->{name}, port => $port->{name};
 
@@ -241,7 +241,7 @@ sub operation(@)
 #warn Dumper $port, $self->prefixes;
     my ($prefix)  = $address =~ m/(\w+)_address$/;
     $prefix
-        or error __x"port address not prefixed; probably need to add a plugin";
+        or error __x"port address not prefixed; probably need to add a plugin XML::Compile::SOAP12";
 
     my $opns      = $self->findName("$prefix:");
     my $opclass   = XML::Compile::SOAP::Operation->plugin($opns);
@@ -352,7 +352,9 @@ sub compileClient(@)
 {   my $self = shift;
     unshift @_, 'operation' if @_ % 2;
     my $op   = $self->operation(@_) or return ();
-    $op->compileClient(@_);
+
+    my $dopts = $self->{XCW_dcopts} || {};
+    $op->compileClient(@_, (ref $dopts eq 'ARRAY' ? @$dopts : %$dopts));
 }
 
 #---------------------
@@ -498,10 +500,11 @@ sub printIndex(@)
     my @args = @_;
 
     my %tree;
-    $tree{'service '.$_->serviceName}
-         {$_->version.' port '.$_->portName . ' (binding '.$_->bindingName.')'}
-         {$_->name} = $_
-         for $self->operations(@args);
+    foreach my $op ($self->operations(@args))
+    {   my $port = $op->version.' port '.$op->portName;
+        my $bind = '(binding '.$op->bindingName.')';
+        $tree{'service '.$op->serviceName}{"$port $bind"}{$op->name} = $_;
+    }
 
     foreach my $service (sort keys %tree)
     {   $fh->print("$service\n");

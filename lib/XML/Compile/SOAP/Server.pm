@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::Server;
 use vars '$VERSION';
-$VERSION = '2.36';
+$VERSION = '2.37';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -70,13 +70,13 @@ sub compileHandler(@)
         unless(defined $answer)
         {   notice __x"procedure {name} did not produce an answer", name=> $name;
             return ( RC_INTERNAL_SERVER_ERROR, 'no answer produced'
-                      , $self->faultNoAnswerProduced($name));
+                   , $self->faultNoAnswerProduced($name));
         }
 
         if(ref $answer ne 'HASH')
         {   notice __x"procedure {name} did not return a HASH", name => $name;
             return ( RC_INTERNAL_SERVER_ERROR, 'invalid answer produced'
-                      , $self->faultNoAnswerProduced($name));
+                   , $self->faultNoAnswerProduced($name));
         }
 
         my $rc = (delete $answer->{_RETURN_CODE})

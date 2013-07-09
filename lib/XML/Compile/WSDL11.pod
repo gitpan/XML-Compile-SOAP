@@ -247,9 +247,9 @@ See L<documentation in base class|XML::Compile::Cache/"Compilers">.
 
 See L<XML::Compile::Cache/"Compilers">
 
-=item $obj-E<gt>B<call>(OPERATION, DATA)
+=item $obj-E<gt>B<call>(OPNAME, DATA)
 
-[2.20] Call the OPERATION (by name) with DATA (HASH or LIST of parameters).
+[2.20] Call the OPNAME (operation name) with DATA (HASH or LIST of parameters).
 This only works when you have called L<compileCalls()|XML::Compile::WSDL11/"Compilers"> beforehand,
 always during the initiation phase of the program.
 
@@ -269,6 +269,20 @@ See L<XML::Compile::Schema/"Compilers">
 
 [2.20] With explicit C<CALLS> or without any parameter, it will call
 L<compileCalls()|XML::Compile::WSDL11/"Compilers">. Otherwise, see L<XML::Compile::Cache::compileAll()|XML::Compile::Cache/"Compilers">.
+
+=item $obj-E<gt>B<compileCall>(OPERATION, OPTIONS)
+
+[2.37] The call to the OPERATION object (which extends
+L<XML::Compile::SOAP::Operation|XML::Compile::SOAP::Operation>) gets compiled and cached so it can
+be used with L<call()|XML::Compile::WSDL11/"Compilers">.
+
+example: 
+
+  my $op = $wsdl->operation(name => 'getInfo');
+  $wsdl->compileCall($op);
+
+  # as often as you need it
+  my ($answer, $trace) = $wsdl->call('getInfo')->(%request);
 
 =item $obj-E<gt>B<compileCalls>(OPTIONS)
 
@@ -335,7 +349,9 @@ which must have a C<definition> root element.
 =item $obj-E<gt>B<compileClient>([NAME], OPTIONS)
 
 Creates an L<XML::Compile::SOAP::Operation|XML::Compile::SOAP::Operation> temporary object using
-L<operation()|XML::Compile::WSDL11/"Extension">, and then calls C<compileClient()> on that.
+L<operation()|XML::Compile::WSDL11/"Extension">, and then calls C<compileClient()> on that.  This
+results in a code reference which will handle all client-server
+SOAP exchange.
 
 The OPTIONS available include all of the options for:
 
@@ -356,13 +372,19 @@ You B<cannot> pass options for L<XML::Compile::Schema::compile()|XML::Compile::S
 C<<sloppy_integers => 0>>, hooks or typemaps this way. Use L<new(opts_rw)|XML::Compile::Cache/"Constructors">
 and friends to declare those.
 
+When you use L<compileCall()|XML::Compile::WSDL11/"Compilers">, the compiled code references get cached
+for you.  In that case, you can use L<call()|XML::Compile::WSDL11/"Compilers"> to use them.
+
 example: 
 
   my $call = $wsdl->compileClient
     ( operation => 'HelloWorld'
-    , port      => 'PrefillSoap' # only needed when multiple ports
+    , port      => 'PrefillSoap' # only required when multiple ports
     );
   my ($answer, $trace) = $call->($request);
+
+  # 'operation' keyword optional
+  my $call = $wsdl->compileClient('HelloWorld');
 
 =item $obj-E<gt>B<namesFor>(CLASS)
 
@@ -660,8 +682,8 @@ See L<documentation in base class|XML::Compile::Cache/"DESCRIPTIONS">.
  
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.36,
-built on May 03, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.37,
+built on July 09, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
@@ -676,14 +698,12 @@ L<XML::Compile::Tester>,
 L<XML::Compile::Cache>,
 L<XML::Compile::Dumper>,
 L<XML::Compile::RPC>,
-L<XML::Rewrite>,
-L<XML::eXistDB>,
+L<XML::Rewrite>
 and
 L<XML::LibXML::Simple>.
 
 Please post questions or ideas to the mailinglist at
-F<http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/xml-compile>
-
+F<http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/xml-compile> .
 For live contact with other developers, visit the C<#xml-compile> channel
 on C<irc.perl.org>.
 
