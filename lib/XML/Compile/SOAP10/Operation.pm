@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP10::Operation;
 use vars '$VERSION';
-$VERSION = '2.37';
+$VERSION = '2.38';
 
 use base 'XML::Compile::SOAP::Operation';
 
@@ -46,7 +46,7 @@ sub _initWSDL11($)
 
     $wsdl->importDefinitions(WSDL11HTTP, element_form_default => 'qualified');
     $wsdl->importDefinitions(WSDL11MIME, element_form_default => 'qualified');
-    $wsdl->prefixes
+    $wsdl->addPrefixes
       ( http => WSDL11HTTP
       , mime => WSDL11MIME
       );

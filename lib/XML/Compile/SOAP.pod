@@ -405,8 +405,8 @@ it still works... but you may get into characterset problems and such.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.37,
-built on July 09, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.38,
+built on August 22, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

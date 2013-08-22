@@ -20,15 +20,15 @@ XML::Compile::SOAP11::Operation - defines a SOAP11 interaction
 Objects of this type define one possible SOAP11 interaction, either
 client side or server side.
 
-See L<documentation in base class|XML::Compile::SOAP::Operation/"DESCRIPTION">.
+See L<documentation in the base class|XML::Compile::SOAP::Operation/"DESCRIPTION">.
  
 =head1 METHODS
 
-See L<documentation in base class|XML::Compile::SOAP::Operation/"METHODS">.
+See L<documentation in the base class|XML::Compile::SOAP::Operation/"METHODS">.
  
 =head2 Constructors
 
-See L<documentation in base class|XML::Compile::SOAP::Operation/"Constructors">.
+See L<documentation in the base class|XML::Compile::SOAP::Operation/"Constructors">.
  
 =over 4
 
@@ -78,7 +78,7 @@ in WSDL1.1 style.
 
 =head2 Accessors
 
-See L<documentation in base class|XML::Compile::SOAP::Operation/"Accessors">.
+See L<documentation in the base class|XML::Compile::SOAP::Operation/"Accessors">.
  
 =over 4
 
@@ -138,7 +138,7 @@ See L<XML::Compile::SOAP::Operation/"Accessors">
 
 Operations are often modified by SOAP extensions.
 See L<XML::Compile::SOAP::WSA|XML::Compile::SOAP::WSA>, for instance. Also demonstrated in
-the FAQ, XML::Compile::SOAP::FAQ.
+the FAQ, L<XML::Compile::SOAP::FAQ|XML::Compile::SOAP::FAQ>.
 
 =over 4
 
@@ -170,7 +170,7 @@ ignored unless the ELEMENT type differs.
 
 =head2 Handlers
 
-See L<documentation in base class|XML::Compile::SOAP::Operation/"Handlers">.
+See L<documentation in the base class|XML::Compile::SOAP::Operation/"Handlers">.
  
 =over 4
 
@@ -220,7 +220,7 @@ See L<XML::Compile::SOAP::Operation/"Handlers">
 
 =head2 Helpers
 
-See L<documentation in base class|XML::Compile::SOAP::Operation/"Helpers">.
+See L<documentation in the base class|XML::Compile::SOAP::Operation/"Helpers">.
  
 =over 4
 
@@ -281,8 +281,8 @@ See L<XML::Compile::SOAP::Operation/"Helpers">
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.37,
-built on July 09, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.38,
+built on August 22, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

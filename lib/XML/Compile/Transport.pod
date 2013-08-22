@@ -47,15 +47,15 @@ in parallel.
 
 =back
 
-See L<documentation in base class|XML::Compile::SOAP::Extension/"DESCRIPTION">.
+See L<documentation in the base class|XML::Compile::SOAP::Extension/"DESCRIPTION">.
  
 =head1 METHODS
 
-See L<documentation in base class|XML::Compile::SOAP::Extension/"METHODS">.
+See L<documentation in the base class|XML::Compile::SOAP::Extension/"METHODS">.
  
 =head2 Constructors
 
-See L<documentation in base class|XML::Compile::SOAP::Extension/"Constructors">.
+See L<documentation in the base class|XML::Compile::SOAP::Extension/"Constructors">.
  
 =over 4
 
@@ -79,7 +79,7 @@ One or more URI which represents the servers.
 
 =head2 WSDL11
 
-See L<documentation in base class|XML::Compile::SOAP::Extension/"WSDL11">.
+See L<documentation in the base class|XML::Compile::SOAP::Extension/"WSDL11">.
  
 =over 4
 
@@ -93,7 +93,7 @@ See L<XML::Compile::SOAP::Extension/"WSDL11">
 
 =head2 SOAP11
 
-See L<documentation in base class|XML::Compile::SOAP::Extension/"SOAP11">.
+See L<documentation in the base class|XML::Compile::SOAP::Extension/"SOAP11">.
  
 =over 4
 
@@ -286,7 +286,7 @@ or
 
 =head1 SYNOPSYS
 
-See L<documentation in base class|XML::Compile::SOAP::Extension/"SYNOPSYS">.
+See L<documentation in the base class|XML::Compile::SOAP::Extension/"SYNOPSYS">.
  
 =head1 Helpers
 
@@ -300,8 +300,8 @@ Declare an transporter type.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.37,
-built on July 09, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.38,
+built on August 22, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

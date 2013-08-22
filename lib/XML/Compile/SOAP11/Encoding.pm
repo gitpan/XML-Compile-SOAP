@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11;
 use vars '$VERSION';
-$VERSION = '2.37';
+$VERSION = '2.38';
   #!!!
 
 use Log::Report 'xml-compile-soap';
@@ -421,13 +421,13 @@ sub _dec_other($$)
     my $elem  = pack_type $ns, $local;
 
     my $data;
-
     my $type  = $basetype || $elem;
+warn "Type=$type\n$basetype\n$elem\n";
     my $read  = try { $self->_dec_reader($type) };
     if($@)
     {    # warn $@->wasFatal->message;  #--> element not found
          # Element not known, so we must autodetect the type
-         my @childs = grep {$_->isa('XML::LibXML::Element')} $node->childNodes;
+         my @childs = grep $_->isa('XML::LibXML::Element'), $node->childNodes;
          if(@childs)
          {   my ($childbase, $dims);
              if($type =~ m/(.+?)\s*\[([\d,]+)\]$/)
@@ -439,7 +439,7 @@ sub _dec_other($$)
              $data  = { $local => $dec_childs } if $dec_childs;
          }
          else
-         {   $data->{$local} = $node->textContent;
+         {   $data->{_} = $node->textContent;
              $data->{_TYPE}  = $basetype if $basetype;
          }
     }
@@ -517,6 +517,7 @@ sub _dec_resolve_hrefs($$)
 sub _dec_array_hook($$$)
 {   my ($self, $node, $args, $where, $local) = @_;
 
+warn "NODE=", $node->toString(1);
     my $at = $node->getAttributeNS(SOAP11ENC, 'arrayType')
         or return $node;
 
@@ -534,6 +535,7 @@ sub _dec_array_hook($$$)
     else
     {   $basetype = pack_type '', $preftype;
     }
+warn "BASE=$basetype\n";
 
     return $self->_dec_array_one($node, $basetype, $dims[0])
         if @dims == 1;

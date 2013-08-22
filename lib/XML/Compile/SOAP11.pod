@@ -32,15 +32,15 @@ Two extensions are made: the SOAP11 client
 L<XML::Compile::SOAP11::Client|XML::Compile::SOAP11::Client>.
 and server in L<XML::Compile::SOAP11::Server|XML::Compile::SOAP11::Server>.
 
-See L<documentation in base class|XML::Compile::SOAP/"DESCRIPTION">.
+See L<documentation in the base class|XML::Compile::SOAP/"DESCRIPTION">.
  
 =head1 METHODS
 
-See L<documentation in base class|XML::Compile::SOAP/"METHODS">.
+See L<documentation in the base class|XML::Compile::SOAP/"METHODS">.
  
 =head2 Constructors
 
-See L<documentation in base class|XML::Compile::SOAP/"Constructors">.
+See L<documentation in the base class|XML::Compile::SOAP/"Constructors">.
  
 =over 4
 
@@ -66,7 +66,7 @@ right URI.
 
 =head2 Accessors
 
-See L<documentation in base class|XML::Compile::SOAP/"Accessors">.
+See L<documentation in the base class|XML::Compile::SOAP/"Accessors">.
  
 =over 4
 
@@ -86,7 +86,7 @@ See L<XML::Compile::SOAP/"Accessors">
 
 =head2 Single message
 
-See L<documentation in base class|XML::Compile::SOAP/"Single message">.
+See L<documentation in the base class|XML::Compile::SOAP/"Single message">.
  
 =over 4
 
@@ -139,11 +139,11 @@ See L<XML::Compile::SOAP/"Single message">
 
 =head2 Helpers
 
-See L<documentation in base class|XML::Compile::SOAP/"Helpers">.
+See L<documentation in the base class|XML::Compile::SOAP/"Helpers">.
  
 =head2 Transcoding
 
-See L<documentation in base class|XML::Compile::SOAP/"Transcoding">.
+See L<documentation in the base class|XML::Compile::SOAP/"Transcoding">.
  
 =over 4
 
@@ -163,23 +163,23 @@ See L<XML::Compile::SOAP/"Transcoding">
 
 =head1 DETAILS
 
-See L<documentation in base class|XML::Compile::SOAP/"DETAILS">.
+See L<documentation in the base class|XML::Compile::SOAP/"DETAILS">.
  
 =head2 SOAP introduction
 
-See L<documentation in base class|XML::Compile::SOAP/"SOAP introduction">.
+See L<documentation in the base class|XML::Compile::SOAP/"SOAP introduction">.
  
 =head2 Naming types and elements
 
-See L<documentation in base class|XML::Compile::SOAP/"Naming types and elements">.
+See L<documentation in the base class|XML::Compile::SOAP/"Naming types and elements">.
  
 =head2 Client and Server implementations
 
-See L<documentation in base class|XML::Compile::SOAP/"Client and Server implementations">.
+See L<documentation in the base class|XML::Compile::SOAP/"Client and Server implementations">.
  
 =head2 Use of wildcards (any/anyAttribute)
 
-See L<documentation in base class|XML::Compile::SOAP/"Use of wildcards (any/anyAttribute)">.
+See L<documentation in the base class|XML::Compile::SOAP/"Use of wildcards (any/anyAttribute)">.
  
 =head2 Header and Body entries
 
@@ -341,8 +341,8 @@ Or
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.37,
-built on July 09, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.38,
+built on August 22, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

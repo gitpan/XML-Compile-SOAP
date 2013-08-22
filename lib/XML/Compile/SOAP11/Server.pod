@@ -21,24 +21,24 @@ This module does not implement an actual soap server, but the
 needs to create the server side.  The server daemon is implemented
 by L<XML::Compile::SOAP::Daemon|XML::Compile::SOAP::Daemon>
 
-See L<documentation in base class|XML::Compile::SOAP::Server/"DESCRIPTION">.
+See L<documentation in the base class|XML::Compile::SOAP::Server/"DESCRIPTION">.
  
-See L<documentation in base class|XML::Compile::SOAP11/"DESCRIPTION">.
+See L<documentation in the base class|XML::Compile::SOAP11/"DESCRIPTION">.
  
 =head1 METHODS
 
-See L<documentation in base class|XML::Compile::SOAP::Server/"METHODS">.
+See L<documentation in the base class|XML::Compile::SOAP::Server/"METHODS">.
  
-See L<documentation in base class|XML::Compile::SOAP11/"METHODS">.
+See L<documentation in the base class|XML::Compile::SOAP11/"METHODS">.
  
 =head1 DETAILS
 
-See L<documentation in base class|XML::Compile::SOAP11/"DETAILS">.
+See L<documentation in the base class|XML::Compile::SOAP11/"DETAILS">.
  
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.37,
-built on July 09, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.38,
+built on August 22, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

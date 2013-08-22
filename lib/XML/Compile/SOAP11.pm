@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11;
 use vars '$VERSION';
-$VERSION = '2.37';
+$VERSION = '2.38';
 
 use base 'XML::Compile::SOAP';
 
@@ -44,7 +44,7 @@ sub _initSOAP11($)
     return $self
         if $schemas->{did_init_SOAP11}++;   # ugly
 
-    $schemas->prefixes
+    $schemas->addPrefixes
       ( 'SOAP-ENV' => SOAP11ENV  # preferred names by spec
       , 'SOAP-ENC' => SOAP11ENC
       , xsd        => SCHEMA2001

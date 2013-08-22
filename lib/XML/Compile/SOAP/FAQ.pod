@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-XML::Compile::FAQ - frequently asked questions
+XML::Compile::SOAP::FAQ - frequently asked questions
 
 =head1 DESCRIPTION
 
@@ -11,7 +11,7 @@ the XML::Compile::SOAP modules.  Or better said: let's hope there will
 be more in the future. If you have contributions either in question or
 as answer, then please contribute via the xml mailinglist.
 
-See also L<XML::Compile::FAQ|XML::Compile::FAQ>.
+Also read L<XML::Compile::FAQ|XML::Compile::FAQ>.
 
 =head2 Modifing the messages
 
@@ -37,7 +37,7 @@ for a complex example. A simple example follows here.
 
   sub wsdl11Init($@)
   {   my ($self, $wsdl, $args) = @_;
-      $wsdl->prefixes(myprefix => $my_ns);
+      $wsdl->addPrefixes(myprefix => $my_ns);
       $wsdl->importDefinitions($my_schema_file);
       $self;
   }
@@ -156,8 +156,8 @@ In your program, you typically start with
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.37,
-built on July 09, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 2.38,
+built on August 22, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::Client;
 use vars '$VERSION';
-$VERSION = '2.37';
+$VERSION = '2.38';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
@@ -99,8 +99,8 @@ sub compileClient(@)
       { my ($data, $charset)
           = UNIVERSAL::isa($_[0], 'HASH') ? @_
           : @_%2==0 ? ({@_}, undef)
-          : error __x"operation `{name}' called with odd length parameter list"
-              , name => $name;
+          : panic(__x"operation `{name}' called with odd length parameter list"
+              , name => $name);
 
         $data->{_callback}
             and error __x"operation `{name}' called with _callback, but "

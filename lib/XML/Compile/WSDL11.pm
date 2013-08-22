@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::WSDL11;
 use vars '$VERSION';
-$VERSION = '2.37';
+$VERSION = '2.38';
 
 use base 'XML::Compile::Cache';
 
@@ -22,6 +22,7 @@ use XML::Compile::SOAP::Operation  ();
 use XML::Compile::Transport  ();
 
 use List::Util               qw/first/;
+use Scalar::Util             qw/blessed/;
 
 XML::Compile->addSchemaDirs(__FILE__);
 XML::Compile->knownNamespace(&WSDL11 => 'wsdl.xsd');
@@ -40,7 +41,7 @@ sub init($)
 
     $self->{index}   = {};
 
-    $self->prefixes(wsdl => WSDL11, soap => WSDL11SOAP, http => WSDL11HTTP);
+    $self->addPrefixes(wsdl => WSDL11, soap => WSDL11SOAP, http => WSDL11HTTP);
 
     # next modules should change into an extension as well...
     $_->can('_initWSDL11') && $_->_initWSDL11($self)
@@ -92,9 +93,11 @@ sub compileCalls(@)
 
 
 sub compileCall($@)
-{   my ($self, $op, @opts) = @_;
+{   my ($self, $oper, @opts) = @_;
+    my $op    = blessed $oper ? $oper : $self->operation($oper, @opts);
+
     my $name  = $op->name;
-    error __x"attempt to compile operation {name} again", name => $name
+    error __x"a compiled call for {name} already exists", name => $name
         if $self->{XCW_ccode}{$name};
 
     my $dopts = $self->{XCW_dcopts} || {};
@@ -122,7 +125,6 @@ sub addWSDL($)
 {   my ($self, $data) = @_;
     defined $data or return ();
 
-    defined $data or return;
     my ($node, %details) = $self->dataToXML($data);
     defined $node or return $self;
 
@@ -427,17 +429,18 @@ sub findDef($;$)
 
 sub operations(@)
 {   my ($self, %args) = @_;
-    my @ops;
     $args{produce} and die "produce option removed in 0.81";
 
-    foreach my $service ($self->findDef('service'))
+    my @ops;
+    my @services = $self->findDef('service');
+    foreach my $service (@services)
     {
         next if $args{service} && $args{service} ne $service->{name};
 
-        foreach my $port (@{$service->{wsdl_port} || []})
+        my @ports = @{$service->{wsdl_port} || []};
+        foreach my $port (@ports)
         {
             next if $args{port} && $args{port} ne $port->{name};
-
             my $bindtype = $port->{binding}
                 or error __x"no binding defined in port '{name}'"
                       , name => $port->{name};
@@ -449,12 +452,22 @@ sub operations(@)
                 or error __x"no type defined with binding `{name}'"
                     , name => $bindtype;
 
+            my %all_ops;
             foreach my $operation ( @{$binding->{wsdl_operation}||[]} )
-            {   push @ops, $self->operation
+            {   my $name = $operation->{name};
+                if($all_ops{$name}++)
+                {   panic __x"operation {name} found again; pick service from {services}"
+                      , services => [map $_->{name}, @services], _join => ', '
+                        if @services > 1 && !$args{service};
+                    panic __x"need one set of operations, pick port from {ports}"
+                       , ports => [ map $_->{name}, @ports ], _join => ', ';
+                }
+  
+                push @ops, $self->operation
                   ( service   => $service->{name}
                   , port      => $port->{name}
                   , binding   => $bindtype
-                  , operation => $operation->{name}
+                  , operation => $name
                   , portType  => $type
                   );
             }
