@@ -25,5 +25,6 @@ requires:
   Time::HiRes: 0
   XML::Compile: 1.42
   XML::Compile::Cache: 0.995
+  XML::Compile::SOAP::Daemon: 3.00
   XML::Compile::Tester: 0.90
-version: 3.00
+version: 3.01

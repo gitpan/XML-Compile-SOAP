@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport::SOAPHTTP;
 use vars '$VERSION';
-$VERSION = '3.00';
+$VERSION = '3.01';
 
 use base 'XML::Compile::Transport';
 
@@ -19,14 +19,7 @@ use LWP            ();
 use LWP::UserAgent ();
 use HTTP::Request  ();
 use HTTP::Headers  ();
-
-if($] >= 5.008003)
-{   use Encode;
-    Encode->import;
-}
-else
-{   *encode = sub { $_[1] };
-}
+use Encode;
 
 # (Microsofts HTTP Extension Framework)
 my $http_ext_id = SOAP11ENV;
@@ -227,8 +220,8 @@ sub _prepare_simple_call($)
             or error __x"answer is not xml but `{type}'", type => $ct;
 
         # HTTP::Message::decoded_content() does not work for old Perls
-        my $content = $] >= 5.008 ? $response->decoded_content(ref => 1)
-          : $response->content(ref => 1);
+        my $content = $response->decoded_content(ref => 1)
+                   || $response->content(ref => 1);
 
         ($content, {});
       };
