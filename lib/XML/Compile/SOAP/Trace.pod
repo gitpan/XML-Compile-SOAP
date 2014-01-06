@@ -7,7 +7,7 @@ XML::Compile::SOAP::Trace - help displaying trace details.
 =head1 SYNOPSIS
 
  my ($answer, $trace) = $call->(%params);
- #now $trace is a XML::Compile::SOAP::Trace
+ # now $trace is a XML::Compile::SOAP::Trace
 
  my $req = $trace->request;   # HTTP message which was sent
  my $res = $trace->response;  # HTTP message received
@@ -16,6 +16,7 @@ XML::Compile::SOAP::Trace - help displaying trace details.
  my $dura  = $trace->elapse;
 
  $trace->printTimings;
+ $trace->printErrors;
  $trace->printTimings(\*STDERR);
  $trace->printRequest(pretty_print => 1);
  $trace->printResponse;
@@ -152,12 +153,13 @@ Print an overview on various timings to the selected filehandle.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.38,
-built on August 22, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.00,
+built on January 06, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
 L<XML::Compile::SOAP>,
+L<XML::Compile::WSDL11>,
 L<XML::Compile::SOAP12>,
 L<XML::Compile::SOAP::Daemon>,
 L<XML::Compile::SOAP::WSA>,
@@ -179,7 +181,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2013 by [Mark Overmeer]. For other contributors see ChangeLog.
+Copyrights 2007-2014 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -1,4 +1,4 @@
-# Copyrights 2007-2013 by [Mark Overmeer].
+# Copyrights 2007-2014 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.01.
@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::Transport::SOAPHTTP;
 use vars '$VERSION';
-$VERSION = '2.38';
+$VERSION = '3.00';
 
 use base 'XML::Compile::Transport';
 
@@ -30,6 +30,8 @@ else
 
 # (Microsofts HTTP Extension Framework)
 my $http_ext_id = SOAP11ENV;
+
+my $mime_xop    = 'application/xop+xml';
 
 __PACKAGE__->register(SOAP11HTTP);
 
@@ -92,11 +94,11 @@ sub _prepare_call($)
 
     my $content_type;
     if($version eq 'SOAP11')
-    {   $mime  ||= 'text/xml';
+    {   $mime  ||= ref $soap ? $soap->mimeType : 'text/xml';
         $content_type = qq{$mime; charset="$charset"};
     }
     elsif($version eq 'SOAP12')
-    {   $mime  ||= 'application/soap+xml';
+    {   $mime  ||= ref $soap ? $soap->mimeType : 'application/soap+xml';
         my $sa   = defined $action ? qq{; action="$action"} : '';
         $content_type = qq{$mime; charset="$charset"$sa};
         $header->header(Accept => $mime);  # not the HTML answer
@@ -106,7 +108,9 @@ sub _prepare_call($)
     }
 
     if($method eq 'POST')
-    {   $header->header(SOAPAction => qq{"$action"})
+    {   # should only be used by SOAP11, but you never know.  So, SOAP12
+        # will have the action both ways.
+        $header->header(SOAPAction => qq{"$action"})
             if defined $action;
     }
     elsif($method eq 'M-POST')
@@ -246,26 +250,23 @@ sub _prepare_xop_call($)
         my $bound      = "MIME-boundary-".int rand 10000;
         (my $start_cid = $mtom->[0]->cid) =~ s/^.*\@/xml@/;
 
-        $request->header(Content_Type => <<_CT);
+        $request->header(Content_Type => <<__CT);
 multipart/related;
  boundary="$bound";
- type="application/xop+xml"
+ type="$mime_xop";
  start="<$start_cid>";
- start-info="text/xml"
-_CT
+ start-info="$content_type"
+__CT
 
         my $base = HTTP::Message->new
-          ( [ Content_Type => <<_CT
-application/xop+xml;
- charset="$charset"; type="text/xml"
-_CT
+          ( [ Content_Type => qq{$mime_xop; charset="$charset"; type="$content_type"}
             , Content_Transfer_Encoding => '8bit'
-            , Content_ID  => '<'.$start_cid.'>'
+            , Content_ID  => "<$start_cid>"
             ] );
         $base->content_ref($content);   # already bytes (not utf-8)
 
-        my @parts = ($base, map { $_->mimePart } @$mtom);
-        $request->parts(@parts); #$base, map { $_->mimePart } @$mtom);
+        my @parts = ($base, map $_->mimePart, @$mtom);
+        $request->parts(@parts); #$base, map $_->mimePart, @$mtom);
         $request;
       };
 

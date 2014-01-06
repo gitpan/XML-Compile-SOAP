@@ -1,4 +1,4 @@
-# Copyrights 2007-2013 by [Mark Overmeer].
+# Copyrights 2007-2014 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.01.
@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::Operation;
 use vars '$VERSION';
-$VERSION = '2.38';
+$VERSION = '3.00';
 
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
@@ -111,18 +111,6 @@ sub compileTransporter(@)
 
 sub compileClient(@)  { panic "not implemented" }
 sub compileHandler(@) { panic "not implemented" }
-
-
-{   my (%registered, %envelope);
-    sub register($)
-    { my ($class, $uri, $env) = @_;
-      $registered{$uri} = $class;
-      $envelope{$env}   = $class if $env;
-    }
-    sub plugin($)       { $registered{$_[1]} }
-    sub fromEnvelope($) { $envelope{$_[1]} }
-    sub registered($)   { values %registered }
-}
 
 
 sub explain($$$@)

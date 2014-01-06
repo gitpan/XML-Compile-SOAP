@@ -1,4 +1,4 @@
-# Copyrights 2007-2013 by [Mark Overmeer].
+# Copyrights 2007-2014 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.01.
@@ -7,23 +7,21 @@ use strict;
 
 package XML::Compile::SOAP11;
 use vars '$VERSION';
-$VERSION = '2.38';
+$VERSION = '3.00';
 
 use base 'XML::Compile::SOAP';
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 use XML::Compile::SOAP::Util qw/:soap11/;
-use XML::Compile::Util       qw/pack_type unpack_type type_of_node
-   SCHEMA2001 SCHEMA2001i/;
+use XML::Compile::Util       qw/pack_type unpack_type type_of_node/;
 
 # publish interface to WSDL
 use XML::Compile::SOAP11::Operation ();
 
-XML::Compile->addSchemaDirs(__FILE__);
-XML::Compile->knownNamespace
- ( &SOAP11ENC => 'soap-encoding.xsd'
- , &SOAP11ENV => 'soap-envelope.xsd'
- );
+__PACKAGE__->register
+  ( WSDL11SOAP
+  , &SOAP11ENV => 'XML::Compile::SOAP11::Operation'
+  );
 
 
 sub new($@)
@@ -35,38 +33,57 @@ sub new($@)
 
 sub init($)
 {   my ($self, $args) = @_;
+    $args->{media_type} ||= 'text/xml';
     $self->SUPER::init($args);
     $self->_initSOAP11($self->schemas);
 }
 
 sub _initSOAP11($)
-{   my ($self, $schemas) = @_;
-    return $self
+{   my ($thing, $schemas) = @_;
+    $thing->_initSOAP($schemas);
+
+    return $thing
         if $schemas->{did_init_SOAP11}++;   # ugly
 
     $schemas->addPrefixes
       ( 'SOAP-ENV' => SOAP11ENV  # preferred names by spec
       , 'SOAP-ENC' => SOAP11ENC
-      , xsd        => SCHEMA2001
-      , xsi        => SCHEMA2001i
       );
 
+    (my $xsddir = __FILE__) =~ s!\.pm$!/xsd!;
     $schemas->importDefinitions
-      ( SOAP11ENV
+      ( "$xsddir/soap-envelope.xsd"
       , element_form_default   => 'qualified'
       , attribute_form_default => 'qualified'
       );
     $schemas->importDefinitions
-      ( SOAP11ENC
+      ( "$xsddir/soap-encoding.xsd"
       , element_form_default   => 'qualified'
       );
-    $schemas->importDefinitions('soap-envelope-patch.xsd');
+    $schemas->importDefinitions
+      ( "$xsddir/soap-envelope-patch.xsd"
+      );
+    $thing;
+}
 
-    $self;
+sub _initWSDL11($)
+{   my ($class, $wsdl) = @_;
+    trace "initialize SOAP11 for WSDL11";
+    $class->_initSOAP11($wsdl);
+
+    (my $xsddir = __FILE__) =~ s!SOAP11\.pm$!WSDL11/xsd!;
+    my $xsd     = "$xsddir/wsdl-soap.xsd";
+    $wsdl->importDefinitions($xsd, element_form_default => 'qualified');
+    $wsdl->addPrefixes(soap => WSDL11SOAP);
+
+    $wsdl->declare(READER =>
+      [ "soap:address", "soap:operation", "soap:binding"
+      , "soap:body",    "soap:header",    "soap:fault" ]);
 }
 
 sub version    { 'SOAP11' }
 sub envelopeNS { SOAP11ENV }
+sub envType($) { pack_type SOAP11ENV, $_[1] }
 
 #-----------------------------------
 
@@ -78,28 +95,28 @@ sub compileMessage($$)
     if(ref $args{body} eq 'ARRAY')
     {   my @h = @{$args{body}};
         my @parts;
-        push @parts, { name => shift @h, element => shift @h } while @h;
-        $args{body} = {use => 'literal', parts => \@parts};
+        push @parts, +{name => shift @h, element => shift @h} while @h;
+        $args{body} = +{use => 'literal', parts => \@parts};
     }
 
     if(ref $args{header} eq 'ARRAY')
     {   my @h = @{$args{header}};
         my @o;
         while(@h)
-        {  my $part = { name => shift @h, element => shift @h };
-           push @o, {use => 'literal', parts => [ $part ]};
+        {  my $part = +{name => shift @h, element => shift @h};
+           push @o, +{use => 'literal', parts => [$part]};
         }
         $args{header} = \@o;
     }
 
     my $f = $args{faults};
     if(ref $f eq 'ARRAY')
-    {   $args{faults} = {};
+    {   $args{faults} = +{};
         my @f = @$f;
         while(@f)
         {   my $name = shift @f;
-            my $part = { name => $name, element => shift @f };
-            $args{faults}{$name} = { use => 'literal', part => $part };
+            my $part = +{name => $name, element => shift @f};
+            $args{faults}{$name} = +{use => 'literal', part => $part};
         }
     }
 
@@ -109,8 +126,6 @@ sub compileMessage($$)
 #------------------------------------------------
 # Sender
 
-sub _envNS { SOAP11ENV }
-
 sub _sender(@)
 {   my ($self, %args) = @_;
 
@@ -119,7 +134,7 @@ sub _sender(@)
     my %destination = @{$args{destination} || []};
 
     my $understand  = $args{mustUnderstand};
-    my %understand  = map { ($_ => 1) }
+    my %understand  = map +($_ => 1),
         ref $understand eq 'ARRAY' ? @$understand
       : defined $understand ? $understand : ();
 
@@ -167,6 +182,7 @@ sub _writer_header($)
         $label eq shift @$rules or panic;
         my $code  = shift @$rules;
 
+        # fixed in SOAP12, but SOAP11 only understands numeric boolean values
         my $understand
            = $part->{mustUnderstand}         ? '1'
            : defined $part->{mustUnderstand} ? '0'    # explicit 0
@@ -174,7 +190,7 @@ sub _writer_header($)
 
         my $actor = $part->{destination};
         if(ref $actor eq 'ARRAY')
-        {   $actor = join ' ', map {$self->roleURI($_)} @$actor }
+        {   $actor = join ' ', map $self->roleURI($_), @$actor }
         elsif(defined $actor)
         {   $actor =~ s/\b(\S+)\b/$self->roleURI($1)/ge }
 
@@ -223,7 +239,7 @@ sub _writer_faults($)
             $copy{faultactor} = $self->roleURI($copy{faultactor});
             my $det = delete $copy{detail};
             my @det = !defined $det ? () : ref $det eq 'ARRAY' ? @$det : $det;
-            $copy{detail}{$type} = [ map {$details->($doc, $_)} @det ];
+            $copy{detail}{$type} = [ map $details->($doc, $_), @det ];
             $wrfault->($doc, \%copy);
           };
 

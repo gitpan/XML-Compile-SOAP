@@ -1,4 +1,4 @@
-# Copyrights 2007-2013 by [Mark Overmeer].
+# Copyrights 2007-2014 by [Mark Overmeer].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
 # Pod stripped from pm file by OODoc 2.01.
@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11::Operation;
 use vars '$VERSION';
-$VERSION = '2.38';
+$VERSION = '3.00';
 
 use base 'XML::Compile::SOAP::Operation';
 
@@ -21,10 +21,7 @@ use XML::Compile::SOAP11::Server;
 use XML::Compile::SOAP::Extension;
 
 our $VERSION;         # OODoc adds $VERSION to the script
-$VERSION ||= 'undef';
-
-XML::Compile->knownNamespace(&WSDL11SOAP => 'wsdl-soap.xsd');
-__PACKAGE__->register(WSDL11SOAP, SOAP11ENV);
+$VERSION ||= '(devel)';
 
 # client/server object per schema class, because initiation options
 # can be different.  Class reference is key.
@@ -43,19 +40,6 @@ sub init($)
 
     XML::Compile::SOAP::Extension->soap11OperationInit($self, $args);
     $self;
-}
-
-sub _initWSDL11($)
-{   my ($class, $wsdl) = @_;
-
-    trace "initialize SOAP11 operations for WSDL11";
-
-    $wsdl->importDefinitions(WSDL11SOAP, element_form_default => 'qualified');
-    $wsdl->addPrefixes(soap => WSDL11SOAP);
-
-    $wsdl->declare(READER =>
-      [ "soap:address", "soap:operation", "soap:binding"
-      , "soap:body",    "soap:header",    "soap:fault" ]);
 }
 
 sub _fromWSDL11(@)
@@ -112,6 +96,10 @@ sub _msg_parts($$$$$)
         $parts{body}  = {procedure => $procedure, %$port_op, use => 'literal',
            %$body, parts => \@parts};
     }
+    elsif($port_op->{message})
+    {   # missing <soap:body use="literal"> in <wsdl:input> or :output
+        error __x"operation {opname} has a message in its portType but no encoding in the binding", opname => $opname;
+    }
 
     my $bsh = $bind_op->{soap_header} || [];
     foreach my $header (ref $bsh eq 'ARRAY' ? @$bsh : $bsh)
@@ -142,7 +130,7 @@ sub _select_parts($$$)
     @need or return @$parts;
 
     my @sel;
-    my %parts = map { ($_->{name} => $_) } @$parts;
+    my %parts = map +($_->{name} => $_), @$parts;
     foreach my $name (@need)
     {   my $part = $parts{$name}
             or error __x"message {msg} does not have a part named {part}"
@@ -199,7 +187,8 @@ sub clientClass { 'XML::Compile::SOAP11::Client' }
 
 
 sub addHeader($$$%)
-{   my ($self, $dir, $label, $elem, %opts) = @_;
+{   my ($self, $dir, $label, $el, %opts) = @_;
+    my $elem = $self->schemas->findName($el);
     my $defs
       = $dir eq 'INPUT'  ? 'input_def'
       : $dir eq 'OUTPUT' ? 'output_def'

@@ -172,9 +172,10 @@ DETAILs chapter in the L<XML::Compile::Transport|XML::Compile::Transport> manual
 
 The routine which will be used to exchange the data with the server.
 This code is created by an L<XML::Compile::Transport::compileClient()|XML::Compile::Transport/"Handlers">
-extension. By default, a transporter compatible to the protocol
-is created.  However, in most cases you want to reuse one (HTTP1.1)
-connection to a server.
+extension.
+
+By default, a transporter compatible to the protocol is created.  However,
+in most cases you want to reuse one (HTTP1.1) connection to a server.
 
 =back
 
@@ -193,20 +194,17 @@ The DIRECTION is C<INPUT>, it will return the message which the client
 sends to the server (input for the server). The C<OUTPUT> message is
 sent as response by the server.
 
-=item XML::Compile::SOAP::Operation-E<gt>B<register>(URI, ENVNS)
-
-Declare an operation type, but WSDL specific URI and envelope namespace.
-
 =back
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.38,
-built on August 22, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.00,
+built on January 06, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
 L<XML::Compile::SOAP>,
+L<XML::Compile::WSDL11>,
 L<XML::Compile::SOAP12>,
 L<XML::Compile::SOAP::Daemon>,
 L<XML::Compile::SOAP::WSA>,
@@ -228,7 +226,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2013 by [Mark Overmeer]. For other contributors see ChangeLog.
+Copyrights 2007-2014 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

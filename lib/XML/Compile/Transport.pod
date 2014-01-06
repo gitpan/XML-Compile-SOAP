@@ -113,6 +113,28 @@ See L<XML::Compile::SOAP::Extension/"SOAP11">
 
 =back
 
+=head2 SOAP12
+
+See L<documentation in the base class|XML::Compile::SOAP::Extension/"SOAP12">.
+ 
+=over 4
+
+=item $obj-E<gt>B<soap12ClientWrapper>(OPERATION, CALL, ARGS)
+
+See L<XML::Compile::SOAP::Extension/"SOAP12">
+
+=item $obj-E<gt>B<soap12HandlerWrapper>(OPERATION, CALLBACK, ARGS)
+
+See L<XML::Compile::SOAP::Extension/"SOAP12">
+
+=item $obj-E<gt>B<soap12OperationInit>(OPERATION, ARGS)
+
+=item XML::Compile::Transport-E<gt>B<soap12OperationInit>(OPERATION, ARGS)
+
+See L<XML::Compile::SOAP::Extension/"SOAP12">
+
+=back
+
 =head2 Accessors
 
 =over 4
@@ -215,8 +237,8 @@ can modify the outgoing message XML body and headers, carry out the data
 exchange using the UserAgent, and then examine the returned Reponse for
 content and headers using methods similar to the following:
 
- sub transport_hook($$)
- {   my ($request, $trace) = @_;
+ sub transport_hook($$$)
+ {   my ($request, $trace, $transporter) = @_;
      my $content = $request->content;
 
      # ... modify content if you need
@@ -233,7 +255,7 @@ content and headers using methods similar to the following:
      my $response = $ua->request($request);
 
      # ... check the response headers
-     $response->header('Name');
+     my $name = $response->header('Name');
 
      # ... use the response content
      my $received = $response->decoded_content || $response->content;
@@ -284,6 +306,39 @@ or
   $wsdl->compileClient('GetLastTracePrice',
       transport_hook => \&fake_server);
 
+=head3 Transport hook for basic authentication
+
+[Adapted from an example contributed by Kieron Johnson]
+This example shows a transport_hook for compileClient() to add to http
+headers for the basic http authentication.  The parameter can also be
+used for compileAll() and many other related functions.
+
+  my $call = $wsdl->compileClient($operation
+     , transport_hook => \&basic_auth );
+
+  # HTTP basic authentication encodes the username and password with
+  # Base64. The encoded source string has format: "username:password"
+  # With the below HTTP header being required:
+  #        "Authorization: Basic [encoded password]"
+
+  use MIME::Base64 'encode_base64';
+
+  my $user     = 'myuserid' ;
+  my $password = 'mypassword';
+
+  sub basic_auth($$)
+  {   my ($request, $trace) = @_;
+
+      # Encode userid and password
+      my $authorization = 'Basic '. encode_base64 "$user:$password";
+
+      # Modify http header to include basic authorisation
+      $request->header(Authorization => $authorization );
+
+      my $ua = $trace->{user_agent};
+      $ua->request($request);
+  }
+
 =head1 SYNOPSYS
 
 See L<documentation in the base class|XML::Compile::SOAP::Extension/"SYNOPSYS">.
@@ -300,12 +355,13 @@ Declare an transporter type.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.38,
-built on August 22, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.00,
+built on January 06, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
 L<XML::Compile::SOAP>,
+L<XML::Compile::WSDL11>,
 L<XML::Compile::SOAP12>,
 L<XML::Compile::SOAP::Daemon>,
 L<XML::Compile::SOAP::WSA>,
@@ -327,7 +383,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2013 by [Mark Overmeer]. For other contributors see ChangeLog.
+Copyrights 2007-2014 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

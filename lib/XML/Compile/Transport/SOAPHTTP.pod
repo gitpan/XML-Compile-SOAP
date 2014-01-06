@@ -24,6 +24,8 @@ XML::Compile::Transport::SOAPHTTP - exchange XML-SOAP via HTTP
 
  my ($xmlout, $trace) = $call->($xmlin);
 
+ $wsdl->compileCalls(transport => $send);
+
 =head1 DESCRIPTION
 
 This module handles the exchange of (XML) messages, according to the
@@ -122,6 +124,28 @@ See L<XML::Compile::SOAP::Extension/"SOAP11">
 =item XML::Compile::Transport::SOAPHTTP-E<gt>B<soap11OperationInit>(OPERATION, ARGS)
 
 See L<XML::Compile::SOAP::Extension/"SOAP11">
+
+=back
+
+=head2 SOAP12
+
+See L<documentation in the base class|XML::Compile::Transport/"SOAP12">.
+ 
+=over 4
+
+=item $obj-E<gt>B<soap12ClientWrapper>(OPERATION, CALL, ARGS)
+
+See L<XML::Compile::SOAP::Extension/"SOAP12">
+
+=item $obj-E<gt>B<soap12HandlerWrapper>(OPERATION, CALLBACK, ARGS)
+
+See L<XML::Compile::SOAP::Extension/"SOAP12">
+
+=item $obj-E<gt>B<soap12OperationInit>(OPERATION, ARGS)
+
+=item XML::Compile::Transport::SOAPHTTP-E<gt>B<soap12OperationInit>(OPERATION, ARGS)
+
+See L<XML::Compile::SOAP::Extension/"SOAP12">
 
 =back
 
@@ -266,12 +290,13 @@ See L<XML::Compile::Transport/"Helpers">
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.38,
-built on August 22, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.00,
+built on January 06, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
 L<XML::Compile::SOAP>,
+L<XML::Compile::WSDL11>,
 L<XML::Compile::SOAP12>,
 L<XML::Compile::SOAP::Daemon>,
 L<XML::Compile::SOAP::WSA>,
@@ -293,7 +318,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2013 by [Mark Overmeer]. For other contributors see ChangeLog.
+Copyrights 2007-2014 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

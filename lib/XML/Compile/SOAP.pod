@@ -7,13 +7,12 @@ XML::Compile::SOAP - base-class for SOAP implementations
 =head1 INHERITANCE
 
  XML::Compile::SOAP is extended by
-   XML::Compile::SOAP10
    XML::Compile::SOAP11
    XML::Compile::SOAP12
 
 =head1 SYNOPSIS
 
- ** SOAP1.1 and WSDL1.1 over HTTP
+ ** SOAP1.[12] and WSDL1.1 over HTTP
 
  # !!! The next steps are only required when you do not have
  # !!! a WSDL. See XML::Compile::WSDL11 if you have a WSDL.
@@ -83,8 +82,7 @@ XML::Compile::SOAP - base-class for SOAP implementations
 This module handles the SOAP protocol.  The first implementation is
 SOAP1.1 (F<http://www.w3.org/TR/2000/NOTE-SOAP-20000508/>), which is still
 most often used.  The SOAP1.2 definition (F<http://www.w3.org/TR/soap12/>)
-is quite different; this module tries to define a sufficiently abstract
-interface to hide the protocol differences.
+is provided via the separate distribution L<XML::Compile::SOAP12|XML::Compile::SOAP12>.
 
 Be aware that there are three kinds of SOAP:
 
@@ -142,13 +140,18 @@ C<'ATTEMPT'>
 
 =back
 
+=item XML::Compile::SOAP-E<gt>B<register>(URI, ENVNS)
+
+Declare an operation type, being an (WSDL specific) URI and envelope
+namespace.
+
 =back
 
 =head2 Accessors
 
 =over 4
 
-=item $obj-E<gt>B<name>()
+=item $obj-E<gt>B<mediaType>()
 
 =item $obj-E<gt>B<schemas>()
 
@@ -405,12 +408,13 @@ it still works... but you may get into characterset problems and such.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 2.38,
-built on August 22, 2013. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.00,
+built on January 06, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
 L<XML::Compile::SOAP>,
+L<XML::Compile::WSDL11>,
 L<XML::Compile::SOAP12>,
 L<XML::Compile::SOAP::Daemon>,
 L<XML::Compile::SOAP::WSA>,
@@ -432,7 +436,7 @@ on C<irc.perl.org>.
 
 =head1 LICENSE
 
-Copyrights 2007-2013 by [Mark Overmeer]. For other contributors see ChangeLog.
+Copyrights 2007-2014 by [Mark Overmeer]. For other contributors see ChangeLog.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
