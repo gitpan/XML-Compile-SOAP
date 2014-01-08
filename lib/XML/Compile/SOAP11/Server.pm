@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP11::Server;
 use vars '$VERSION';
-$VERSION = '3.01';
+$VERSION = '3.02';
 
 use base 'XML::Compile::SOAP11', 'XML::Compile::SOAP::Server';
 
@@ -89,7 +89,7 @@ sub faultNoAnswerProduced($)
  
     my $message = __x"callback {name} did not return an answer", name => $name;
     $self->makeError
-      ( faultcode   => pack_type(SOAP11ENV, 'Server.noAnswer')
+      ( faultcode   => pack_type(SOAP11ENV, 'Server.noAnswerProduced')
       , faultstring => $message
       , faultactor  => $self->role
       );
