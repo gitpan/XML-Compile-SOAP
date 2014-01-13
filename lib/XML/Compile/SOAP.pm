@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP;
 use vars '$VERSION';
-$VERSION = '3.02';
+$VERSION = '3.03';
 
 
 use Log::Report          'xml-compile-soap';
@@ -34,11 +34,11 @@ sub new($@)
 
 sub init($)
 {   my ($self, $args) = @_;
-    $self->{XCS_mime}  = $args->{media_type} || 'application/soap+xml';
+    $self->{XCS_mime}   = $args->{media_type} || 'application/soap+xml';
 
     my $schemas = $self->{XCS_schemas} = $args->{schemas}
      || XML::Compile::Cache->new(allow_undeclared => 1
-        , any_element => 'ATTEMPT', any_attribute => 'ATTEMPT');
+          , any_element => 'ATTEMPT', any_attribute => 'ATTEMPT');
 
     UNIVERSAL::isa($schemas, 'XML::Compile::Cache')
         or panic "schemas must be a Cache object";

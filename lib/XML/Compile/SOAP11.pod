@@ -173,6 +173,10 @@ See L<documentation in the base class|XML::Compile::SOAP/"DETAILS">.
 
 See L<documentation in the base class|XML::Compile::SOAP/"SOAP introduction">.
  
+=head2 Supported servers
+
+See L<documentation in the base class|XML::Compile::SOAP/"Supported servers">.
+ 
 =head2 Naming types and elements
 
 See L<documentation in the base class|XML::Compile::SOAP/"Naming types and elements">.
@@ -345,8 +349,8 @@ Or
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 3.02,
-built on January 08, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.03,
+built on January 10, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

@@ -29,13 +29,14 @@ a server.
 
 =item XML::Compile::SOAP::Operation-E<gt>B<new>(OPTIONS)
 
- -Option   --Default
-  action     undef
-  endpoints  []
-  kin        <required>
-  nam        <required>
-  schemas    <required>
-  transport  'HTTP'
+ -Option     --Default
+  action       undef
+  endpoints    []
+  kin          <required>
+  nam          <required>
+  schemas      <required>
+  server_type  undef
+  transport    'HTTP'
 
 =over 2
 
@@ -58,6 +59,13 @@ two by a client.
 =item nam => e
 
 =item schemas => XML::Compile::Cache
+
+=item server_type => NAME
+
+Most server implementations show some problems.  Also, servers may produce
+responses using their own namespaces (like for error codes).  When you know
+which server you are talking to, the quircks of the specific server type can
+be loaded.  Read more in the L<XML::Compile::SOAP/"Supported servers">.
 
 =item transport => URI|'HTTP'
 
@@ -198,8 +206,8 @@ sent as response by the server.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 3.02,
-built on January 08, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.03,
+built on January 10, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

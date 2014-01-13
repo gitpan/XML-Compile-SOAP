@@ -36,8 +36,8 @@ L<XML::Compile::SOAP::WSA|XML::Compile::SOAP::WSA>)
 
 =item XML::Compile::SOAP::Extension-E<gt>B<wsdl11Init>(WSDL, ARGS)
 
-Do not use this hook for adding WSDLs or Schemas, unless those are
-used to interpret WSDL or SOAP files.
+Do not use this hook for adding WSDLs or schemas, unless those are
+used to interpret WSDL or SOAP files correctly.
 
 =back
 
@@ -85,8 +85,8 @@ ARGS is a reference.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 3.02,
-built on January 08, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.03,
+built on January 10, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

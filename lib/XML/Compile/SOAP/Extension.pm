@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::Extension;
 use vars '$VERSION';
-$VERSION = '3.02';
+$VERSION = '3.03';
 
 use Log::Report 'xml-compile-soap';
 
@@ -23,9 +23,10 @@ sub init($)
     $self;
 }
 
+#--------
 
-### Everywhere: when called on an object, it is the stub for the
-### extension. Only when called as class method, it will walk all
+### For all methods named below: when called on an object, it is the stub
+### for the extension. Only when called as class method, it will walk all
 ### extension objects.
 
 sub wsdl11Init($$)

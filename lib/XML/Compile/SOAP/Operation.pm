@@ -7,26 +7,45 @@ use strict;
 
 package XML::Compile::SOAP::Operation;
 use vars '$VERSION';
-$VERSION = '3.02';
+$VERSION = '3.03';
 
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
-use List::Util  'first';
 
 use XML::Compile::Util       qw/pack_type unpack_type/;
 use XML::Compile::SOAP::Util qw/:wsdl11/;
+
+use File::Spec     ();
+use List::Util     qw(first);
+use File::Basename qw(dirname);
+
+my %servers =
+  ( BEA =>          # Oracle's BEA
+      { xsddir => 'bea'
+      , xsds   => [ qw(bea_wli_sb_context.xsd bea_wli_sb_context-fix.xsd) ]
+      }
+  , SharePoint =>   # MicroSoft's SharePoint
+      { xsddir => 'sharepoint'
+      , xsds   => [ qw(sharepoint-soap.xsd sharepoint-serial.xsd) ]
+      }
+  , 'XML::Compile::Daemon' =>  # my own server implementation
+      { xsddir => 'xcdaemon'
+      , xsds   => [ qw(xcdaemon.xsd) ]
+      }
+  );
 
 
 sub new(@) { my $class = shift; (bless {}, $class)->init( {@_} ) }
 
 sub init($)
 {   my ($self, $args) = @_;
-    $self->{kind}     = $args->{kind} or die;
-    $self->{name}     = $args->{name} or die;
-    $self->{schemas}  = $args->{schemas} or die;
+    $self->{kind} = $args->{kind} or panic;
+    $self->{name} = $args->{name} or panic;
+    $self->{schemas} = $args->{schemas} or panic;
+    $self->_server_type($args->{server_type});
 
     $self->{transport} = $args->{transport};
-    $self->{action}   = $args->{action};
+    $self->{action}    = $args->{action};
 
     my $ep = $args->{endpoints} || [];
     my @ep = ref $ep eq 'ARRAY' ? @$ep : $ep;
@@ -41,6 +60,30 @@ sub init($)
     $self;
 }
 
+sub registered
+{   # This cannot be resolved via dependencies, because that causes
+    # a dependency cycle which CPAN.pm cannot handle.  This method was
+    # always called in <3.00 and moved to ::SOAP in >= 3.00
+    error "You need to upgrade XML::Compile::WSDL11 to at least 3.00";
+}
+
+sub _server_type($)
+{   my ($self, $type) = @_;
+    $type or return;
+
+    my $schemas = $self->schemas;
+    return if $schemas->{"did_init_server_$type"}++;
+
+    my $def    = $servers{$type}
+        or error __x"soap server type `{type}' is not supported (yet), please contribute"
+          , type => $type;
+
+    my $xsddir = File::Spec->catdir(dirname(__FILE__), 'xsd', $def->{xsddir});
+    $schemas->importDefinitions(File::Spec->catfile($xsddir, $_))
+        for @{$def->{xsds}};
+}
+
+#----------------
 
 sub schemas()   {shift->{schemas}}
 sub kind()      {shift->{kind}}
@@ -112,6 +155,7 @@ sub compileTransporter(@)
 sub compileClient(@)  { panic "not implemented" }
 sub compileHandler(@) { panic "not implemented" }
 
+#---------------
 
 sub explain($$$@)
 {   my ($self, $wsdl, $format, $dir, %args) = @_;

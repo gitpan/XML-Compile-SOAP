@@ -38,17 +38,18 @@ C<input_def>, C<output_def> and C<fault_def> are HASHes which contain
 the input and output message header, body and fault-header definitions
 in WSDL1.1 style.
 
- -Option    --Defined in                   --Default
-  action      XML::Compile::SOAP::Operation  undef
-  endpoints   XML::Compile::SOAP::Operation  []
-  fault_def                                  <undef>
-  input_def                                  <undef>
-  kin         XML::Compile::SOAP::Operation  <required>
-  nam         XML::Compile::SOAP::Operation  <required>
-  output_def                                 <undef>
-  schemas     XML::Compile::SOAP::Operation  <required>
-  style                                      'document'
-  transport   XML::Compile::SOAP::Operation  'HTTP'
+ -Option     --Defined in                   --Default
+  action       XML::Compile::SOAP::Operation  undef
+  endpoints    XML::Compile::SOAP::Operation  []
+  fault_def                                   <undef>
+  input_def                                   <undef>
+  kin          XML::Compile::SOAP::Operation  <required>
+  nam          XML::Compile::SOAP::Operation  <required>
+  output_def                                  <undef>
+  schemas      XML::Compile::SOAP::Operation  <required>
+  server_type  XML::Compile::SOAP::Operation  undef
+  style                                       'document'
+  transport    XML::Compile::SOAP::Operation  'HTTP'
 
 =over 2
 
@@ -67,6 +68,8 @@ in WSDL1.1 style.
 =item output_def => HASH
 
 =item schemas => XML::Compile::Cache
+
+=item server_type => NAME
 
 =item style => 'document'|'rpc'
 
@@ -278,8 +281,8 @@ example:
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 3.02,
-built on January 08, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.03,
+built on January 10, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
