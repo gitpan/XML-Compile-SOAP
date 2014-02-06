@@ -37,11 +37,11 @@ the receiver) is avoided.
 
 =over 4
 
-=item $obj-E<gt>B<bytes>((STRING|SCALAR), OPTIONS)
+=item $obj-E<gt>B<bytes>( <STRING|SCALAR>, %options )
 
 Create a L<XML::Compile::XOP::Include|XML::Compile::XOP::Include> object which sources from a
 STRING (representing bytes) or a SCALAR reference to such a string.
-With the OPTIONS, you can overrule defaults generated for the "Include"
+With the %options, you can overrule defaults generated for the "Include"
 object.
 
 example: use of bytes()
@@ -49,10 +49,10 @@ example: use of bytes()
   my $data = $xop->bytes($string, type => 'text/html');
   # $data is a XML::Compile::XOP::Include
 
-=item $obj-E<gt>B<file>((FILENAME|FILEHANDLE), OPTIONS)
+=item $obj-E<gt>B<file>( <$filename|$fh>, %options )
 
 Create a L<XML::Compile::XOP::Include|XML::Compile::XOP::Include> object which sources from a
-FILE specified by NAME or HANDLE.  With the OPTIONS, you can overrule
+FILE specified by NAME or HANDLE.  With the %options, you can overrule
 defaults generated for the "Include" object.
 
 example: use of file()
@@ -64,7 +64,7 @@ example: use of file()
   my $data = $xop->file($fn, type => $fn);
   # $data is a XML::Compile::XOP::Include
 
-=item XML::Compile::XOP-E<gt>B<new>(OPTIONS)
+=item XML::Compile::XOP-E<gt>B<new>(%options)
 
  -Option         --Default
   hostname         'localhost'
@@ -104,8 +104,8 @@ a email address.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 3.03,
-built on January 10, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.04,
+built on February 06, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

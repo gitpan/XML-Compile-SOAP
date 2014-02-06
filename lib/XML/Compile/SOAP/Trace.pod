@@ -32,7 +32,7 @@ as produced by a SOAP call (client side).
 
 =over 4
 
-=item XML::Compile::SOAP::Trace-E<gt>B<new>(OPTIONS)
+=item XML::Compile::SOAP::Trace-E<gt>B<new>(%options)
 
 Called by the SOAP call implementation; not for normal users.
 
@@ -47,7 +47,7 @@ Called by the SOAP call implementation; not for normal users.
 Returns the date string which represent the moment that the call
 was initiated.
 
-=item $obj-E<gt>B<elapse>([KIND])
+=item $obj-E<gt>B<elapse>( [$kind] )
 
 Returns the time in seconds (with hires, sub-second detail) of a part of
 the SOAP communication. Some values may be C<undef>.  Elapse without
@@ -67,14 +67,14 @@ example:
 
  print $trace->elapse('decode');
 
-=item $obj-E<gt>B<error>([ERROR])
+=item $obj-E<gt>B<error>( [$error] )
 
 Often contains an error message, when something went wrong.  The message
 is returned as Log::Report::Exception.  Only the first error is returned,
 use L<errors()|XML::Compile::SOAP::Trace/"Accessors"> to get all.
 
-[2.31] When an ERROR is provided, it is added to the internal list of errors.
-The ERROR parameter may be a Log::Report::Exception, a
+[2.31] When an $error is provided, it is added to the internal list of errors.
+The $error parameter may be a Log::Report::Exception, a
 Log::Report::Message or a simple string.
 
 =item $obj-E<gt>B<errors>()
@@ -111,13 +111,13 @@ that the call was initiated.  See Time::HiRes method C<time>.
 
 =over 4
 
-=item $obj-E<gt>B<printErrors>([FILEHANDLE])
+=item $obj-E<gt>B<printErrors>( [$fh] )
 
 The filehandle defaults to STDERR.
 
 If you want to see more output, try adding C<<use Log::Report mode => 3;>>
 
-=item $obj-E<gt>B<printRequest>([FILEHANDLE], OPTIONS)
+=item $obj-E<gt>B<printRequest>( [$fh], %options )
 
  -Option      --Default
   pretty_print  0
@@ -131,7 +131,7 @@ the messages to be shown readible.
 
 =back
 
-=item $obj-E<gt>B<printResponse>([FILEHANDLE], OPTIONS)
+=item $obj-E<gt>B<printResponse>( [$fh], %options )
 
  -Option      --Default
   pretty_print  0
@@ -145,7 +145,7 @@ the messages to be shown readible.
 
 =back
 
-=item $obj-E<gt>B<printTimings>([FILEHANDLE])
+=item $obj-E<gt>B<printTimings>( [$fh] )
 
 Print an overview on various timings to the selected filehandle.
 
@@ -153,8 +153,8 @@ Print an overview on various timings to the selected filehandle.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 3.03,
-built on January 10, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.04,
+built on February 06, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

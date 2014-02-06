@@ -6,8 +6,7 @@ use warnings;
 use strict;
 
 package XML::Compile::SOAP::Operation;
-use vars '$VERSION';
-$VERSION = '3.03';
+our $VERSION = '3.04';
 
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
@@ -159,6 +158,12 @@ sub compileHandler(@) { panic "not implemented" }
 
 sub explain($$$@)
 {   my ($self, $wsdl, $format, $dir, %args) = @_;
+    panic "not implemented for ".ref $self;
+}
+
+
+sub parsedWSDL(%)
+{   my $self = shift;
     panic "not implemented for ".ref $self;
 }
 

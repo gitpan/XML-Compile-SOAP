@@ -27,4 +27,4 @@ requires:
   XML::Compile::Cache: 0.995
   XML::Compile::SOAP::Daemon: 3.00
   XML::Compile::Tester: 0.90
-version: 3.03
+version: 3.04

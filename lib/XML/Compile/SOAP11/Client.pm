@@ -6,8 +6,7 @@ use warnings;
 use strict;
 
 package XML::Compile::SOAP11::Client;
-use vars '$VERSION';
-$VERSION = '3.03';
+our $VERSION = '3.04';
 
 use base 'XML::Compile::SOAP11','XML::Compile::SOAP::Client';
 

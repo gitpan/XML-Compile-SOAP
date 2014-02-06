@@ -32,19 +32,19 @@ Two extensions are made: the SOAP11 client
 L<XML::Compile::SOAP11::Client|XML::Compile::SOAP11::Client>.
 and server in L<XML::Compile::SOAP11::Server|XML::Compile::SOAP11::Server>.
 
-See L<documentation in the base class|XML::Compile::SOAP/"DESCRIPTION">.
+Extends L<"DESCRIPTION" in XML::Compile::SOAP|XML::Compile::SOAP/"DESCRIPTION">.
  
 =head1 METHODS
 
-See L<documentation in the base class|XML::Compile::SOAP/"METHODS">.
+Extends L<"METHODS" in XML::Compile::SOAP|XML::Compile::SOAP/"METHODS">.
  
 =head2 Constructors
 
-See L<documentation in the base class|XML::Compile::SOAP/"Constructors">.
+Extends L<"Constructors" in XML::Compile::SOAP|XML::Compile::SOAP/"Constructors">.
  
 =over 4
 
-=item $obj-E<gt>B<new>(OPTIONS)
+=item $obj-E<gt>B<new>(%options)
 
 To simplify the URIs of the actors, as specified with the C<destination>
 option, you may use the STRING C<NEXT>.  It will be replaced by the
@@ -62,39 +62,39 @@ right URI.
 
 =back
 
-=item XML::Compile::SOAP11-E<gt>B<register>(URI, ENVNS)
+=item XML::Compile::SOAP11-E<gt>B<register>($uri, $envns)
 
-See L<XML::Compile::SOAP/"Constructors">
+Inherited, see L<XML::Compile::SOAP/"Constructors">
 
 =back
 
 =head2 Accessors
 
-See L<documentation in the base class|XML::Compile::SOAP/"Accessors">.
+Extends L<"Accessors" in XML::Compile::SOAP|XML::Compile::SOAP/"Accessors">.
  
 =over 4
 
 =item $obj-E<gt>B<mediaType>()
 
-See L<XML::Compile::SOAP/"Accessors">
+Inherited, see L<XML::Compile::SOAP/"Accessors">
 
 =item $obj-E<gt>B<schemas>()
 
-See L<XML::Compile::SOAP/"Accessors">
+Inherited, see L<XML::Compile::SOAP/"Accessors">
 
 =item $obj-E<gt>B<version>()
 
-See L<XML::Compile::SOAP/"Accessors">
+Inherited, see L<XML::Compile::SOAP/"Accessors">
 
 =back
 
 =head2 Single message
 
-See L<documentation in the base class|XML::Compile::SOAP/"Single message">.
+Extends L<"Single message" in XML::Compile::SOAP|XML::Compile::SOAP/"Single message">.
  
 =over 4
 
-=item $obj-E<gt>B<compileMessage>(('SENDER'|'RECEIVER'), OPTIONS)
+=item $obj-E<gt>B<compileMessage>( <'SENDER'|'RECEIVER'>, %options )
 
  -Option        --Defined in        --Default
   body            XML::Compile::SOAP  []
@@ -133,61 +133,61 @@ decoded automatically.
 
 =back
 
-=item $obj-E<gt>B<messageStructure>(XML)
+=item $obj-E<gt>B<messageStructure>($xml)
 
-=item XML::Compile::SOAP11-E<gt>B<messageStructure>(XML)
+=item XML::Compile::SOAP11-E<gt>B<messageStructure>($xml)
 
-See L<XML::Compile::SOAP/"Single message">
+Inherited, see L<XML::Compile::SOAP/"Single message">
 
 =back
 
 =head2 Helpers
 
-See L<documentation in the base class|XML::Compile::SOAP/"Helpers">.
+Extends L<"Helpers" in XML::Compile::SOAP|XML::Compile::SOAP/"Helpers">.
  
 =head2 Transcoding
 
-See L<documentation in the base class|XML::Compile::SOAP/"Transcoding">.
+Extends L<"Transcoding" in XML::Compile::SOAP|XML::Compile::SOAP/"Transcoding">.
  
 =over 4
 
-=item $obj-E<gt>B<replyMustUnderstandFault>(TYPE)
+=item $obj-E<gt>B<replyMustUnderstandFault>($type)
 
-See L<XML::Compile::SOAP/"Transcoding">
+Inherited, see L<XML::Compile::SOAP/"Transcoding">
 
-=item $obj-E<gt>B<roleAbbreviation>(URI)
+=item $obj-E<gt>B<roleAbbreviation>($uri)
 
-See L<XML::Compile::SOAP/"Transcoding">
+Inherited, see L<XML::Compile::SOAP/"Transcoding">
 
-=item $obj-E<gt>B<roleURI>(URI|STRING)
+=item $obj-E<gt>B<roleURI>($uri|STRING)
 
-See L<XML::Compile::SOAP/"Transcoding">
+Inherited, see L<XML::Compile::SOAP/"Transcoding">
 
 =back
 
 =head1 DETAILS
 
-See L<documentation in the base class|XML::Compile::SOAP/"DETAILS">.
+Extends L<"DETAILS" in XML::Compile::SOAP|XML::Compile::SOAP/"DETAILS">.
  
 =head2 SOAP introduction
 
-See L<documentation in the base class|XML::Compile::SOAP/"SOAP introduction">.
+Extends L<"SOAP introduction" in XML::Compile::SOAP|XML::Compile::SOAP/"SOAP introduction">.
  
 =head2 Supported servers
 
-See L<documentation in the base class|XML::Compile::SOAP/"Supported servers">.
+Extends L<"Supported servers" in XML::Compile::SOAP|XML::Compile::SOAP/"Supported servers">.
  
 =head2 Naming types and elements
 
-See L<documentation in the base class|XML::Compile::SOAP/"Naming types and elements">.
+Extends L<"Naming types and elements" in XML::Compile::SOAP|XML::Compile::SOAP/"Naming types and elements">.
  
 =head2 Client and Server implementations
 
-See L<documentation in the base class|XML::Compile::SOAP/"Client and Server implementations">.
+Extends L<"Client and Server implementations" in XML::Compile::SOAP|XML::Compile::SOAP/"Client and Server implementations">.
  
 =head2 Use of wildcards (any/anyAttribute)
 
-See L<documentation in the base class|XML::Compile::SOAP/"Use of wildcards (any/anyAttribute)">.
+Extends L<"Use of wildcards (any/anyAttribute)" in XML::Compile::SOAP|XML::Compile::SOAP/"Use of wildcards (any/anyAttribute)">.
  
 =head2 Header and Body entries
 
@@ -349,8 +349,8 @@ Or
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 3.03,
-built on January 10, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.04,
+built on February 06, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

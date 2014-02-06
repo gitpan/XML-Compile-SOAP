@@ -60,24 +60,24 @@ SOAP defines encodings, especially for SOAP-RPC.
 
 =over 4
 
-=item $obj-E<gt>B<array>((NAME|undef), ITEM_TYPE, ARRAY-of-ELEMENTS, OPTIONS)
+=item $obj-E<gt>B<array>( <$name|undef>, $item_type, $elements, %options )
 
 Arrays can be a mess: a mixture of anything and nothing.  Therefore,
 you have to help the generation more than you may wish for.  This
 method produces an one dimensional array, L<multidim()|XML::Compile::SOAP11::Encoding/"Encoding"> is used for
 multi-dimensional arrays.
 
-The NAME is the packed type of the array itself.  When undef,
+The $name is the packed type of the array itself.  When undef,
 the C<< {soap-enc-ns}Array >> will be used (the action soap
 encoding namespace will be used).
 
-The ITEM_TYPE specifies the type of each element within the array.
+The $item_type specifies the type of each element within the array.
 This type is used to create the C<arrayType> attribute, however
 doesn't tell enough about the items themselves: they may be
 extensions to that type.
 
-Each of the ELEMENTS must be an XML::LibXML::Node, either
-self-constructed, or produced by one of the builder methods in
+Each of the $elements (passed as ARRAY) must be an XML::LibXML::Node,
+either self-constructed, or produced by one of the builder methods in
 this class, like L<enc()|XML::Compile::SOAP11::Encoding/"Encoding"> or L<typed()|XML::Compile::SOAP11::Encoding/"Encoding">.
 
 Returned is the XML::LibXML::Element which represents the
@@ -124,17 +124,17 @@ element)
 
 =back
 
-=item $obj-E<gt>B<element>(TYPE, NAME, VALUE)
+=item $obj-E<gt>B<element>($type, $name, $value)
 
-Create an element.  The NAME is for node, where a namespace component
+Create an element.  The $name is for node, where a namespace component
 is translated into a prefix.  When you wish for a C<type> attribute,
 use L<typed()|XML::Compile::SOAP11::Encoding/"Encoding">.
 
-When the TYPE does not contain a namespace indication, it is taken
-in the selected schema namespace.  If the VALUE already is a
-XML::LibXML::Element, then that one is used (and the NAME ignored).
+When the $type does not contain a namespace indication, it is taken
+in the selected schema namespace.  If the $value already is a
+XML::LibXML::Element, then that one is used (and the $name ignored).
 
-=item $obj-E<gt>B<enc>(LOCAL, VALUE, [ID])
+=item $obj-E<gt>B<enc>( $local, $value, [$id] )
 
 In the SOAP specification, encoding types are defined: elements
 which do not have a distinguishable name but use the type of the
@@ -152,21 +152,21 @@ example:
   print $xml->toString;
     # <SOAP-ENC:int id="me">42</SOAP-ENC:int>
 
-=item $obj-E<gt>B<href>(NAME, ELEMENT, [ID])
+=item $obj-E<gt>B<href>( $name, $element, [$id] )
 
-Create a reference element with NAME to the existing ELEMENT.  When the
-ELEMENT does not have an "id" attribute yet, then ID will be used.  In
-case not ID was specified, then one is generated.
+Create a reference element with $name to the existing $element.  When the
+$element does not have an "id" attribute yet, then $id will be used.  In
+case not $id was specified, then one is generated.
 
-=item $obj-E<gt>B<multidim>((NAME|undef), ITEM_TYPE, ARRAY-of-ELEMENTS, OPTIONS)
+=item $obj-E<gt>B<multidim>( <$name|undef>, $item_type, $elements, %options )
 
 A multi-dimensional array, less flexible than a single dimensional
 array, which can be created with L<array()|XML::Compile::SOAP11::Encoding/"Encoding">.
 
-The array must be square: in each of the dimensions, the length of
-each row must be the same.  On the other hand, it may be sparse
-(contain undefs).  The size of each dimension is determined by the
-length of its first element.
+The table of $elements (ARRAY of ARRAYs) must be full: in each of the
+dimensions, the length of each row must be the same.  On the other
+hand, it may be sparse (contain undefs).  The size of each dimension is
+determined by the length of its first element.
 
  -Option--Default
   id      undef
@@ -177,20 +177,20 @@ length of its first element.
 
 =back
 
-=item $obj-E<gt>B<nil>([TYPE], NAME)
+=item $obj-E<gt>B<nil>( [$type], $name )
 
-Create an element with NAME which explicitly has the C<xsi:nil> attribute.
-If the NAME is full (has a namespace to it), it will be translated into
+Create an element with $name which explicitly has the C<xsi:nil> attribute.
+If the $name is full (has a namespace to it), it will be translated into
 a QNAME, otherwise, it is considered not namespace qualified.
 
-If a TYPE is given, then an explicit type parameter is added.
+If a $type is given, then an explicit type parameter is added.
 
-=item $obj-E<gt>B<prefixed>(TYPE|(NAMESPACE,LOCAL))
+=item $obj-E<gt>B<prefixed>( $type|<$ns,$local> )
 
-Translate a NAMESPACE-LOCAL combination (which may be represented as
-a packed TYPE) into a prefixed notation.
+Translate a $ns-$local combination (which may be represented as
+a packed $type) into a prefixed notation.
 
-=item $obj-E<gt>B<startEncoding>(OPTIONS)
+=item $obj-E<gt>B<startEncoding>(%options)
 
 This needs to be called before any encoding routine, because it
 initializes the internals.  Each call will reset all compiled
@@ -212,21 +212,21 @@ example:
 
  $soap->startEncoding(doc => $doc);
 
-=item $obj-E<gt>B<struct>(TYPE, CHILDS)
+=item $obj-E<gt>B<struct>($type, $childs)
 
-Create a structure, an element with children.  The CHILDS must be fully
+Create a structure, an element with children.  The $childs must be fully
 prepared XML::LibXML::Element objects.
 
-=item $obj-E<gt>B<typed>(TYPE, NAME, VALUE)
+=item $obj-E<gt>B<typed>($type, $name, $value)
 
 A "typed" element shows its type explicitly, via the "xsi:type" attribute.
-The VALUE will get processed via an auto-generated XML::Compile writer,
+The $value will get processed via an auto-generated XML::Compile writer,
 so validated.  The processing is cashed.
 
-When VALUE already is an XML::LibXML::Element, then no processing
-nor value checking will be performed.  The NAME will be ignored.
+When $value already is an XML::LibXML::Element, then no processing
+nor value checking will be performed.  The $name will be ignored.
 
-If the TYPE is not qualified, then it is interpreted as basic type, as
+If the $type is not qualified, then it is interpreted as basic type, as
 defined by the selected schema.  If you explicitly
 need a non-namespace typed item, then use an empty namespace.  In any
 case, the type must be defined and the value is validated.
@@ -245,9 +245,9 @@ example:
 
 =over 4
 
-=item $obj-E<gt>B<dec>(XMLNODES)
+=item $obj-E<gt>B<dec>($xmlnodes)
 
-Decode the XMLNODES (list of XML::LibXML::Element objects).  Use
+Decode the $xmlnodes (list of XML::LibXML::Element objects).  Use
 Data::Dumper to figure-out what the produced output is: it is a guess,
 so may not be perfect (do not use RPC but document style soap for
 good results).
@@ -257,16 +257,16 @@ then the returned data is compact but may be sloppy.  Otherwise,
 a HASH is returned containing as much info as could be extracted from
 the tree.
 
-=item $obj-E<gt>B<decSimplify>(TREE, OPTIONS)
+=item $obj-E<gt>B<decSimplify>($tree, %options)
 
-Simplify the TREE of output produced by L<dec()|XML::Compile::SOAP11::Encoding/"Decoding"> to contain only
+Simplify the $tree of output produced by L<dec()|XML::Compile::SOAP11::Encoding/"Decoding"> to contain only
 data.  Of course, this will remove useful information.
 
 From each of the HASHes in the tree, the C<_NAME>, C<_TYPE>, C<id>,
 and any/anyAttribute fields are removed.  If only a C<_> is left over,
 that related value will replace the HASH as a whole.
 
-=item $obj-E<gt>B<startDecoding>(OPTIONS)
+=item $obj-E<gt>B<startDecoding>(%options)
 
 Each call to this method will restart the cache of the decoding
 internals.
@@ -297,8 +297,8 @@ an easily accessible output tree.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 3.03,
-built on January 10, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.04,
+built on February 06, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

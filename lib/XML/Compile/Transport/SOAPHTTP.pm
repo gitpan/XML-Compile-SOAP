@@ -6,8 +6,7 @@ use warnings;
 use strict;
 
 package XML::Compile::Transport::SOAPHTTP;
-use vars '$VERSION';
-$VERSION = '3.03';
+our $VERSION = '3.04';
 
 use base 'XML::Compile::Transport';
 

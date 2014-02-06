@@ -40,7 +40,7 @@ base class.  The primary must contain the C<new>.
 
 =over 4
 
-=item XML::Compile::SOAP::Server-E<gt>B<new>(OPTIONS)
+=item XML::Compile::SOAP::Server-E<gt>B<new>(%options)
 
  -Option--Default
   role    'NEXT'
@@ -75,7 +75,7 @@ Returns the URI of the role (actor) of this server.
 
 =over 4
 
-=item $obj-E<gt>B<compileFilter>(OPTIONS)
+=item $obj-E<gt>B<compileFilter>(%options)
 
 This routine returns a CODE reference which can be used for
 L<compileHandler(selector)|XML::Compile::SOAP::Server/"Actions">; so see whether a certain message has arrived.
@@ -96,7 +96,7 @@ On the moment, only the first C<body> element is used to determine that.
 
 =back
 
-=item $obj-E<gt>B<compileHandler>(OPTIONS)
+=item $obj-E<gt>B<compileHandler>(%options)
 
 Returns an HTTP status code and an XML::LibXML::Document pair.
 
@@ -160,8 +160,8 @@ Returns a CODE reference which can be used to produce faults.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 3.03,
-built on January 10, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.04,
+built on February 06, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

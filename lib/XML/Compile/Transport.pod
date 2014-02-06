@@ -47,19 +47,19 @@ in parallel.
 
 =back
 
-See L<documentation in the base class|XML::Compile::SOAP::Extension/"DESCRIPTION">.
+Extends L<"DESCRIPTION" in XML::Compile::SOAP::Extension|XML::Compile::SOAP::Extension/"DESCRIPTION">.
  
 =head1 METHODS
 
-See L<documentation in the base class|XML::Compile::SOAP::Extension/"METHODS">.
+Extends L<"METHODS" in XML::Compile::SOAP::Extension|XML::Compile::SOAP::Extension/"METHODS">.
  
 =head2 Constructors
 
-See L<documentation in the base class|XML::Compile::SOAP::Extension/"Constructors">.
+Extends L<"Constructors" in XML::Compile::SOAP::Extension|XML::Compile::SOAP::Extension/"Constructors">.
  
 =over 4
 
-=item XML::Compile::Transport-E<gt>B<new>(OPTIONS)
+=item XML::Compile::Transport-E<gt>B<new>(%options)
 
  -Option --Default
   address  'http://localhost'
@@ -79,59 +79,59 @@ One or more URI which represents the servers.
 
 =head2 WSDL11
 
-See L<documentation in the base class|XML::Compile::SOAP::Extension/"WSDL11">.
+Extends L<"WSDL11" in XML::Compile::SOAP::Extension|XML::Compile::SOAP::Extension/"WSDL11">.
  
 =over 4
 
-=item $obj-E<gt>B<wsdl11Init>(WSDL, ARGS)
+=item $obj-E<gt>B<wsdl11Init>($wsdl, $args)
 
-=item XML::Compile::Transport-E<gt>B<wsdl11Init>(WSDL, ARGS)
+=item XML::Compile::Transport-E<gt>B<wsdl11Init>($wsdl, $args)
 
-See L<XML::Compile::SOAP::Extension/"WSDL11">
+Inherited, see L<XML::Compile::SOAP::Extension/"WSDL11">
 
 =back
 
 =head2 SOAP11
 
-See L<documentation in the base class|XML::Compile::SOAP::Extension/"SOAP11">.
+Extends L<"SOAP11" in XML::Compile::SOAP::Extension|XML::Compile::SOAP::Extension/"SOAP11">.
  
 =over 4
 
-=item $obj-E<gt>B<soap11ClientWrapper>(OPERATION, CALL, ARGS)
+=item $obj-E<gt>B<soap11ClientWrapper>($operation, $call, $args)
 
-See L<XML::Compile::SOAP::Extension/"SOAP11">
+Inherited, see L<XML::Compile::SOAP::Extension/"SOAP11">
 
-=item $obj-E<gt>B<soap11HandlerWrapper>(OPERATION, CALLBACK, ARGS)
+=item $obj-E<gt>B<soap11HandlerWrapper>($operation, $callback, $args)
 
-See L<XML::Compile::SOAP::Extension/"SOAP11">
+Inherited, see L<XML::Compile::SOAP::Extension/"SOAP11">
 
-=item $obj-E<gt>B<soap11OperationInit>(OPERATION, ARGS)
+=item $obj-E<gt>B<soap11OperationInit>($operation, $args)
 
-=item XML::Compile::Transport-E<gt>B<soap11OperationInit>(OPERATION, ARGS)
+=item XML::Compile::Transport-E<gt>B<soap11OperationInit>($operation, $args)
 
-See L<XML::Compile::SOAP::Extension/"SOAP11">
+Inherited, see L<XML::Compile::SOAP::Extension/"SOAP11">
 
 =back
 
 =head2 SOAP12
 
-See L<documentation in the base class|XML::Compile::SOAP::Extension/"SOAP12">.
+Extends L<"SOAP12" in XML::Compile::SOAP::Extension|XML::Compile::SOAP::Extension/"SOAP12">.
  
 =over 4
 
-=item $obj-E<gt>B<soap12ClientWrapper>(OPERATION, CALL, ARGS)
+=item $obj-E<gt>B<soap12ClientWrapper>($operation, $call, $args)
 
-See L<XML::Compile::SOAP::Extension/"SOAP12">
+Inherited, see L<XML::Compile::SOAP::Extension/"SOAP12">
 
-=item $obj-E<gt>B<soap12HandlerWrapper>(OPERATION, CALLBACK, ARGS)
+=item $obj-E<gt>B<soap12HandlerWrapper>($operation, $callback, $args)
 
-See L<XML::Compile::SOAP::Extension/"SOAP12">
+Inherited, see L<XML::Compile::SOAP::Extension/"SOAP12">
 
-=item $obj-E<gt>B<soap12OperationInit>(OPERATION, ARGS)
+=item $obj-E<gt>B<soap12OperationInit>($operation, $args)
 
-=item XML::Compile::Transport-E<gt>B<soap12OperationInit>(OPERATION, ARGS)
+=item XML::Compile::Transport-E<gt>B<soap12OperationInit>($operation, $args)
 
-See L<XML::Compile::SOAP::Extension/"SOAP12">
+Inherited, see L<XML::Compile::SOAP::Extension/"SOAP12">
 
 =back
 
@@ -158,7 +158,7 @@ Returns the charset to be used when sending,
 
 =over 4
 
-=item $obj-E<gt>B<compileClient>(OPTIONS)
+=item $obj-E<gt>B<compileClient>(%options)
 
 Compile a client handler.  Returned is a subroutine which is called
 with a text represenation of the XML request, or an XML::LibXML tree.
@@ -341,13 +341,13 @@ used for compileAll() and many other related functions.
 
 =head1 SYNOPSYS
 
-See L<documentation in the base class|XML::Compile::SOAP::Extension/"SYNOPSYS">.
+Extends L<"SYNOPSYS" in XML::Compile::SOAP::Extension|XML::Compile::SOAP::Extension/"SYNOPSYS">.
  
 =head1 Helpers
 
 =over 4
 
-=item XML::Compile::Transport-E<gt>B<register>(URI)
+=item XML::Compile::Transport-E<gt>B<register>($uri)
 
 Declare an transporter type.
 
@@ -355,8 +355,8 @@ Declare an transporter type.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 3.03,
-built on January 10, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.04,
+built on February 06, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

@@ -19,24 +19,24 @@ XML::Compile::SOAP11::Client - SOAP1.1 client needs
 
 See L<XML::Compile::SOAP11|XML::Compile::SOAP11>.
 
-See L<documentation in the base class|XML::Compile::SOAP::Client/"DESCRIPTION">.
+Extends L<"DESCRIPTION" in XML::Compile::SOAP::Client|XML::Compile::SOAP::Client/"DESCRIPTION">.
  
-See L<documentation in the base class|XML::Compile::SOAP11/"DESCRIPTION">.
+Extends L<"DESCRIPTION" in XML::Compile::SOAP11|XML::Compile::SOAP11/"DESCRIPTION">.
  
 =head1 METHODS
 
-See L<documentation in the base class|XML::Compile::SOAP::Client/"METHODS">.
+Extends L<"METHODS" in XML::Compile::SOAP::Client|XML::Compile::SOAP::Client/"METHODS">.
  
-See L<documentation in the base class|XML::Compile::SOAP11/"METHODS">.
+Extends L<"METHODS" in XML::Compile::SOAP11|XML::Compile::SOAP11/"METHODS">.
  
 =head1 DETAILS
 
-See L<documentation in the base class|XML::Compile::SOAP11/"DETAILS">.
+Extends L<"DETAILS" in XML::Compile::SOAP11|XML::Compile::SOAP11/"DETAILS">.
  
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 3.03,
-built on January 10, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.04,
+built on February 06, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

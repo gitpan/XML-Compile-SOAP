@@ -24,7 +24,7 @@ L<XML::Compile::SOAP::WSA|XML::Compile::SOAP::WSA>)
 
 =over 4
 
-=item XML::Compile::SOAP::Extension-E<gt>B<new>(OPTIONS)
+=item XML::Compile::SOAP::Extension-E<gt>B<new>(%options)
 
 =back
 
@@ -32,12 +32,12 @@ L<XML::Compile::SOAP::WSA|XML::Compile::SOAP::WSA>)
 
 =over 4
 
-=item $obj-E<gt>B<wsdl11Init>(WSDL, ARGS)
+=item $obj-E<gt>B<wsdl11Init>($wsdl, $args)
 
-=item XML::Compile::SOAP::Extension-E<gt>B<wsdl11Init>(WSDL, ARGS)
+=item XML::Compile::SOAP::Extension-E<gt>B<wsdl11Init>($wsdl, $args)
 
 Do not use this hook for adding WSDLs or schemas, unless those are
-used to interpret WSDL or SOAP files correctly.
+used to interpret $wsdl or SOAP files correctly.
 
 =back
 
@@ -45,18 +45,18 @@ used to interpret WSDL or SOAP files correctly.
 
 =over 4
 
-=item $obj-E<gt>B<soap11ClientWrapper>(OPERATION, CALL, ARGS)
+=item $obj-E<gt>B<soap11ClientWrapper>($operation, $call, $args)
 
-=item $obj-E<gt>B<soap11HandlerWrapper>(OPERATION, CALLBACK, ARGS)
+=item $obj-E<gt>B<soap11HandlerWrapper>($operation, $callback, $args)
 
 Called before the handler is created, to influence the encoder and
 decoder. Returned is a wrapped callback, or the same.
 
-=item $obj-E<gt>B<soap11OperationInit>(OPERATION, ARGS)
+=item $obj-E<gt>B<soap11OperationInit>($operation, $args)
 
-=item XML::Compile::SOAP::Extension-E<gt>B<soap11OperationInit>(OPERATION, ARGS)
+=item XML::Compile::SOAP::Extension-E<gt>B<soap11OperationInit>($operation, $args)
 
-ARGS is a reference.
+$args is a reference.
 
 =back
 
@@ -64,18 +64,18 @@ ARGS is a reference.
 
 =over 4
 
-=item $obj-E<gt>B<soap12ClientWrapper>(OPERATION, CALL, ARGS)
+=item $obj-E<gt>B<soap12ClientWrapper>($operation, $call, $args)
 
-=item $obj-E<gt>B<soap12HandlerWrapper>(OPERATION, CALLBACK, ARGS)
+=item $obj-E<gt>B<soap12HandlerWrapper>($operation, $callback, $args)
 
 Called before the handler is created, to influence the encoder and
 decoder. Returned is a wrapped callback, or the same.
 
-=item $obj-E<gt>B<soap12OperationInit>(OPERATION, ARGS)
+=item $obj-E<gt>B<soap12OperationInit>($operation, $args)
 
-=item XML::Compile::SOAP::Extension-E<gt>B<soap12OperationInit>(OPERATION, ARGS)
+=item XML::Compile::SOAP::Extension-E<gt>B<soap12OperationInit>($operation, $args)
 
-ARGS is a reference.
+$args is a reference.
 
 =back
 
@@ -85,8 +85,8 @@ ARGS is a reference.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 3.03,
-built on January 10, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.04,
+built on February 06, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

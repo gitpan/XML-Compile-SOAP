@@ -6,8 +6,7 @@ use warnings;
 use strict;
 
 package XML::Compile::SOAP11;
-use vars '$VERSION';
-$VERSION = '3.03';
+our $VERSION = '3.04';
 
 use base 'XML::Compile::SOAP';
 
@@ -268,8 +267,9 @@ sub _reader_fault_reader()
        foreach my $node (@childs)
        {   my $type  = type_of_node($node);
            push @{$h{_ELEMENT_ORDER}}, $type;
-           $h{$type} = $schemas->reader($type, elements_qualified=>'TOP')
-              ->($node);
+           my $dec   = try { $schemas->reader($type, elements_qualified=>'TOP')
+              ->($node) };
+           $h{$type} = $dec // $node;
        }
        ($tag => \%h);
     };

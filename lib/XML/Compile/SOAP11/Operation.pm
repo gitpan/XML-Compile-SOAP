@@ -6,8 +6,7 @@ use warnings;
 use strict;
 
 package XML::Compile::SOAP11::Operation;
-use vars '$VERSION';
-$VERSION = '3.03';
+our $VERSION = '3.04';
 
 use base 'XML::Compile::SOAP::Operation';
 
@@ -20,7 +19,7 @@ use XML::Compile::SOAP11::Client;
 use XML::Compile::SOAP11::Server;
 use XML::Compile::SOAP::Extension;
 
-our $VERSION;         # OODoc adds $VERSION to the script
+use vars '$VERSION';         # OODoc adds $VERSION to the script
 $VERSION ||= '(devel)';
 
 # client/server object per schema class, because initiation options
@@ -480,7 +479,6 @@ sub explain($$$@)
 
     join "\n", @header, @main, @postproc, @attach, '';
 }
-
 
 sub parsedWSDL()
 {   my $self = shift;

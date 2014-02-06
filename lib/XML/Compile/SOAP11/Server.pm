@@ -6,8 +6,7 @@ use warnings;
 use strict;
 
 package XML::Compile::SOAP11::Server;
-use vars '$VERSION';
-$VERSION = '3.03';
+our $VERSION = '3.04';
 
 use base 'XML::Compile::SOAP11', 'XML::Compile::SOAP::Server';
 
@@ -71,17 +70,17 @@ sub faultResponseInvalid($$)
 }
 
 sub faultNotImplemented($)
-{   my ($class, $name) = @_;
+{   my ($self, $name) = @_;
 
     my $message = __x"procedure {name} for {version} is not yet implemented"
       , name => $name, version => 'SOAP11';
 
- +{ Fault =>
-      { faultcode   => pack_type(SOAP11ENV, 'Server.notImplemented')
-      , faultstring => $message
-      , faultactor  => SOAP11NEXT
-      }
-  };
+     +{ Fault =>
+          { faultcode   => pack_type(SOAP11ENV, 'Server.notImplemented')
+          , faultstring => $message
+          , faultactor  => SOAP11NEXT
+          }
+      };
 }
 
 sub faultNoAnswerProduced($)

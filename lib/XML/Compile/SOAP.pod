@@ -117,7 +117,7 @@ and (if available) a donation.
 
 =over 4
 
-=item $obj-E<gt>B<new>(OPTIONS)
+=item $obj-E<gt>B<new>(%options)
 
 Create a new SOAP object.  You have to instantiate either the SOAP11 or
 SOAP12 sub-class of this, because there are quite some differences (which
@@ -140,9 +140,9 @@ C<'ATTEMPT'>
 
 =back
 
-=item XML::Compile::SOAP-E<gt>B<register>(URI, ENVNS)
+=item XML::Compile::SOAP-E<gt>B<register>($uri, $envns)
 
-Declare an operation type, being an (WSDL specific) URI and envelope
+Declare an operation type, being an (WSDL specific) $uri and envelope
 namespace.
 
 =back
@@ -166,7 +166,7 @@ knowledge about the types.
 
 =over 4
 
-=item $obj-E<gt>B<compileMessage>(('SENDER'|'RECEIVER'), OPTIONS)
+=item $obj-E<gt>B<compileMessage>( <'SENDER'|'RECEIVER'>, %options )
 
 The payload is defined explicitly, where all headers and bodies are
 described in detail.  When you have a WSDL file, these ENTRIES are
@@ -179,7 +179,7 @@ the type where it belongs to.  The element of an entry (the value) is
 defined as an C<any> element in the schema, and therefore you will need
 to explicitly specify the element to be processed.
 
-As OPTIONS, you can specify any listed here, but also anything which is
+As %options, you can specify any listed here, but also anything which is
 accepted by L<XML::Compile::Schema::compile()|XML::Compile::Schema/"Compilers">, like
 C<< sloppy_integers => 1 >> and hooks.  These are applied to all header
 and body elements (not to the SOAP wrappers)
@@ -262,9 +262,9 @@ Alternative for option C<role>
 
 =back
 
-=item $obj-E<gt>B<messageStructure>(XML)
+=item $obj-E<gt>B<messageStructure>($xml)
 
-=item XML::Compile::SOAP-E<gt>B<messageStructure>(XML)
+=item XML::Compile::SOAP-E<gt>B<messageStructure>($xml)
 
 Returns a HASH with some collected information from a complete SOAP
 message (XML::LibXML::Document or XML::LibXML::Element).  Currenty,
@@ -279,20 +279,20 @@ of element names which where found in the header resp. body.
 
 =over 4
 
-=item $obj-E<gt>B<replyMustUnderstandFault>(TYPE)
+=item $obj-E<gt>B<replyMustUnderstandFault>($type)
 
 Produce an error structure to be returned to the sender.
 
-=item $obj-E<gt>B<roleAbbreviation>(URI)
+=item $obj-E<gt>B<roleAbbreviation>($uri)
 
-Translate a role URI into a simple string, if predefined.  See
+Translate a role $uri into a simple string, if predefined.  See
 L<roleURI()|XML::Compile::SOAP/"Transcoding">.
 
-=item $obj-E<gt>B<roleURI>(URI|STRING)
+=item $obj-E<gt>B<roleURI>($uri|STRING)
 
 Translates actor/role/destination abbreviations into URIs. Various
 SOAP protocol versions have different pre-defined STRINGs, which can
-be abbreviated for readibility.  Returns the unmodified URI in
+be abbreviated for readibility.  Returns the unmodified $uri in
 all other cases.
 
 SOAP11 only defines C<NEXT>.  SOAP12 defines C<NEXT>, C<NONE>, and
@@ -442,8 +442,8 @@ it still works... but you may get into characterset problems and such.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 3.03,
-built on January 10, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.04,
+built on February 06, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

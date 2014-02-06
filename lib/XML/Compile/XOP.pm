@@ -6,8 +6,7 @@ use warnings;
 use strict;
 
 package XML::Compile::XOP;
-use vars '$VERSION';
-$VERSION = '3.03';
+our $VERSION = '3.04';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';

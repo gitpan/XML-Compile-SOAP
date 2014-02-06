@@ -31,11 +31,11 @@ data which is transported inline or packaged separately.
 
 =over 4
 
-=item XML::Compile::XOP::Include-E<gt>B<fromMime>(OBJECT)
+=item XML::Compile::XOP::Include-E<gt>B<fromMime>($object)
 
 Collect the data from a HTTP::Message object.
 
-=item XML::Compile::XOP::Include-E<gt>B<new>(OPTIONS)
+=item XML::Compile::XOP::Include-E<gt>B<new>(%options)
 
 You have to specify either a C<file> or C<byte> source.  Otherwise, the
 constructor will return C<undef>.
@@ -82,9 +82,9 @@ The MIME-Type of the data.
 
 Returns the Content-ID.
 
-=item $obj-E<gt>B<content>([BYREF])
+=item $obj-E<gt>B<content>( [$byref] )
 
-Returns the content, when BYREF (boolean) is true, then the value is
+Returns the content, when $byref (boolean) is true, then the value is
 returned by reference.
 
 =back
@@ -93,21 +93,21 @@ returned by reference.
 
 =over 4
 
-=item $obj-E<gt>B<mimePart>([HEADERS])
+=item $obj-E<gt>B<mimePart>( [$headers] )
 
 Produce the message part which contains a normal mime representation
-of a binary file.  You may provide an initial HEADERS (HTTP::Headers)
+of a binary file.  You may provide an initial $headers (HTTP::Headers)
 object, or an ARRAY of headers to instantiate such an object.
 
-=item $obj-E<gt>B<write>(FILENAME|FILEHANDLE)
+=item $obj-E<gt>B<write>($filename|$fh)
 
 Write the content to the specified FILE.
 
-=item $obj-E<gt>B<xmlNode>(DOCUMENT, PATH, TAG)
+=item $obj-E<gt>B<xmlNode>($document, $path, $tag)
 
-The DOCUMENT will be used to construct the node from.  The PATH
+The $document will be used to construct the node from.  The $path
 is an indicator for the location of the node within the data
-structure (used in error messages).  The TAG is the prefixed name
+structure (used in error messages).  The $tag is the prefixed name
 for the node to be created.
 
 Returned is an XML node to be included in the output tree.
@@ -118,7 +118,7 @@ Returned is an XML node to be included in the output tree.
 
 =over 4
 
-=item overload: B<"" (stringification)>()
+=item overload: B<"">
 
 This object stringifies to its binary content.
 
@@ -126,8 +126,8 @@ This object stringifies to its binary content.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 3.03,
-built on January 10, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.04,
+built on February 06, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

@@ -27,7 +27,7 @@ a server.
 
 =over 4
 
-=item XML::Compile::SOAP::Operation-E<gt>B<new>(OPTIONS)
+=item XML::Compile::SOAP::Operation-E<gt>B<new>(%options)
 
  -Option     --Default
   action       undef
@@ -126,14 +126,14 @@ server). The C<OUTPUT> is used by the server in its message back.
 
 =over 4
 
-=item $obj-E<gt>B<compileClient>(OPTIONS)
+=item $obj-E<gt>B<compileClient>(%options)
 
 Returns one CODE reference which handles the conversion from a perl
 data-structure into a request message, the transmission of the
 request, the receipt of the answer, and the decoding of that answer
 into a Perl data-structure.
 
-=item $obj-E<gt>B<compileHandler>(OPTIONS)
+=item $obj-E<gt>B<compileHandler>(%options)
 
 Returns a code reference which translates in incoming XML message
 into Perl a data-structure, then calls the callback.  The result of
@@ -148,7 +148,7 @@ the callback is encoded from Perl into XML and returned.
 
 =back
 
-=item $obj-E<gt>B<compileTransporter>(OPTIONS)
+=item $obj-E<gt>B<compileTransporter>(%options)
 
 Create the transporter code for a certain specific target.
 
@@ -193,21 +193,41 @@ in most cases you want to reuse one (HTTP1.1) connection to a server.
 
 =over 4
 
-=item $obj-E<gt>B<explain>(WSDL, FORMAT, DIRECTION, OPTIONS)
+=item $obj-E<gt>B<explain>($wsdl, $format, $direction, %options)
 
 Dump an annotated structure showing how the operation works, helping
-developers to understand the schema. FORMAT is C<PERL> or C<XML>.
+developers to understand the schema. $format is C<PERL> or C<XML>.
 
-The DIRECTION is C<INPUT>, it will return the message which the client
+The $direction is C<INPUT>, it will return the message which the client
 sends to the server (input for the server). The C<OUTPUT> message is
 sent as response by the server.
+
+=item $obj-E<gt>B<parsedWSDL>(%options)
+
+[2.29] For some purposes, it is useful to get access to the parsed WSDL
+structure.
+
+B<Be aware> that the structure returned is consided "internal"
+and strongly influenced by behavior of L<XML::Compile|XML::Compile>; backwards
+compatibility will not be maintained at all cost.
+
+You can use L<XML::Compile::Schema::template()|XML::Compile::Schema/"Compilers"> format C<TREE> to get
+more details about the element types mentioned in this structure.
+
+example: 
+
+  use Data::Dumper;
+  $Data::Dumper::Indent    = 1;
+  $Data::Dumper::Quotekeys = 0;
+
+  print Dumper $op->parsedWSDL;
 
 =back
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 3.03,
-built on January 10, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.04,
+built on February 06, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
