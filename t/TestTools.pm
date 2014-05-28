@@ -9,7 +9,8 @@ use strict;
 use lib '../XMLCompile/lib', '../LogReport/lib', '../XMLTester/lib';
 
 package TestTools;
-our $VERSION = '3.04';
+use vars '$VERSION';
+$VERSION = '3.05';
 
 use base 'Exporter';
 

@@ -6,7 +6,8 @@ use warnings;
 use strict;
 
 package XML::Compile::SOAP;
-our $VERSION = '3.04';
+use vars '$VERSION';
+$VERSION = '3.05';
 
 
 use Log::Report          'xml-compile-soap';
@@ -307,7 +308,7 @@ sub _writer_body($)
 {   my ($self, $args) = @_;
     my (@rules, @blabels);
 
-    my $body  = $args->{body};
+    my $body  = $args->{body} || $args->{fault};
     my $use   = $body->{use} || 'literal';
     $use eq 'literal'
         or error __x"RPC encoded not supported by this version";

@@ -6,13 +6,14 @@ use warnings;
 use strict;
 
 package XML::Compile::XOP::Include;
-our $VERSION = '3.04';
+use vars '$VERSION';
+$VERSION = '3.05';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';
 use XML::Compile::SOAP::Util qw/:xop10/;
 use HTTP::Message            ();
-use File::Slurp              qw/read_file write_file/;
+use File::Slurp::Tiny        qw/read_file write_file/;
 
 
 use overload '""'     => 'content'

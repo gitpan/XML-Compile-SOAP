@@ -18,7 +18,7 @@ no_index:
     - t
     - inc
 requires:
-  File::Slurp: 0
+  File::Slurp::Tiny: 0
   LWP: 5.816
   Log::Report: 1.00
   Test::More: 0.54
@@ -27,4 +27,4 @@ requires:
   XML::Compile::Cache: 0.995
   XML::Compile::SOAP::Daemon: 3.00
   XML::Compile::Tester: 0.90
-version: 3.04
+version: 3.05
