@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::Operation;
 use vars '$VERSION';
-$VERSION = '3.05';
+$VERSION = '3.06';
 
 
 use Log::Report 'xml-report-soap', syntax => 'SHORT';
@@ -109,6 +109,12 @@ sub clientClass {panic}
 
 
 sub endPoints() { @{shift->{endpoints}} }
+
+
+sub longName()
+{   my $self = shift;
+    ($self->serviceName // '') . '#' . $self->name;
+}
 
 #-------------------------------------------
 

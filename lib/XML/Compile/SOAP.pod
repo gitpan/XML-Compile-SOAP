@@ -427,7 +427,7 @@ harder... you may try hooks or something more along these lines:
    my $message = { ..., $type => $node };
 
    my $call = $wsdl->compileClient('myOpToCall');
-   my ($answer, $trace) =  $call->(_doc => $doc, message => $message);
+   my ($answer, $trace) = $call->(_doc => $doc, message => $message);
 
 Here, C<$type> is the type of the element which needs to be filled in
 on a spot where the schema defines an "ANY" element. You need to include
@@ -442,8 +442,8 @@ it still works... but you may get into characterset problems and such.
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 3.05,
-built on May 28, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.06,
+built on December 22, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

@@ -7,7 +7,7 @@ use strict;
 
 package XML::Compile::SOAP::Server;
 use vars '$VERSION';
-$VERSION = '3.05';
+$VERSION = '3.06';
 
 
 use Log::Report 'xml-compile-soap', syntax => 'SHORT';

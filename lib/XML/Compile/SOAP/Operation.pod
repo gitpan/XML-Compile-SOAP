@@ -94,6 +94,11 @@ be defined within the service's port declaration.
 
 =item $obj-E<gt>B<kind>()
 
+=item $obj-E<gt>B<longName>()
+
+[3.06] prefix the service name before the operation name, to make it
+really unique.  A C<#> is used as separator.
+
 =item $obj-E<gt>B<name>()
 
 =item $obj-E<gt>B<portName>()
@@ -226,8 +231,8 @@ example:
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 3.05,
-built on May 28, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.06,
+built on December 22, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

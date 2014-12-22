@@ -34,16 +34,16 @@
          "requires" : {
             "File::Slurp::Tiny" : "0",
             "LWP" : "5.816",
-            "Log::Report" : "1.00",
+            "Log::Report" : "1.05",
             "Test::More" : "0.54",
             "Time::HiRes" : "0",
-            "XML::Compile" : "1.42",
-            "XML::Compile::Cache" : "0.995",
+            "XML::Compile" : "1.48",
+            "XML::Compile::Cache" : "1.03",
             "XML::Compile::SOAP::Daemon" : "3.00",
             "XML::Compile::Tester" : "0.90"
          }
       }
    },
    "release_status" : "stable",
-   "version" : "3.05"
+   "version" : "3.06"
 }

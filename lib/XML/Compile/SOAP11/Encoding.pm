@@ -7,26 +7,121 @@ use strict;
 
 package XML::Compile::SOAP11;
 use vars '$VERSION';
-$VERSION = '3.05';
+$VERSION = '3.06';
   #!!!
 
 use Log::Report 'xml-compile-soap';
 use List::Util         qw/first/;
 use XML::Compile::Util
    qw/odd_elements SCHEMA2001 SCHEMA2001i unpack_type type_of_node/;
-use XML::Compile::SOAP::Util qw/:soap11/;
+use XML::Compile::SOAP::Util qw/:soap11 WSDL11/;
+
+my $simplify;
+
+sub XML::Compile::SOAP11::Encoding::import(@) #!!!
+{   my ($class, %args) = @_;
+    $simplify = $args{simplify};
+}
 
 
-# startEncoding is always implemented, loading this class
-# the {enc} settings are temporary; live shorter than the object.
-sub _init_encoding($)
-{   my ($self, $args) = @_;
-    my $doc = $args->{doc};
-    $doc && UNIVERSAL::isa($doc, 'XML::LibXML::Document')
-        or error __x"encoding required an XML document to work with";
+sub _initRpcEnc11($$)
+{   my ($self, $schemas, $xsddir) = @_;
 
-    $self->{enc} = $args;
+    $schemas->addPrefixes('SOAP-ENC' => SOAP11ENC);
+    $schemas->importDefinitions("$xsddir/soap-encoding.xsd");
+
+    $schemas->addCompileOptions( 'READERS'
+      , anyElement   => 'TAKE_ALL'
+      , anyAttribute => 'TAKE_ALL'
+      , permit_href  => 1
+      );
+
+    # this will keep the soap11 compile object alive after compilation
+    $schemas->addHook
+      ( action  => 'READER'
+      , extends => 'SOAP-ENC:Array'
+      , replace => sub { $self->_dec_array_hook(@_) }
+      );
+
+    $schemas->addHook
+      ( action  => 'WRITER'
+      , extends => 'SOAP-ENC:Array'
+      , replace => sub { $self->_enc_array_hook(@_) }
+      );
+
     $self;
+}
+
+sub _reader_body_rpcenc_wrapper($$)
+{   my ($self, $procedure, $body) = @_;
+    my %trans = map +($_->[1] => [ $_->[0], $_->[2] ]), @$body;
+
+    # this should use key_rewrite, but there is no $wsdl here
+    # my $label = $wsdl->prefixed($procedure);
+    my $label = (unpack_type $procedure)[1];
+
+    my $code  = sub
+      { my $opnode = shift or return {};
+        my @nodes  = $opnode->childNodes;
+        my $parent = $opnode->parentNode;  # href'd sometimes a level up
+        push @nodes, grep $_ ne $opnode, $parent->childNodes
+            if $parent;
+
+        $self->rpcDecode(@nodes);
+      };
+
+    [ [ $label => $procedure => $code ] ];
+}
+
+sub _writer_body_rpcenc_hook($$$$$)
+{   my ($self, $type, $procedure, $params, $faults) = @_;
+    $self->_writer_body_rpclit_hook($type, $procedure, $params, $faults);
+}
+
+#------------------
+
+# Currently only support 1-dim arrays
+
+sub _enc_array_hook(@)
+{   my ($client, $doc, $val, $path, $tag, $r, $fulltype) = @_;
+    my $schema = $client->schemas;
+    my $nss    = $schema->namespaces;
+
+    my $elem   = $doc->createElement($tag);
+    my $encns  = $schema->prefixFor(SOAP11ENC);
+    $elem->setAttribute('xsi:type' => "$encns:Array");
+
+    my ($label, $items) = %$val;
+    my @items  = ref $items eq 'ARRAY' ? @$items : $items;
+
+    my $def    = $nss->find(complexType => $fulltype)
+        or error __x"cannot find {type} in rpc array writer hook"
+          , type => $fulltype;
+    my $defnode= $def->{node};
+    my $xpc    = XML::LibXML::XPathContext->new;
+    $xpc->registerNs(wsdl => WSDL11);
+    my ($atattr) = $xpc->findnodes('.//@wsdl:arrayType', $def->{node});
+
+    my $qname  = $atattr->value;
+    $qname     =~ s/\[.*//;    # strip array notation
+
+    my ($pref,$local) = $qname =~ /\:/ ? (split /\:/,$qname,2) : ('',$qname);
+    my $ns     = $atattr->lookupNamespaceURI($pref);
+    my $eltype = pack_type $ns, $local;
+
+    my @nodes;
+    if($nss->find(element => $eltype))
+    {   my $w  = $schema->writer($eltype);
+        @nodes = map $w->($doc, $_), @items;
+    }
+    else  # type
+    {   my $w  = $schema->writer($eltype, is_type => 1, element => $label);
+        @nodes = map $w->($doc, $_), @items;
+    }
+
+    $elem->appendChild($_) for @nodes;
+    $elem->setAttribute("$encns:arrayType" => $qname.'['.@nodes.']');
+    $elem;
 }
 
 
@@ -268,39 +363,25 @@ sub _flatten_multidim($$$)
 
 #--------------------------------------------------
 
-
-sub _init_decoding($)
-{   my ($self, $opts) = @_;
-
-    my %r =  $opts->{reader_opts} ? %{$opts->{reader_opts}} : ();
-    $r{anyElement}   ||= 'TAKE_ALL';
-    $r{anyAttribute} ||= 'TAKE_ALL';
-    $r{permit_href}    = 1;
-
-    push @{$r{hooks}},
-     { type    => pack_type(SOAP11ENC, 'Array')
-     , replace => sub { $self->_dec_array_hook(@_) }
-     };
-
-    $self->{dec} =
-     { reader_opts => [%r]
-     , simplify    => $opts->{simplify}
-     };
-
-    $self;
-}
-
-
-sub dec(@)
+sub rpcDecode(@)
 {   my $self  = shift;
-    my $data  = $self->_dec( [@_] );
+    my @nodes = grep $_->isa('XML::LibXML::Element'), @_;
+    my $data  = $self->_dec(\@nodes);
+
+#XXX MO: no idea why this is needed:
+foreach my $d (@$data)
+{   next unless $d->{_NAME};
+    $d = { $d->{_NAME} => $d };
+}
+#use Data::Dumper;
+#warn "RAW DATA=", Dumper $data;
  
     my ($index, $hrefs) = ({}, []);
     $self->_dec_find_ids_hrefs($index, $hrefs, \$data);
-    $self->_dec_resolve_hrefs ($index, $hrefs);
+    $self->_dec_resolve_hrefs($index, $hrefs);
 
-    $data = $self->decSimplify($data)
-        if $self->{dec}{simplify};
+    $data = $self->_dec_simplify_tree($data)
+        if $simplify;
 
     ref $data eq 'ARRAY'
         or return $data;
@@ -308,23 +389,26 @@ sub dec(@)
     # find the root element(s)
     my @roots;
     for(my $i = 0; $i < @_ && $i < @$data; $i++)
-    {   my $root = $_[$i]->getAttributeNS(SOAP11ENC, 'root');
+    {   my $root = $nodes[$i]->getAttributeNS(SOAP11ENC, 'root');
         next if defined $root && $root==0;
         push @roots, $data->[$i];
     }
-
-    my $answer
-      = !@roots        ? $data
-      : @$data==@roots ? $data
-      : @roots==1      ? $roots[0]
-      : \@roots;
-
-    $answer;
+    
+    # address parameters by name
+    # On the top-level, we can strip on level.  Some elements may appear
+    # more than once.
+    my %h;
+    foreach my $param (@roots ? @roots : @$data)
+    {   my ($k, $v) = %$param;
+           if(!$h{$k})    { $h{$k} = $v }
+        elsif(ref $h{$k}) { push @{$h{$k}}, $v }
+        else              { $h{$k} = [ $h{$k}, $v ] }
+    }
+    \%h;
 }
 
 sub _dec_reader($@)
 {   my ($self, $type) = @_;
-    return $self->{dec}{$type} if $self->{dec}{$type};
 
     my ($typens, $typelocal) = unpack_type $type;
 
@@ -339,17 +423,21 @@ sub _dec_reader($@)
 __FAKE_SCHEMA
     }
 
-    $self->schemas->reader($type, @{$self->{dec}{reader_opts}}, @_);
+    $self->schemas->reader($type, @_);
 }
 
 sub _dec($;$$$)
 {   my ($self, $nodes, $basetype, $offset, $dims) = @_;
+    my $schemas = $self->schemas;
+    my $nss     = $schemas->namespaces;
 
     my @res;
     $#res = $offset-1 if defined $offset;
 
     foreach my $node (@$nodes)
     {   my $ns    = $node->namespaceURI || '';
+
+        my $label = type_of_node $node;
         my $place;
         if($dims)
         {   my $pos = $node->getAttributeNS(SOAP11ENC, 'position');
@@ -366,12 +454,12 @@ sub _dec($;$$$)
         }
 
         if(my $href = $node->getAttribute('href') || '')
-        {   $$place = { href => $href };
+        {   $$place = { $label => { href => $href } };
             next;
         }
 
         if($ns ne SOAP11ENC)
-        {   my $typedef = $node->getAttributeNS(SCHEMA2001i,'type');
+        {   my $typedef = $node->getAttributeNS(SCHEMA2001i, 'type');
             if($typedef)
             {   $$place = $self->_dec_typed($node, $typedef);
                 next;
@@ -411,7 +499,7 @@ sub _dec_typed($$$)
     my $id = $node->getAttribute('id');
     $data->{id} = $id if defined $id;
 
-    { $local => $data };
+    $data;
 }
 
 sub _dec_other($$)
@@ -422,31 +510,31 @@ sub _dec_other($$)
 
     my $data;
     my $type  = $basetype || $elem;
-warn "Type=$type\n$basetype\n$elem\n";
     my $read  = try { $self->_dec_reader($type) };
     if($@)
-    {    # warn $@->wasFatal->message;  #--> element not found
-         # Element not known, so we must autodetect the type
-         my @childs = grep $_->isa('XML::LibXML::Element'), $node->childNodes;
-         if(@childs)
-         {   my ($childbase, $dims);
-             if($type =~ m/(.+?)\s*\[([\d,]+)\]$/)
-             {   $childbase = $1;
-                 $dims = ($2 =~ tr/,//) + 1;
-             }
-             my $dec_childs =  $self->_dec(\@childs, $childbase, 0, $dims);
-             $local = '_' if $local eq 'Array';  # simplifies better
-             $data  = { $local => $dec_childs } if $dec_childs;
-         }
-         else
-         {   $data->{_} = $node->textContent;
-             $data->{_TYPE}  = $basetype if $basetype;
-         }
+    {   # warn $@->wasFatal->message;  #--> element not found
+        # Element not known, so we must autodetect the type
+        my @childs = grep $_->isa('XML::LibXML::Element'), $node->childNodes;
+        if(@childs)
+        {   my ($childbase, $dims);
+            if($type =~ m/(.+?)\s*\[([\d,]+)\]$/)
+            {   $childbase = $1;
+                $dims = ($2 =~ tr/,//) + 1;
+            }
+            my $dec_childs =  $self->_dec(\@childs, $childbase, 0, $dims);
+            $local = '_' if $local eq 'Array';  # simplifies better
+            $data  = { $local => $dec_childs } if $dec_childs;
+        }
+        else
+        {   $data->{_} = $node->textContent;
+            $data->{_TYPE} = $basetype if $basetype;
+        }
     }
     else
-    {    $data = $read->($node);
-         $data = { _ => $data } if ref $data ne 'HASH';
-         $data->{_TYPE} = $basetype if $basetype;
+    {   my @x = $read->($node);
+        $data = $x[0];
+        $data = { _ => $data } if ref $data ne 'HASH';
+        $data->{_TYPE} = $basetype if $basetype;
     }
 
     $data->{_NAME} = $elem;
@@ -454,7 +542,7 @@ warn "Type=$type\n$basetype\n$elem\n";
     my $id = $node->getAttribute('id');
     $data->{id} = $id if defined $id;
 
-    $data;
+    ($local => $data);
 }
 
 sub _dec_soapenc($$)
@@ -514,10 +602,9 @@ sub _dec_resolve_hrefs($$)
     }
 }
 
-sub _dec_array_hook($$$)
-{   my ($self, $node, $args, $where, $local) = @_;
+sub _dec_array_hook($$$$$)
+{   my ($self, $node, $args, $where, $local, $r, $fulltype) = @_;
 
-warn "NODE=", $node->toString(1);
     my $at = $node->getAttributeNS(SOAP11ENC, 'arrayType')
         or return $node;
 
@@ -529,22 +616,25 @@ warn "NODE=", $node->toString(1);
    
     my $basetype;
     if(index($preftype, ':') >= 0)
-    {   my ($prefix, $local) = split /\:/, $preftype;
+    {   my ($prefix, $local) = split /\:/, $preftype, 2;
         $basetype = pack_type $node->lookupNamespaceURI($prefix), $local;
     }
     else
     {   $basetype = pack_type '', $preftype;
     }
-warn "BASE=$basetype\n";
 
-    return $self->_dec_array_one($node, $basetype, $dims[0])
-        if @dims == 1;
+    my $table;
+    if(@dims==1)
+    {   $table = $self->_dec_array_one($node, $basetype, $dims[0]);
+    }
+    else
+    {   my $first = first {$_->isa('XML::LibXML::Element')} $node->childNodes;
+        $table    = $first && $first->getAttributeNS(SOAP11ENC, 'position')
+          ? $self->_dec_array_multisparse($node, $basetype, \@dims)
+          : $self->_dec_array_multi($node, $basetype, \@dims);
+    }
 
-     my $first = first {$_->isa('XML::LibXML::Element')} $node->childNodes;
-
-       $first && $first->getAttributeNS(SOAP11ENC, 'position')
-     ? $self->_dec_array_multisparse($node, $basetype, \@dims)
-     : $self->_dec_array_multi($node, $basetype, \@dims);
+    (type_of_node($node) => $table);
 }
 
 sub _dec_array_one($$$)
@@ -554,7 +644,7 @@ sub _dec_array_one($$$)
     $off =~ m/^\[(\d+)\]$/ or return $node;
 
     my $offset = $1;
-    my @childs = grep {$_->isa('XML::LibXML::Element')} $node->childNodes;
+    my @childs = grep $_->isa('XML::LibXML::Element'), $node->childNodes;
     my $array  = $self->_dec(\@childs, $basetype, $offset, 1);
     $#$array   = $size -1;   # resize array to specified size
     $array;
@@ -563,7 +653,7 @@ sub _dec_array_one($$$)
 sub _dec_array_multisparse($$$)
 {   my ($self, $node, $basetype, $dims) = @_;
 
-    my @childs = grep {$_->isa('XML::LibXML::Element')} $node->childNodes;
+    my @childs = grep $_->isa('XML::LibXML::Element'), $node->childNodes;
     my $array  = $self->_dec(\@childs, $basetype, 0, scalar(@$dims));
     $array;
 }
@@ -571,7 +661,7 @@ sub _dec_array_multisparse($$$)
 sub _dec_array_multi($$$)
 {   my ($self, $node, $basetype, $dims) = @_;
 
-    my @childs = grep {$_->isa('XML::LibXML::Element')} $node->childNodes;
+    my @childs = grep $_->isa('XML::LibXML::Element'), $node->childNodes;
     $self->_dec_array_multi_slice(\@childs, $basetype, $dims);
 }
 
@@ -583,12 +673,10 @@ sub _dec_array_multi_slice($$$)
     }
     my ($rows, @dims) = @$dims;
 
-    [ map { $self->_dec_array_multi_slice($childs, $basetype, \@dims) }
-        1..$rows ]
+    [map $self->_dec_array_multi_slice($childs, $basetype, \@dims), 1..$rows];
 }
 
-
-sub decSimplify($@)
+sub _dec_simplify_tree($@)
 {   my ($self, $tree, %opts) = @_;
     defined $tree or return ();
     $self->{dec}{_simple_recurse} = {};
@@ -607,7 +695,7 @@ sub _dec_simple($$)
     $self->{dec}{_simple_recurse}{$tree}++;
 
     if(ref $tree eq 'ARRAY')
-    {   my @a = map { $self->_dec_simple($_, $opts) } @$tree;
+    {   my @a = map $self->_dec_simple($_, $opts), @$tree;
         return $a[0] if @a==1;
 
         # array of hash with each one element becomes hash
@@ -632,7 +720,7 @@ sub _dec_simple($$)
         or return $tree;
 
     foreach my $k (keys %$tree)
-    {   if($k =~ m/^(?:_NAME$|_TYPE$|id$|\{)/) { delete $tree->{$k} }
+    {   if($k =~ m/^(?:_NAME$|_TYPE$|id$)/) { delete $tree->{$k} }
         elsif(ref $tree->{$k})
         {   $tree->{$k} = $self->_dec_simple($tree->{$k}, $opts);
         }

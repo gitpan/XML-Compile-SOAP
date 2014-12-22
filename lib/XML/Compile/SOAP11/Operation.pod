@@ -101,6 +101,10 @@ Inherited, see L<XML::Compile::SOAP::Operation/"Accessors">
 
 Inherited, see L<XML::Compile::SOAP::Operation/"Accessors">
 
+=item $obj-E<gt>B<longName>()
+
+Inherited, see L<XML::Compile::SOAP::Operation/"Accessors">
+
 =item $obj-E<gt>B<name>()
 
 Inherited, see L<XML::Compile::SOAP::Operation/"Accessors">
@@ -265,8 +269,8 @@ Inherited, see L<XML::Compile::SOAP::Operation/"Helpers">
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 3.05,
-built on May 28, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.06,
+built on December 22, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,

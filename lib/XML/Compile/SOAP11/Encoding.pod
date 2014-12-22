@@ -6,49 +6,20 @@ XML::Compile::SOAP11::Encoding - SOAP encoding
 
 =head1 SYNOPSIS
 
- ### FOR THE MOMENT UNUSABLE
- # see t/70enc11.t in the distribution for complex examples
+ ### This module may work for you... but may also
+ ### not work.  Progress has been made, but the
+ ### implementation is not complete and not well tested.
 
- my $client = XML::Compile::SOAP11::Client->new();
- $client->startEncoding(...);  # loads this module
+ # Add this to load the logic
+ use XML::Compile::SOAP11::Encoding simplify => 1;
 
- # create: <SOAP-ENC:int>41</SOAP-ENC:int>
- my $xml = $client->enc(int => 41);
-
- # create: <SOAP-ENC:int id="hhtg">42</SOAP-ENC:int>
- my $xml = $client->enc(int => 42, 'hhtg');
-
- # create: <code xsi:type="xsd:int">43</code>
- my $int = pack_type SCHEMA2001, 'int';
- my $xml = $client->typed($int, code => 43);
-
- # create: <ref href="#id-1"/>  (xyz get's id if it hasn't)
- my $xml = $client->href('ref', $xyz);
- my $xml = $client->href('ref', $xyz, 'id-1');  # explicit label
- 
- # create: <number>3</number>   (gets validated as well!)
- my $xml = $client->element($int, number => 3);
-
- # create one-dimensional array of ints
- my $xml = $client->array(undef, $int, \@xml);
- my $xml = $client->array('{myns}mylocal', $int, \@xml);
-
- # create multi-dimensional array
- my $xml = $client->multidim(undef, $int, $matrix);
- my $xml = $client->multidim('{myns}mylocal', $int, $matrix);
-
- # decode an incoming encoded structure (as far as possible)
- my $hash = $client->dec($xml);
+ # The internals are used by the ::SOAP11 module, and
+ # probably should not be called by yourself.
 
 =head1 DESCRIPTION
 
 This module loads extra functionality into the L<XML::Compile::SOAP11|XML::Compile::SOAP11>
 namespace: all kinds of methods which are used to SOAP-encode data.
-
-The loading is triggered by calling L<startEncoding()|XML::Compile::SOAP11::Encoding/"Encoding">.  In threaded
-applications, you may wish to call that method once before the fork(),
-such that not each threads or forked process needs to compile the
-code again.  Of course, you can also C<use> this package explicitly.
 
 =head1 METHODS
 
@@ -190,28 +161,6 @@ If a $type is given, then an explicit type parameter is added.
 Translate a $ns-$local combination (which may be represented as
 a packed $type) into a prefixed notation.
 
-=item $obj-E<gt>B<startEncoding>(%options)
-
-This needs to be called before any encoding routine, because it
-initializes the internals.  Each call will reset all compiled
-cached translator routines.
-
-When you use the standard RPC-encoded interface, this will be
-called for you.
-
- -Option--Default
-  doc     <required>
-
-=over 2
-
-=item doc => XML::LibXML::Document
-
-=back
-
-example: 
-
- $soap->startEncoding(doc => $doc);
-
 =item $obj-E<gt>B<struct>($type, $childs)
 
 Create a structure, an element with children.  The $childs must be fully
@@ -245,60 +194,23 @@ example:
 
 =over 4
 
-=item $obj-E<gt>B<dec>($xmlnodes)
+=item $obj-E<gt>B<rpcDecode>($xmlnodes)
 
-Decode the $xmlnodes (list of XML::LibXML::Element objects).  Use
-Data::Dumper to figure-out what the produced output is: it is a guess,
-so may not be perfect (do not use RPC but document style soap for
-good results).
+Decode the elements found in the $xmlnodes (list of XML::LibXML::Node
+objects).  Use Data::Dumper to figure-out what the produced output is:
+it is a guess, so may not be perfect (do not use RPC but document style
+soap for good results).
 
-The decoded data is returned.  When L<startDecoding(simplify)|XML::Compile::SOAP11::Encoding/"Decoding"> is true,
-then the returned data is compact but may be sloppy.  Otherwise,
-a HASH is returned containing as much info as could be extracted from
-the tree.
-
-=item $obj-E<gt>B<decSimplify>($tree, %options)
-
-Simplify the $tree of output produced by L<dec()|XML::Compile::SOAP11::Encoding/"Decoding"> to contain only
-data.  Of course, this will remove useful information.
-
-From each of the HASHes in the tree, the C<_NAME>, C<_TYPE>, C<id>,
-and any/anyAttribute fields are removed.  If only a C<_> is left over,
-that related value will replace the HASH as a whole.
-
-=item $obj-E<gt>B<startDecoding>(%options)
-
-Each call to this method will restart the cache of the decoding
-internals.
-
-Currently B<not supported>, is the automatic decoding of elements which
-I<inherit> from C<SOAP-ENC:Array>.  If you encounter these, you have to
-play with hooks.
-
- -Option     --Default
-  reader_opts  {}
-  simplify     <false>
-
-=over 2
-
-=item reader_opts => HASH
-
-Extend or overrule the default reader options.  Available options
-are shown in L<XML::Compile::Schema::compile()|XML::Compile::Schema/"Compilers">.
-
-=item simplify => BOOLEAN
-
-Call L<decSimplify()|XML::Compile::SOAP11::Encoding/"Decoding"> automatically at the end of L<dec()|XML::Compile::SOAP11::Encoding/"Decoding">, so producing
-an easily accessible output tree.
-
-=back
+The decoded data is returned.  When "simplify" is set, then the returned
+data is compact but may be sloppy.  Otherwise, a HASH is returned
+containing as much info as could be extracted from the tree.
 
 =back
 
 =head1 SEE ALSO
 
-This module is part of XML-Compile-SOAP distribution version 3.05,
-built on May 28, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
+This module is part of XML-Compile-SOAP distribution version 3.06,
+built on December 22, 2014. Website: F<http://perl.overmeer.net/xml-compile/>
 
 Other distributions in this suite:
 L<XML::Compile>,
